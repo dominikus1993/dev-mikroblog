@@ -1,0 +1,16 @@
+STORAGE: NONE
+RESTRICTION: == net6.0
+NUGET
+  remote: https://api.nuget.org/v3/index.json
+    Microsoft.Extensions.ApiDescription.Server (6.0.2)
+    Microsoft.OpenApi (1.2.3)
+    Swashbuckle.AspNetCore (6.2.3)
+      Microsoft.Extensions.ApiDescription.Server (>= 3.0)
+      Swashbuckle.AspNetCore.Swagger (>= 6.2.3)
+      Swashbuckle.AspNetCore.SwaggerGen (>= 6.2.3)
+      Swashbuckle.AspNetCore.SwaggerUI (>= 6.2.3)
+    Swashbuckle.AspNetCore.Swagger (6.2.3)
+      Microsoft.OpenApi (>= 1.2.3)
+    Swashbuckle.AspNetCore.SwaggerGen (6.2.3)
+      Swashbuckle.AspNetCore.Swagger (>= 6.2.3)
+    Swashbuckle.AspNetCore.SwaggerUI (6.2.3)
