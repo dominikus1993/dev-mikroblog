@@ -1,0 +1,15 @@
+Serilog
+Serilog.Enrichers.ClientInfo
+Serilog.Enrichers.Environment
+Serilog.Enrichers.Process
+Serilog.Enrichers.Thread
+Serilog.Exceptions
+Serilog.Extensions.Hosting
+Serilog.Sinks.Async
+Serilog.Sinks.Console
+Serilog.Sinks.Trace
+Serilog.Formatting.Elasticsearch
+Serilog.Sinks.Seq
+Roslynator.Analyzers
+SonarAnalyzer.CSharp
+AsyncFixer

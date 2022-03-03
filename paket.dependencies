@@ -4,3 +4,20 @@ storage: none
 framework: net6.0
 
 nuget Swashbuckle.AspNetCore
+
+nuget Serilog
+nuget Serilog.Enrichers.ClientInfo
+nuget Serilog.Enrichers.Environment
+nuget Serilog.Enrichers.Process
+nuget Serilog.Enrichers.Thread
+nuget Serilog.Exceptions
+nuget Serilog.Extensions.Hosting
+nuget Serilog.Sinks.Async
+nuget Serilog.Sinks.Console
+nuget Serilog.Sinks.Trace
+nuget Serilog.Formatting.Elasticsearch
+nuget Serilog.Sinks.Seq
+
+nuget Roslynator.Analyzers
+nuget SonarAnalyzer.CSharp
+nuget AsyncFixer
