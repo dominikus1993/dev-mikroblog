@@ -1,0 +1,4 @@
+Roslynator.Analyzers
+SonarAnalyzer.CSharp
+AsyncFixer
+LanguageExt.Core
