@@ -20,3 +20,4 @@ nuget Serilog.Sinks.Seq
 nuget Roslynator.Analyzers
 nuget SonarAnalyzer.CSharp
 nuget AsyncFixer
+nuget LanguageExt.Core
