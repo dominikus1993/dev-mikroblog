@@ -1,5 +1,10 @@
+using DevMikroblog.BuildingBlocks.Infrastructure.Logging;
+
+using Microsoft.AspNetCore.Builder;
+
 var builder = WebApplication.CreateBuilder(args);
 
+builder.UseLogging("DevMikroblog.Api");
 // Add services to the container.
 
 builder.Services.AddControllers();
@@ -16,7 +21,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+app.UseRequestLogging();
 
 app.UseAuthorization();
 
