@@ -5,6 +5,7 @@ framework: net6.0
 
 nuget Swashbuckle.AspNetCore
 
+nuget Serilog.AspNetCore
 nuget Serilog.Enrichers.ClientInfo
 nuget Serilog.Enrichers.Environment
 nuget Serilog.Enrichers.Process
@@ -16,6 +17,7 @@ nuget Serilog.Sinks.Console
 nuget Serilog.Sinks.Trace
 nuget Serilog.Formatting.Elasticsearch
 nuget Serilog.Sinks.Seq
+nuget Microsoft.Extensions.Hosting.Abstractions
 
 nuget Roslynator.Analyzers
 nuget SonarAnalyzer.CSharp
