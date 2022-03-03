@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Reflection;
 
 using DevMikroblog.BuildingBlocks.Infrastructure.Logging.Enrichment;
@@ -50,13 +51,9 @@ public static class Extensionss
         return o;
     }
 
-    private static LogEventLevel ParseLevel(string level)
+    private static LogEventLevel ParseLevel(string? level)
     {
-        if (Enum.TryParse<LogEventLevel>(level, true, out var lvl))
-        {
-            return lvl;
-        }
-        return LogEventLevel.Information;
+        return Enum.TryParse<LogEventLevel>(level, true, out var lvl) ? lvl : LogEventLevel.Information;
     }
 
     public static WebApplicationBuilder UseLogging(this WebApplicationBuilder builder, string? applicationName = null)
@@ -93,15 +90,15 @@ public static class Extensionss
                 conf.WriteTo.Async((logger) =>
                 {
 
-                    switch (serilogOptions.Format.ToLower())
+                    switch (serilogOptions.Format.ToUpperInvariant())
                     {
-                        case "elasticsearch":
+                        case "ELASTICSEARCH":
                             logger.Console(new ElasticsearchJsonFormatter());
                             break;
-                        case "compact":
+                        case "COMPACT":
                             logger.Console(new RenderedCompactJsonFormatter());
                             break;
-                        case "colored":
+                        case "COLORED":
                             logger.Console(theme: AnsiConsoleTheme.Code);
                             break;
                         default:
