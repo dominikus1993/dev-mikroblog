@@ -1,4 +1,3 @@
-Serilog
 Serilog.Enrichers.ClientInfo
 Serilog.Enrichers.Environment
 Serilog.Enrichers.Process

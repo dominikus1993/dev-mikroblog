@@ -5,7 +5,6 @@ framework: net6.0
 
 nuget Swashbuckle.AspNetCore
 
-nuget Serilog
 nuget Serilog.Enrichers.ClientInfo
 nuget Serilog.Enrichers.Environment
 nuget Serilog.Enrichers.Process
