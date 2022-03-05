@@ -2,3 +2,4 @@ Roslynator.Analyzers
 SonarAnalyzer.CSharp
 AsyncFixer
 LanguageExt.Core
+Npgsql.EntityFrameworkCore.PostgreSQL
