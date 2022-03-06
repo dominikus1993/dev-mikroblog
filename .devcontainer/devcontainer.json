@@ -21,7 +21,10 @@
 		"wakatime.vscode-wakatime",
 		"GitHub.copilot",
 		"Fudge.auto-using",
-		"formulahendry.dotnet-test-explorer",		
+		"formulahendry.dotnet-test-explorer",
+		"usernamehw.errorlens",
+		"pflannery.vscode-versionlens",
+		"svelte.svelte-vscode"
 	],
 
     // Use 'forwardPorts' to make a list of ports inside the container available locally.
