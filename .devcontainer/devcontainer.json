@@ -23,8 +23,7 @@
 		"Fudge.auto-using",
 		"formulahendry.dotnet-test-explorer",
 		"usernamehw.errorlens",
-		"pflannery.vscode-versionlens",
-		"svelte.svelte-vscode"
+		"pflannery.vscode-versionlens"
 	],
 
     // Use 'forwardPorts' to make a list of ports inside the container available locally.
