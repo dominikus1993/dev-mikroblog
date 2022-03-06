@@ -3,9 +3,6 @@
   <ItemGroup>
     <ProjectReference Include="..\..\BuildingBlocks\Infrastructure\Infrastructure.csproj" />
   </ItemGroup>
-      <Target Name="Rollup" BeforeTargets="Build">
-        <Exec Command="npm run build" />
-    </Target>
   <PropertyGroup>
       <TargetFramework>net6.0</TargetFramework>
       <LangVersion>latest</LangVersion>
