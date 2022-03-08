@@ -62,7 +62,6 @@ public static class Extensionss
         return builder;
     }
 
-
     public static IHostBuilder UseLogging(this IHostBuilder hostBuilder, string? applicationName = null)
     {
         string? appName = applicationName ?? Assembly.GetExecutingAssembly().FullName;
@@ -89,7 +88,6 @@ public static class Extensionss
             {
                 conf.WriteTo.Async((logger) =>
                 {
-
                     switch (serilogOptions.Format.ToUpperInvariant())
                     {
                         case "ELASTICSEARCH":
