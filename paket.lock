@@ -164,6 +164,7 @@ NUGET
     Serilog.Sinks.Trace (3.0)
       Serilog (>= 2.10)
     SonarAnalyzer.CSharp (8.36.1.44192)
+    StronglyTypedId (1.0.0-beta06)
     Swashbuckle.AspNetCore (6.2.3)
       Microsoft.Extensions.ApiDescription.Server (>= 3.0)
       Swashbuckle.AspNetCore.Swagger (>= 6.2.3)

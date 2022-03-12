@@ -4,3 +4,4 @@ AsyncFixer
 LanguageExt.Core
 System.Linq.Async
 Npgsql.EntityFrameworkCore.PostgreSQL
+StronglyTypedId

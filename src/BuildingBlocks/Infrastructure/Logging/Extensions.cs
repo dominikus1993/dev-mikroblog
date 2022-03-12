@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Globalization;
 using System.Reflection;
 
@@ -18,10 +20,11 @@ namespace DevMikroblog.BuildingBlocks.Infrastructure.Logging;
 
 public class SerilogOptions
 {
+    internal readonly static Dictionary<string, string> DefaultOverride = new() { { "Microsoft.AspNetCore", "Warning" } };
     public bool ConsoleEnabled { get; set; } = true;
     public string MinimumLevel { get; set; } = "Information";
     public string Format { get; set; } = "compact";
-    public Dictionary<string, string>? Override { get; set; }
+    public Dictionary<string, string>? Override { get; set; } = DefaultOverride;
 
     public LogEventLevel GetMinimumLogEventLevel()
     {
@@ -37,14 +40,13 @@ public class SerilogOptions
 
 public static class Extensionss
 {
-    private readonly static Dictionary<string, string> DefaultOverride = new() { { "Microsoft.AspNetCore", "Warning" } };
     private static Dictionary<string, string> BindOverride(Dictionary<string, string>? o)
     {
         if (o is null)
         {
-            return DefaultOverride;
+            return SerilogOptions.DefaultOverride;
         }
-        foreach (var (key, value) in DefaultOverride)
+        foreach (var (key, value) in SerilogOptions.DefaultOverride)
         {
             o.TryAdd(key, value);
         }
