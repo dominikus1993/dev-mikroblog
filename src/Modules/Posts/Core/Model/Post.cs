@@ -1,6 +1,8 @@
 using System.Collections.Generic;
+using StronglyTypedIds;
+
 namespace DevMikroblog.Modules.Posts.Core.Model;
 
-[StronglyTypedId(jsonConverter: StronglyTypedIdJsonConverter.SystemTextJson)]
+[StronglyTypedId(converters: StronglyTypedIdConverter.SystemTextJson)]
 public partial struct PostId{}
 public record Post(PostId Id, string Content, IList<Post> Replies, DateTime CreatedAt, int Linkes);
