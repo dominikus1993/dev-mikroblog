@@ -1,6 +1,6 @@
 namespace DevMikroblog.Modules.Posts.Infrastructure.Model;
 
-class EfPost
+internal class EfPost
 {
     public Guid Id { get; set; }
     public string? Content { get; set; }

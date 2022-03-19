@@ -7,7 +7,7 @@ namespace DevMikroblog.Modules.Posts.Infrastructure.EfCore;
 
 class PostsDbContext : DbContext
 {
-    public DbSet<EfPost> Posts => Set<EfPost>();
+    public DbSet<EfPost> Posts { get; set; } = null!;
 
     public PostsDbContext(DbContextOptions<PostsDbContext> options) : base(options)
     {

@@ -81,7 +81,7 @@ public static class Extensionss
                 .Enrich.WithCustomerId()
                 .Enrich.WithExceptionDetails();
 
-            foreach (var (name, lvl) in BindOverride(serilogOptions.Override))
+            foreach ((string name, string lvl) in BindOverride(serilogOptions.Override))
             {
                 conf.MinimumLevel.Override(name, ParseLevel(lvl));
             }
