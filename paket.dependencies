@@ -19,6 +19,7 @@ nuget Serilog.Formatting.Elasticsearch
 nuget Serilog.Sinks.Seq
 nuget Microsoft.Extensions.Hosting.Abstractions
 nuget StronglyTypedId >= 1.0.0-beta06
+nuget RabbitMQ.Client 
 
 nuget Roslynator.Analyzers
 nuget SonarAnalyzer.CSharp
