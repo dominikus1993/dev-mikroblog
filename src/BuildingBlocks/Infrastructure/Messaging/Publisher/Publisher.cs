@@ -1,16 +1,74 @@
+using System.ComponentModel;
 namespace DevMikroblog.BuildingBlocks.Infrastructure.Messaging.Publisher;
 
+using System.Text.Json;
 using System.Threading;
+using System.Threading.Channels;
 using System.Threading.Tasks;
 
 using DevMikroblog.BuildingBlocks.Infrastructure.Messaging.Abstractions;
 
 using LanguageExt;
 
-public class RabbitmMqMessagePublishe<T> : IMessagePublisher<T> where T : notnull, IMessage
+using Microsoft.Extensions.Hosting;
+
+using RabbitMQ.Client;
+
+public class RabbtMqPublisheConfig<T> where T : notnull, IMessage
 {
-    public Task<Unit> Publish(T message, CancellationToken cancellationToken = default)
+    public string Exchange { get; init; } = null!;
+    public string Topic { get; init; } = "#";
+}
+
+public readonly record struct RabbitMqMessage(ReadOnlyMemory<byte> Body, string Exchange, string Topic);
+
+internal class RabbitmMqMessagePublisher<T> : IMessagePublisher<T> where T : notnull, IMessage
+{
+    private static readonly JsonSerializerOptions _options = new() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
+    private RabbtMqPublisheConfig<T> _config;
+    private ChannelWriter<RabbitMqMessage> _stream;
+
+    public RabbitmMqMessagePublisher(RabbtMqPublisheConfig<T> config, Channel<RabbitMqMessage> stream)
     {
-        throw new NotImplementedException();
+        _config = config;
+        _stream = stream.Writer;
+    }
+
+    public async ValueTask<Unit> Publish(T message, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(message, nameof(message));
+        var json = JsonSerializer.SerializeToUtf8Bytes(message, _options);
+        await _stream.WriteAsync(new RabbitMqMessage(json, _config.Exchange, _config.Topic), cancellationToken);
+        return Unit.Default;
+    }
+}
+
+internal class RabbitMqPublisher : BackgroundService
+{
+    private readonly ChannelReader<RabbitMqMessage> _messageStream;
+    private readonly IModel _model;
+
+    private readonly Dictionary<string, object> _defaultHeaders = new()
+    {
+        { "Content-Type", "application/json" },
+        { "X-Message-Type", "DevMikroblog.BuildingBlocks.Infrastructure.Messaging.Abstractions.RabbitmMqMessage" },
+    };
+
+    public RabbitMqPublisher(Channel<RabbitMqMessage> stream, IModel model)
+    {
+        _messageStream = stream.Reader;
+        _model = model;
+    }
+
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    {
+        await Task.Yield();
+        await foreach (var message in _messageStream.ReadAllAsync(stoppingToken))
+        {
+            _model.ExchangeDeclare(exchange: message.Exchange, type: ExchangeType.Topic);
+            var props = _model.CreateBasicProperties();
+            props.Headers = _defaultHeaders;
+            _model.BasicPublish(exchange: message.Exchange, routingKey: message.Topic, basicProperties: props, body: message.Body);
+        }
     }
 }
