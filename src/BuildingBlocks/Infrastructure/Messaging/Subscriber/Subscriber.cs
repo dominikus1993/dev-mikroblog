@@ -1,9 +1,11 @@
 using System.Text.Json;
 
 using DevMikroblog.BuildingBlocks.Infrastructure.Messaging.Abstractions;
+using DevMikroblog.BuildingBlocks.Infrastructure.Messaging.Logging;
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
@@ -22,14 +24,15 @@ internal class RabbitMqSubscriber<T> : BackgroundService where T : notnull, IMes
     private static readonly JsonSerializerOptions _options = new() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
     private readonly IServiceProvider _serviceProvider;
     private readonly RabbtMqSubscriptionConfig<T> _config;
-
+    private readonly ILogger<RabbitMqSubscriber<T>> _logger;
     private readonly IModel _channel;
 
-    public RabbitMqSubscriber(IServiceProvider serviceProvider, RabbtMqSubscriptionConfig<T> config, IModel channel)
+    public RabbitMqSubscriber(IServiceProvider serviceProvider, RabbtMqSubscriptionConfig<T> config, IModel channel, ILogger<RabbitMqSubscriber<T>> logger)
     {
         _serviceProvider = serviceProvider;
         _config = config;
         _channel = channel;
+        _logger = logger;
     }
 
     protected override Task ExecuteAsync(CancellationToken stoppingToken)
@@ -44,10 +47,15 @@ internal class RabbitMqSubscriber<T> : BackgroundService where T : notnull, IMes
         return Task.CompletedTask;
     }
 
-    private Task OnMessageReceived(object sender, BasicDeliverEventArgs ea)
+    private async Task OnMessageReceived(object sender, BasicDeliverEventArgs ea)
     {
-        var message = JsonSerializer.Deserialize<T>(ea.Body, _options);
-        var messageHandler = _serviceProvider.GetService<IMessageHandler<T>>();
-        return messageHandler!.Handle(message);
+        var message = JsonSerializer.Deserialize<T>(ea.Body.Span, _options);
+        if (message is null)
+        {
+            _logger.LogRabbitmqMessageIsNull(ea.Exchange, ea.RoutingKey);
+            return;
+        }
+        var messageHandler = _serviceProvider.GetService<IMessageHandler<T>>()!;
+        await messageHandler!.Handle(message);
     }
 }
