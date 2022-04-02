@@ -1,0 +1,29 @@
+name: dev-mikroblog
+services:
+- name: dev-mikroblog
+  project: src/Api/DevMikroblog.Api/DevMikroblog.Api.csproj
+  env:
+    - name: ASPNETCORE_ENVIRONMENT
+      value: tye
+- name: postgres
+  image: postgres:14.1
+  env:
+    - name: POSTGRES_PASSWORD
+      value: postgres
+    - name: POSTGRES_USER
+      value: postgres
+    - name: POSTGRES_DB
+      value: postgres    
+  bindings:
+    - port: 5432
+      connectionString: Server=${host};Port=${port};User Id=${env:POSTGRES_USER};Password=${env:POSTGRES_PASSWORD};
+- name: rabbit
+  image: rabbitmq:3-management
+  bindings:
+    - port: 5672
+      protocol: rabbitmq
+      connectionString: amqp://guest:guest@${host}:${port};
+extensions:
+- name: seq
+  logPath: ./.logs
+- name: zipkin

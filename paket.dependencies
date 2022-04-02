@@ -20,6 +20,7 @@ nuget Serilog.Sinks.Seq
 nuget Microsoft.Extensions.Hosting.Abstractions
 nuget StronglyTypedId >= 1.0.0-beta06
 nuget RabbitMQ.Client 
+nuget Microsoft.Tye.Extensions.Configuration
 
 nuget Roslynator.Analyzers
 nuget SonarAnalyzer.CSharp
