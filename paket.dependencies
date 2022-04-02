@@ -27,3 +27,4 @@ nuget AsyncFixer
 nuget LanguageExt.Core
 nuget Npgsql.EntityFrameworkCore.PostgreSQL
 nuget System.Linq.Async
+nuget ClrHeapAllocationAnalyzer

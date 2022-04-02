@@ -13,6 +13,7 @@ Serilog.Sinks.Seq
 Roslynator.Analyzers
 SonarAnalyzer.CSharp
 AsyncFixer
+ClrHeapAllocationAnalyzer
 LanguageExt.Core
 Microsoft.Extensions.Hosting.Abstractions
 RabbitMQ.Client
