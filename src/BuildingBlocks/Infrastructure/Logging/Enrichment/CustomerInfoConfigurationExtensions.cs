@@ -7,9 +7,7 @@ public static class CustomerInfoConfigurationExtensions
 {
     public static LoggerConfiguration WithCustomerId(this LoggerEnrichmentConfiguration enrichmentConfiguration)
     {
-        if (enrichmentConfiguration == null)
-            throw new ArgumentNullException(nameof(enrichmentConfiguration));
-
+        ArgumentNullException.ThrowIfNull(enrichmentConfiguration, nameof(enrichmentConfiguration));
         return enrichmentConfiguration.With<CustomerIdEnricher>();
     }
 }
