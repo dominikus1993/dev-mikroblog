@@ -1,3 +1,5 @@
+using System.Diagnostics;
+
 using DevMikroblog.BuildingBlocks.Infrastructure.Logging;
 
 using Microsoft.AspNetCore.Builder;
@@ -15,8 +17,9 @@ builder.Services.AddSwaggerGen();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment() || app.Environment.IsEnvironment("tye"))
 {
+    Activity.DefaultIdFormat = ActivityIdFormat.W3C;
     app.UseSwagger();
     app.UseSwaggerUI();
 }

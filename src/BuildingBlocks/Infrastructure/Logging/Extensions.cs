@@ -38,6 +38,12 @@ public class SerilogOptions
     public static SerilogOptions Empty => new();
 }
 
+public class SeqOptions
+{
+    public bool Enabled { get; set; }
+    public string? Url { get; set; }
+}
+
 public static class Extensionss
 {
     private static Dictionary<string, string> BindOverride(Dictionary<string, string>? o)
@@ -71,7 +77,7 @@ public static class Extensionss
         {
             var serilogOptions = context.Configuration.GetSection("Serilog").Get<SerilogOptions>();
             var level = serilogOptions.GetMinimumLogEventLevel();
-
+            var seq = context.Configuration.GetSection("Seq").Get<SeqOptions>();
             var conf = configuration
                 .MinimumLevel.Is(level)
                 .Enrich.FromLogContext()
@@ -84,6 +90,10 @@ public static class Extensionss
             foreach ((string name, string lvl) in BindOverride(serilogOptions.Override))
             {
                 conf.MinimumLevel.Override(name, ParseLevel(lvl));
+            }
+            if (seq is not null && seq.Enabled)
+            {
+                conf.WriteTo.Seq(seq.Url);
             }
 
             if (serilogOptions.ConsoleEnabled)
