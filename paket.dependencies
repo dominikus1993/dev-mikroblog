@@ -29,3 +29,10 @@ nuget LanguageExt.Core
 nuget Npgsql.EntityFrameworkCore.PostgreSQL
 nuget System.Linq.Async
 nuget ClrHeapAllocationAnalyzer
+
+
+nuget AutoFixture
+nuget FluentAssertions
+nuget xunit
+nuget xunit.runner.visualstudio
+nuget Moq

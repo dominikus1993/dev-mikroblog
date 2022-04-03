@@ -1,0 +1,5 @@
+AutoFixture
+FluentAssertions
+xunit
+xunit.runner.visualstudio
+Moq
