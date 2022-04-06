@@ -20,7 +20,7 @@ NUGET
     ClrHeapAllocationAnalyzer (3.0)
       Microsoft.CodeAnalysis (>= 3.4)
     Fare (2.2)
-    FluentAssertions (6.5.1)
+    FluentAssertions (6.6)
       System.Configuration.ConfigurationManager (>= 4.4)
     Humanizer.Core (2.14.1)
     LanguageExt.Core (4.0.4)
