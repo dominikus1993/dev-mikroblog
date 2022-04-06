@@ -5,5 +5,11 @@
     <Nullable>enable</Nullable>
     <IsPackable>false</IsPackable>
   </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\src\Modules\Posts\Posts.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Infrastructure" />
+  </ItemGroup>
   <Import Project="..\..\..\.paket\Paket.Restore.targets" />
 </Project>

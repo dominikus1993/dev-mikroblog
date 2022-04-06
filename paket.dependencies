@@ -29,10 +29,13 @@ nuget LanguageExt.Core
 nuget Npgsql.EntityFrameworkCore.PostgreSQL
 nuget System.Linq.Async
 nuget ClrHeapAllocationAnalyzer
-
+nuget EFCore.NamingConventions
+nuget Dapper
 
 nuget AutoFixture
 nuget FluentAssertions
 nuget xunit
 nuget xunit.runner.visualstudio
 nuget Moq
+nuget coverlet.collector
+nuget DotNet.Testcontainers >= 1.6.0-beta.2130
