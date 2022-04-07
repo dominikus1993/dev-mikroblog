@@ -21,11 +21,6 @@ jobs:
       run: dotnet tool restore
     - name: Restore dependencies
       run: dotnet restore
-    - name: Run .NET Code Analysis
-      uses: dotnet/code-analysis@v1
-      id: code-analysis
-      with:
-        build-breaking: true
     - name: Build
       run: dotnet build --no-restore
     - name: Test
