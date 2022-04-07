@@ -4,8 +4,11 @@ namespace DevMikroblog.Modules.Posts.Core.Dto;
 
 public class PostDto
 {
-    public PostDto(Post post)
+    private PostDto(Post post)
     {
         
     }
+
+    public static PostDto FromPost(Post post) => new(post);
+
 }
