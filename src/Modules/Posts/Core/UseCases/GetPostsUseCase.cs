@@ -15,6 +15,6 @@ public class GetPostsUseCase
 
     public async Task<IEnumerable<PostDto>> Execute(GetPostsQuery query, CancellationToken cancellationToken = default)
     {
-        return await _postProvider.Provide(query, cancellationToken).Select(x => PostDto.FromPost(x)).ToListAsync(cancellationToken);
+        return await _postProvider.Find(query, cancellationToken).Select(x => PostDto.FromPost(x)).ToListAsync(cancellationToken);
     }
 }

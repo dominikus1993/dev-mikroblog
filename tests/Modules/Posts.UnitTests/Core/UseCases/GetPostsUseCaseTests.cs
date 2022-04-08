@@ -22,18 +22,16 @@ public class GetPostsUseCaseTests
         // Arrange
         var mock = new Mock<IPostsProvider>();
         mock
-            .Setup(provider => provider.Provide(It.IsAny<GetPostsQuery>(), It.IsAny<CancellationToken>()))
+            .Setup(provider => provider.Find(It.IsAny<GetPostsQuery>(), It.IsAny<CancellationToken>()))
             .Returns(AsyncEnumerable.Empty<Post>());
 
         var useCase = new GetPostsUseCase(mock.Object);
-        
         // Act
 
-        var result = await useCase.Execute(new GetPostsQuery(1, 2), CancellationToken.None);
+        var result = await useCase.Execute(new GetPostsQuery(1, 2, null), CancellationToken.None);
 
         var subject = result.ToList();
         // Test
-
         subject.Should().BeEmpty();
 
     }
