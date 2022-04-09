@@ -91,7 +91,7 @@ public static class Extensionss
             {
                 conf.MinimumLevel.Override(name, ParseLevel(lvl));
             }
-            if (seq is not null && seq.Enabled)
+            if (seq is { Enabled: true, Url.Length: > 0 })
             {
                 conf.WriteTo.Seq(seq.Url);
             }
