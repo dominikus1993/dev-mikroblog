@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 using DevMikroblog.Modules.Posts.Core.Model;
 using DevMikroblog.Modules.Posts.Core.Providers;
-using DevMikroblog.Modules.Posts.Core.UseCases;
+using DevMikroblog.Modules.Posts.GetPosts.UseCase;
 
 using FluentAssertions;
 

@@ -6,9 +6,10 @@ using DevMikroblog.Modules.Posts.Infrastructure.Model;
 using Microsoft.EntityFrameworkCore;
 
 [assembly: InternalsVisibleTo("Posts.UnitTests")]
+[assembly: InternalsVisibleTo("Posts.FunctionalTests")]
 namespace DevMikroblog.Modules.Posts.Infrastructure.EfCore;
 
-public class PostsDbContext : DbContext
+internal class PostsDbContext : DbContext
 {
     public DbSet<EfPost> Posts { get; set; } = null!;
 

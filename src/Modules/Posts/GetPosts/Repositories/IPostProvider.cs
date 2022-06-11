@@ -1,23 +1,12 @@
 using DevMikroblog.Modules.Posts.Core.Model;
-
 using LanguageExt;
 
-namespace DevMikroblog.Modules.Posts.Core.Repositories;
+namespace DevMikroblog.Modules.Posts.GetPosts.Repositories;
 
-public record class GetPostQuery(int Page, int PageSize);
+internal record GetPostQuery(int Page, int PageSize);
 
-public interface IPostsReader
+internal interface IPostsReader
 {
     Task<Option<Post>> GetPostById(PostId postId, CancellationToken cancellationToken = default);
     IAsyncEnumerable<Post> GetPosts(GetPostQuery query, CancellationToken cancellationToken);
-}
-
-public interface IPostsWriter
-{
-
-}
-
-public interface IPostsRepository: IPostsReader, IPostsWriter
-{
-
 }

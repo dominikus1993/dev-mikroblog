@@ -18,7 +18,7 @@ public sealed class PostgresSqlSqlFixture : IAsyncLifetime, IDisposable
     private readonly TestcontainerDatabaseConfiguration configuration = new PostgreSqlTestcontainerConfiguration("postgres:14-alpine") { Database = "recommendations", Username = "postgres", Password = "postgres" };
 
     public PostgreSqlTestcontainer Container { get; }
-    public PostsDbContext PostsDbContext { get; private set; }
+    internal PostsDbContext PostsDbContext { get; private set; }
 
     public PostgresSqlSqlFixture()
     {
