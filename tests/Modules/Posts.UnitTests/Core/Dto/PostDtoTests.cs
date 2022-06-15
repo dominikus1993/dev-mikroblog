@@ -2,11 +2,14 @@ using System;
 using System.Collections.Generic;
 
 using DevMikroblog.Modules.Posts.Core.Dto;
-using DevMikroblog.Modules.Posts.Core.Model;
+using DevMikroblog.Modules.Posts.Domain.Model;
 
 using FluentAssertions;
 
 using Xunit;
+
+using AuthorId = DevMikroblog.Modules.Posts.Domain.Model.AuthorId;
+using PostId = DevMikroblog.Modules.Posts.Domain.Model.PostId;
 
 namespace Posts.UnitTests.Core.Dto;
 

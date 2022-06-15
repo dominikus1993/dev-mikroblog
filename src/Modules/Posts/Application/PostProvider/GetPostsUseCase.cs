@@ -1,7 +1,7 @@
 using DevMikroblog.Modules.Posts.Core.Dto;
-using DevMikroblog.Modules.Posts.GetPosts.Repositories;
+using DevMikroblog.Modules.Posts.Domain.Repositories;
 
-namespace DevMikroblog.Modules.Posts.GetPosts.UseCase;
+namespace DevMikroblog.Modules.Posts.Application.PostProvider;
 
 internal record GetPostQuery(int Page, int PageSize);
 
@@ -16,6 +16,6 @@ internal class GetPostsUseCase
 
     public async Task<IEnumerable<PostDto>> Execute(GetPostQuery query, CancellationToken cancellationToken = default)
     {
-        return await _postProvider.GetPosts(new Repositories.GetPostQuery(query.Page, query.PageSize), cancellationToken).Select(x => PostDto.FromPost(x)).ToListAsync(cancellationToken);
+        return await _postProvider.GetPosts(new Domain.Repositories.GetPostQuery(query.Page, query.PageSize), cancellationToken).Select(x => PostDto.FromPost(x)).ToListAsync(cancellationToken);
     }
 }

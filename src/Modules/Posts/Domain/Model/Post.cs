@@ -1,6 +1,6 @@
 using StronglyTypedIds;
 
-namespace DevMikroblog.Modules.Posts.Core.Model;
+namespace DevMikroblog.Modules.Posts.Domain.Model;
 
 [StronglyTypedId(converters: StronglyTypedIdConverter.SystemTextJson)]
 public partial struct PostId{}

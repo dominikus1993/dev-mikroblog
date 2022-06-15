@@ -1,4 +1,4 @@
-using DevMikroblog.Modules.Posts.Core.Model;
+using DevMikroblog.Modules.Posts.Domain.Model;
 
 namespace DevMikroblog.Modules.Posts.Core.Dto;
 
@@ -6,7 +6,7 @@ public sealed class PostDto
 {
     public Guid PostId { get; init; }
 
-    public string Content { get; set; }
+    public string Content { get; init; }
     
     private PostDto(Post post)
     {
@@ -15,5 +15,4 @@ public sealed class PostDto
     }
 
     public static PostDto FromPost(Post post) => new(post);
-
 }

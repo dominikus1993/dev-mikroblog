@@ -1,7 +1,8 @@
-using DevMikroblog.Modules.Posts.Core.Model;
+using DevMikroblog.Modules.Posts.Domain.Model;
+
 using LanguageExt;
 
-namespace DevMikroblog.Modules.Posts.GetPosts.Repositories;
+namespace DevMikroblog.Modules.Posts.Domain.Repositories;
 
 internal record GetPostQuery(int Page, int PageSize);
 

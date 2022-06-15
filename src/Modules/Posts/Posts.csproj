@@ -5,6 +5,10 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <RootNamespace>DevMikroblog.Modules.Posts</RootNamespace>
+    <LangVersion>preview</LangVersion>
   </PropertyGroup>
+  <ItemGroup>
+    <Folder Include="Application" />
+  </ItemGroup>
   <Import Project="..\..\..\.paket\Paket.Restore.targets" />
 </Project>

@@ -1,10 +1,7 @@
 using System.Buffers.Text;
 using System.Runtime.InteropServices;
 
-using DevMikroblog.Modules.Posts.Core.Model;
-
-using LanguageExt;
-using LanguageExt.TypeClasses;
+using PostId = DevMikroblog.Modules.Posts.Domain.Model.PostId;
 
 namespace DevMikroblog.Modules.Posts.Common;
 
