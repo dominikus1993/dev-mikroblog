@@ -11,5 +11,8 @@ internal static partial class RabbitMqLogger
     public static partial void LogRabbitmqMessageIsNull(this ILogger logger, string exchange, string topic);
     
     [LoggerMessage(EventId = 2, Level = LogLevel.Debug, Message = "Publish RabbitMq message of {Name} to {Exchange} and {Topic}")]
-    public static partial void LogPublishRabbitMqMessage(this ILogger logger, string exchange, string topic, string messageName);
+    public static partial void LogPublishRabbitMqMessage(this ILogger logger, string name, string exchange, string topic);
+    
+    [LoggerMessage(EventId = 3, Level = LogLevel.Debug, Message = "Received RabbitMq message of {Name} to {Exchange}/{Queue} and {Topic}")]
+    public static partial void LogReceivedRabbitMqMessage(this ILogger logger, string name, string exchange, string queue, string topic);
 }

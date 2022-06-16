@@ -15,4 +15,10 @@
     <PackageDownload Include="GitVersion.Tool" Version="[5.8.0]" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Include="..\Directory.build.props">
+      <Link>boot\Directory.build.props</Link>
+    </Content>
+  </ItemGroup>
+
 </Project>

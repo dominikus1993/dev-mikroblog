@@ -43,7 +43,7 @@ internal class RabbitMqMessagePublisher<T> : IMessagePublisher<T> where T : notn
     public async ValueTask<Unit> Publish(T message, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(message, nameof(message));
-        _logger.LogPublishRabbitMqMessage(_config.Exchange, _config.Topic, T.Name);
+        _logger.LogPublishRabbitMqMessage(T.Name, _config.Exchange, _config.Topic);
         var json = JsonSerializer.SerializeToUtf8Bytes(message, _options);
         await _stream.WriteAsync(new RabbitMqMessage(json, _config.Exchange, _config.Topic, T.Name), cancellationToken);
         return Unit.Default;

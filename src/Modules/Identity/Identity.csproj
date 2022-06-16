@@ -1,14 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
-    <LangVersion>latest</LangVersion>
-    <Nullable>enable</Nullable>
-    <NoWarn>$(NoWarn);1591;CA2007;CA1014;IDE0161; CA1062; CA1720;AsyncFixer01;CS1573;</NoWarn>
-    <EnableNETAnalyzers>true</EnableNETAnalyzers>
-    <AnalysisMode>AllEnabledByDefault</AnalysisMode>
-    <AnalysisLevel>latest</AnalysisLevel>
-    <ImplicitUsings>enable</ImplicitUsings>
-  </PropertyGroup>
   <Import Project="..\..\..\.paket\Paket.Restore.targets" />
 </Project>

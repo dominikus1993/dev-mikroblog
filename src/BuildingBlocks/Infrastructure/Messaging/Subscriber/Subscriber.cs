@@ -43,12 +43,12 @@ internal class RabbitMqSubscriber<T> : BackgroundService where T : notnull, IMes
         var consumer = new AsyncEventingBasicConsumer(_channel);
         consumer.Received += OnMessageReceived;
         _channel.BasicConsume(queue: _config.Queue, autoAck: true, consumer: consumer);
-
         return Task.CompletedTask;
     }
 
     private async Task OnMessageReceived(object sender, BasicDeliverEventArgs ea)
     {
+        _logger.LogReceivedRabbitMqMessage(T.Name, _config.Exchange, _config.Queue, _config.Topic);
         var message = JsonSerializer.Deserialize<T>(ea.Body.Span, _options);
         if (message is null)
         {
