@@ -5,7 +5,7 @@ using DevMikroblog.Modules.Posts.Domain.Repositories;
 
 namespace DevMikroblog.Modules.Posts.Application.PostCreator;
 
-public readonly record struct CreatePostCommand(Author Author, string Content);
+public readonly record struct CreatePostCommand(Author Author, string Content, ReplyToPost? ReplyTo);
 
 public sealed class CreatePostUseCase
 {
@@ -20,7 +20,7 @@ public sealed class CreatePostUseCase
 
     public async Task Execute(CreatePostCommand command, CancellationToken cancellationToken)
     {
-        var post = Post.CreateNew(command.Content, command.Author);
+        var post = Post.CreateNew(command.Content, command.Author, command.ReplyTo);
 
         await _postWriter.CreatePost(post, cancellationToken);
 
@@ -30,7 +30,8 @@ public sealed class CreatePostUseCase
             AuthorId = command.Author.Id.Value,
             CreatedAt = post.CreatedAt,
             MessageId = Guid.NewGuid(),
-            PostId = post.Id.Value
+            PostId = post.Id.Value,
+            ReplyToPost = command.ReplyTo?.Id.Value
         }, cancellationToken);
     }
 }
