@@ -1,15 +1,36 @@
+using DevMikroblog.BuildingBlocks.Infrastructure.Messaging.Abstractions;
+using DevMikroblog.Modules.Posts.Application.PostCreator.Events;
+using DevMikroblog.Modules.Posts.Domain.Model;
 using DevMikroblog.Modules.Posts.Domain.Repositories;
 
 namespace DevMikroblog.Modules.Posts.Application.PostCreator;
 
-public readonly record struct CreatePostCommand(string Content);
+public readonly record struct CreatePostCommand(Author Author, string Content);
 
 public sealed class CreatePostUseCase
 {
     private readonly IPostWriter _postWriter;
+    private readonly IMessagePublisher<PostCreated> _messagePublisher;
 
-    public Task Execute(CreatePostCommand command, CancellationToken cancellationToken)
+    internal CreatePostUseCase(IPostWriter postWriter, IMessagePublisher<PostCreated> messagePublisher)
     {
-        
+        _postWriter = postWriter;
+        _messagePublisher = messagePublisher;
+    }
+
+    public async Task Execute(CreatePostCommand command, CancellationToken cancellationToken)
+    {
+        var post = Post.CreateNew(command.Content, command.Author);
+
+        await _postWriter.CreatePost(post, cancellationToken);
+
+        await _messagePublisher.Publish(new PostCreated()
+        {
+            Content = command.Content,
+            AuthorId = command.Author.Id.Value,
+            CreatedAt = post.CreatedAt,
+            MessageId = Guid.NewGuid(),
+            PostId = post.Id.Value
+        }, cancellationToken);
     }
 }

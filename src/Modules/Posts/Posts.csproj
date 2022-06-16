@@ -10,5 +10,8 @@
   <ItemGroup>
     <Folder Include="Application" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\BuildingBlocks\Infrastructure\Infrastructure.csproj" />
+  </ItemGroup>
   <Import Project="..\..\..\.paket\Paket.Restore.targets" />
 </Project>
