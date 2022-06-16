@@ -32,11 +32,13 @@ public class GetPostsUseCaseTests
         var useCase = new GetPostsUseCase(mock.Object);
         // Act
 
-        var result = await useCase.Execute(new GetPostsQuery(1, 2), CancellationToken.None);
+        var query = new GetPostsQuery(1, 2);
+        var result = await useCase.Execute(query, CancellationToken.None);
 
         var subject = result.ToList();
         // Test
         subject.Should().BeEmpty();
+        mock.Verify(x => x.GetPosts(It.Is<GetPostQuery>(x => x.Page == query.Page && x.PageSize == query.PageSize), It.IsAny<CancellationToken>()), Times.Once);
     }
     
     [Fact]
@@ -53,13 +55,16 @@ public class GetPostsUseCaseTests
             .Returns(data.ToAsyncEnumerable());
 
         var useCase = new GetPostsUseCase(mock.Object);
+        
         // Act
-
-        var result = await useCase.Execute(new GetPostsQuery(1, 2), CancellationToken.None);
+        var query = new GetPostsQuery(1, 2);
+        var result = await useCase.Execute(query, CancellationToken.None);
 
         var subject = result.ToList();
         // Test
         subject.Should().HaveCount(data.Count);
         subject.Should().Contain(x => x.PostId == data[0].Id.Value);
+        
+        mock.Verify(x => x.GetPosts(It.Is<GetPostQuery>(x => x.Page == query.Page && x.PageSize == query.PageSize), It.IsAny<CancellationToken>()), Times.Once);
     }
 }
