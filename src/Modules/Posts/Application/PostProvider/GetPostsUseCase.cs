@@ -14,7 +14,7 @@ internal class GetPostsUseCase
         _postProvider = postProvider;
     }
 
-    public async Task<IEnumerable<PostDto>> Execute(GetPostQuery query, CancellationToken cancellationToken = default)
+    public async Task<IReadOnlyList<PostDto>> Execute(GetPostQuery query, CancellationToken cancellationToken = default)
     {
         return await _postProvider.GetPosts(new Domain.Repositories.GetPostQuery(query.Page, query.PageSize), cancellationToken).Select(x => PostDto.FromPost(x)).ToListAsync(cancellationToken);
     }
