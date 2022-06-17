@@ -3,32 +3,33 @@ using System.Linq.Expressions;
 using DevMikroblog.Modules.Posts.Domain.Model;
 using DevMikroblog.Modules.Posts.Infrastructure.Model;
 
+using Marten.Events.CodeGeneration;
+
 namespace DevMikroblog.Modules.Posts.Infrastructure.Query;
 
 using Marten.Linq;
 
-internal class GetPagedPostsQuery : ICompiledListQuery<MartenPost>
+public class GetPagedPostsQuery : ICompiledListQuery<MartenPost>
 {
     public int PageSize { get; init; } = 12;
-    public int Page { get; init; } = 1;
+    [MartenIgnore] public int Page { get; init; } = 1;
+    [MartenIgnore] public int SkipCount => (Page - 1) * PageSize;
 
     public Expression<Func<IMartenQueryable<MartenPost>, IEnumerable<MartenPost>>> QueryIs()
     {
-        var skip = (Page - 1) * PageSize;
-        return posts => posts.OrderBy(x => x.CreatedAt).Skip(skip).Take(PageSize);
+        return posts => posts.OrderBy(x => x.CreatedAt).Skip(SkipCount).Take(PageSize);
     }
 }
 
-internal class GetPostsInTagQuery : ICompiledListQuery<MartenPost>
+public class GetPostsInTagQuery : ICompiledListQuery<MartenPost>
 {
     public int PageSize { get; init; } = 12;
-    public int Page { get; init; } = 1;
-    public string Tag { get; init; } = null!;
-
+    [MartenIgnore] public string Tag { get; init; } = null!;
+    [MartenIgnore] public int Page { get; init; } = 1;
+    [MartenIgnore] public int SkipCount => (Page - 1) * PageSize;
 
     public Expression<Func<IMartenQueryable<MartenPost>, IEnumerable<MartenPost>>> QueryIs()
     {
-        var skip = (Page - 1) * PageSize;
-        return posts => posts.Where(x => x.Tags.Contains(Tag)).OrderBy(x => x.CreatedAt).Skip(skip).Take(PageSize);
+        return posts => posts.Where(x => x.Tags.Contains(Tag)).OrderBy(x => x.CreatedAt).Skip(SkipCount).Take(PageSize);
     }
 }

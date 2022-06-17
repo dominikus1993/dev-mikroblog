@@ -1,4 +1,5 @@
 using DevMikroblog.Modules.Posts.Domain.Model;
+using DevMikroblog.Modules.Posts.Domain.Repositories;
 using DevMikroblog.Modules.Posts.Infrastructure.Model;
 using DevMikroblog.Modules.Posts.Infrastructure.Repositories;
 
@@ -53,5 +54,94 @@ public class PostReaderTests : IClassFixture<PostgresSqlSqlFixture>
         result.Likes.Should().Be(0);
         result.ReplyTo.Should().BeNull();
         result.Content.Should().Be(post.Content);
+    }
+    
+    [Fact]
+    public async Task GetPostTestsWhenExists()
+    {
+        // Arrange
+        var reader = new MartenPostReader(_fixture.Store);
+        var writer = new MartenPostWriter(_fixture.Store);
+        var author = new Author(AuthorId.New(), "jan pawel 2");
+        var post = Post.CreateNew("xDDD", author);
+        var post2 = Post.CreateNew("xDDD", author);
+        await writer.CreatePost(post);
+        await writer.CreatePost(post2);
+        // Act
+        var subject = await reader.GetPosts(new GetPostQuery(1, 12), CancellationToken.None).ToListAsync();
+        
+        // Test
+        subject.Should().NotBeNull();
+        subject.Should().NotBeEmpty();
+        subject.Should().HaveCount(2);
+        subject.Should().Contain(x => x.Id == post.Id).And.Contain(x => x.Id == post2.Id);
+    }
+    
+    [Fact]
+    public async Task GetPostTestsWhenDbIsEmpty()
+    {
+        // Arrange
+        var reader = new MartenPostReader(_fixture.Store);
+        // Act
+        var subject = await reader.GetPosts(new GetPostQuery(1, 12), CancellationToken.None).ToListAsync();
+        
+        // Test
+        subject.Should().NotBeNull();
+        subject.Should().BeEmpty();
+    }
+    
+    [Fact]
+    public async Task GetPostWithTagsTestsWhenNotExists()
+    {
+        // Arrange
+        var reader = new MartenPostReader(_fixture.Store);
+        // Act
+        var subject = await reader.GetPosts(new GetPostQuery(1, 12, "fsharp"), CancellationToken.None).ToListAsync();
+        
+        // Test
+        subject.Should().NotBeNull();
+        subject.Should().BeEmpty();
+    }
+    
+    [Fact]
+    public async Task GetPostWithTagTestsWhenExists()
+    {
+        // Arrange
+        var reader = new MartenPostReader(_fixture.Store);
+        var writer = new MartenPostWriter(_fixture.Store);
+        var author = new Author(AuthorId.New(), "jan pawel 2");
+        var post = Post.CreateNew("xDDD", author, new Tag[]{ new Tag("fsharp")});
+        var post2 = Post.CreateNew("xDDD", author, new Tag[]{ new Tag("fsharp")} );
+        await writer.CreatePost(post);
+        await writer.CreatePost(post2);
+        // Act
+        var subject = await reader.GetPosts(new GetPostQuery(1, 12, "fsharp"), CancellationToken.None).ToListAsync();
+        
+        // Test
+        subject.Should().NotBeNull();
+        subject.Should().NotBeEmpty();
+        subject.Should().HaveCount(2);
+        subject.Should().Contain(x => x.Id == post.Id).And.Contain(x => x.Id == post2.Id);
+    }
+    
+    [Fact]
+    public async Task GetPostWithTagTestsWhenOneExist()
+    {
+        // Arrange
+        var reader = new MartenPostReader(_fixture.Store);
+        var writer = new MartenPostWriter(_fixture.Store);
+        var author = new Author(AuthorId.New(), "jan pawel 2");
+        var post = Post.CreateNew("xDDD", author, new Tag[]{ new Tag("fsharp")});
+        var post2 = Post.CreateNew("xDDD", author, new Tag[]{ new Tag("csharp")} );
+        await writer.CreatePost(post);
+        await writer.CreatePost(post2);
+        // Act
+        var subject = await reader.GetPosts(new GetPostQuery(1, 12, "fsharp"), CancellationToken.None).ToListAsync();
+        
+        // Test
+        subject.Should().NotBeNull();
+        subject.Should().NotBeEmpty();
+        subject.Should().HaveCount(1);
+        subject.Should().Contain(x => x.Id == post.Id);
     }
 }

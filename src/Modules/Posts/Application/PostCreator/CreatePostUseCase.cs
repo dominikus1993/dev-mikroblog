@@ -20,7 +20,7 @@ public sealed class CreatePostUseCase
 
     public async Task Execute(CreatePostCommand command, CancellationToken cancellationToken)
     {
-        var post = Post.CreateNew(command.Content, command.Author, command.ReplyTo);
+        var post = Post.CreateNew(command.Content, command.Author, null, command.ReplyTo);
 
         await _postWriter.CreatePost(post, cancellationToken);
 
