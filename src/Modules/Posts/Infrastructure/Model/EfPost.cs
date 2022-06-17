@@ -9,6 +9,7 @@ internal class EfPost
     public int Likes { get; set; }
 
     public Guid AuthorId { get; init; }
+    public string AuthorName { get; set; }
     public DateTime CreatedAt { get; init; }
     
     public EfPost? ReplyTo { get; set; }
@@ -16,5 +17,13 @@ internal class EfPost
     public void IncrementLikes()
     {
         Likes += 1;
+    }
+    
+    public Post MapToPost()
+    {
+        ReplyToPost? replyTo = ReplyToPostId.HasValue ? new ReplyToPost(new PostId(ReplyToPostId.Value)) : null;
+
+        return new Post(new PostId(Id), Content, replyTo, CreatedAt, new Author(new AuthorId(AuthorId), AuthorName),
+            Likes);
     }
 }
