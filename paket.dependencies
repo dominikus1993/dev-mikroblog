@@ -31,6 +31,7 @@ nuget System.Linq.Async
 nuget ClrHeapAllocationAnalyzer
 nuget EFCore.NamingConventions
 nuget Dapper
+nuget Marten
 
 nuget AutoFixture
 nuget FluentAssertions

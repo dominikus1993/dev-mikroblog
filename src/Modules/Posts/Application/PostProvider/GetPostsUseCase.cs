@@ -3,7 +3,7 @@ using DevMikroblog.Modules.Posts.Domain.Repositories;
 
 namespace DevMikroblog.Modules.Posts.Application.PostProvider;
 
-internal record GetPostsQuery(int Page, int PageSize);
+internal record GetPostsQuery(int Page, int PageSize, string? Tag = null);
 
 internal class GetPostsUseCase
 {
@@ -16,6 +16,6 @@ internal class GetPostsUseCase
 
     public async Task<IReadOnlyList<PostDto>> Execute(GetPostsQuery query, CancellationToken cancellationToken = default)
     {
-        return await _postProvider.GetPosts(new GetPostQuery(query.Page, query.PageSize), cancellationToken).Select(x => PostDto.FromPost(x)).ToListAsync(cancellationToken);
+        return await _postProvider.GetPosts(new GetPostQuery(query.Page, query.PageSize, query.Tag), cancellationToken).Select(x => PostDto.FromPost(x)).ToListAsync(cancellationToken);
     }
 }
