@@ -8,7 +8,7 @@ namespace DevMikroblog.Modules.Posts.Infrastructure.Repositories;
 
 public class MartenPostWriter : IPostWriter
 {
-    private IDocumentStore _store;
+    private readonly IDocumentStore _store;
 
     public MartenPostWriter(IDocumentStore store)
     {

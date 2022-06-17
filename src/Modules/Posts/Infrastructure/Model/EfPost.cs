@@ -2,7 +2,7 @@ using DevMikroblog.Modules.Posts.Domain.Model;
 
 namespace DevMikroblog.Modules.Posts.Infrastructure.Model;
 
-internal class MartenPost
+public class MartenPost
 {
     public Guid Id { get; init; }
     public string? Content { get; init; }
