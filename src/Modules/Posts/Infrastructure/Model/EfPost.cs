@@ -18,6 +18,21 @@ internal class MartenPost
     {
         Likes += 1;
     }
+
+    public MartenPost()
+    {
+        
+    }
+
+    public MartenPost(Post post)
+    {
+        Id = post.Id.Value;
+        Content = post.Content;
+        Likes = post.Likes;
+        AuthorId = post.Author.Id.Value;
+        AuthorName = post.Author.Name;
+        CreatedAt = post.CreatedAt;
+    }
     
     public Post MapToPost()
     {
