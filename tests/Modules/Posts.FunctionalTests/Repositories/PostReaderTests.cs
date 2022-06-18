@@ -26,6 +26,7 @@ public class PostReaderTests : IClassFixture<PostgresSqlSqlFixture>
     public async Task GetPostByIdTestsWhenNotExists()
     {
         // Arrange
+        await _fixture.Store.Advanced.Clean.CompletelyRemoveAllAsync();
         var reader = new MartenPostReader(_fixture.Store);
         
         // Act
@@ -39,6 +40,7 @@ public class PostReaderTests : IClassFixture<PostgresSqlSqlFixture>
     public async Task GetPostByIdTestsWhenExists()
     {
         // Arrange
+        await _fixture.Store.Advanced.Clean.CompletelyRemoveAllAsync();
         var reader = new MartenPostReader(_fixture.Store);
         var writer = new MartenPostWriter(_fixture.Store);
         var post = Post.CreateNew("xDDD", new Author(AuthorId.New(), "jan pawel 2"), null);
@@ -60,6 +62,7 @@ public class PostReaderTests : IClassFixture<PostgresSqlSqlFixture>
     public async Task GetPostTestsWhenExists()
     {
         // Arrange
+        await _fixture.Store.Advanced.Clean.CompletelyRemoveAllAsync();
         var reader = new MartenPostReader(_fixture.Store);
         var writer = new MartenPostWriter(_fixture.Store);
         var author = new Author(AuthorId.New(), "jan pawel 2");
@@ -81,6 +84,7 @@ public class PostReaderTests : IClassFixture<PostgresSqlSqlFixture>
     public async Task GetPostTestsWhenDbIsEmpty()
     {
         // Arrange
+        await _fixture.Store.Advanced.Clean.CompletelyRemoveAllAsync();
         var reader = new MartenPostReader(_fixture.Store);
         // Act
         var subject = await reader.GetPosts(new GetPostQuery(1, 12), CancellationToken.None).ToListAsync();
@@ -94,6 +98,7 @@ public class PostReaderTests : IClassFixture<PostgresSqlSqlFixture>
     public async Task GetPostWithTagsTestsWhenNotExists()
     {
         // Arrange
+        await _fixture.Store.Advanced.Clean.CompletelyRemoveAllAsync();
         var reader = new MartenPostReader(_fixture.Store);
         // Act
         var subject = await reader.GetPosts(new GetPostQuery(1, 12, "fsharp"), CancellationToken.None).ToListAsync();
@@ -107,6 +112,7 @@ public class PostReaderTests : IClassFixture<PostgresSqlSqlFixture>
     public async Task GetPostWithTagTestsWhenExists()
     {
         // Arrange
+        await _fixture.Store.Advanced.Clean.CompletelyRemoveAllAsync();
         var reader = new MartenPostReader(_fixture.Store);
         var writer = new MartenPostWriter(_fixture.Store);
         var author = new Author(AuthorId.New(), "jan pawel 2");
@@ -128,6 +134,7 @@ public class PostReaderTests : IClassFixture<PostgresSqlSqlFixture>
     public async Task GetPostWithTagTestsWhenOneExist()
     {
         // Arrange
+        await _fixture.Store.Advanced.Clean.CompletelyRemoveAllAsync();
         var reader = new MartenPostReader(_fixture.Store);
         var writer = new MartenPostWriter(_fixture.Store);
         var author = new Author(AuthorId.New(), "jan pawel 2");

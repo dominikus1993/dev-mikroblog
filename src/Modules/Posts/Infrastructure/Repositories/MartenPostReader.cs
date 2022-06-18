@@ -3,7 +3,7 @@ using System.Runtime.CompilerServices;
 using DevMikroblog.Modules.Posts.Domain.Model;
 using DevMikroblog.Modules.Posts.Domain.Repositories;
 using DevMikroblog.Modules.Posts.Infrastructure.Model;
-
+using DevMikroblog.Modules.Posts.Infrastructure.Query;
 
 using LanguageExt;
 
@@ -35,14 +35,11 @@ internal class MartenPostReader : IPostsReader
     public async IAsyncEnumerable<Post> GetPosts(GetPostQuery query, [EnumeratorCancellation] CancellationToken cancellationToken)
     {
         await using var session = _store.QuerySession();
-        IQueryable<MartenPost> q = session.Query<MartenPost>();
+        ICompiledListQuery<MartenPost> q = string.IsNullOrEmpty(query.Tag)
+            ? new GetPagedPostsQuery() { Page = query.Page, PageSize = query.PageSize }
+            : new GetPostsInTagQuery() { Page = query.Page, PageSize = query.PageSize, Tag = query.Tag };
 
-        if (!string.IsNullOrEmpty(query.Tag))
-        {
-            q = q.Where(x => x.Tags.Contains(query.Tag));
-        }
-        var skipCount = (query.Page - 1) * query.PageSize;
-        var result = await q.OrderBy(x => x.CreatedAt).Skip(skipCount).Take(query.PageSize).ToListAsync(token: cancellationToken);
+        var result = await session.QueryAsync(q, cancellationToken);
         foreach (var post in result)
         {
             yield return post.MapToPost();
