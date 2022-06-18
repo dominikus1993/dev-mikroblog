@@ -173,4 +173,48 @@ public class PostReaderTests : IClassFixture<PostgresSqlSqlFixture>
         subject.Should().HaveCount(1);
         subject.Should().Contain(x => x.Id == post.Id);
     }
+    
+    [Fact]
+    public async Task GetPostWithAuthorIDTestsWhenOneExist()
+    {
+        // Arrange
+        await _fixture.Store.Advanced.Clean.CompletelyRemoveAllAsync();
+        var reader = new MartenPostReader(_fixture.Store);
+        var writer = new MartenPostWriter(_fixture.Store);
+        var author = new Author(AuthorId.New(), "jan pawel 2");
+        var author2 = new Author(AuthorId.New(), "testoviron");
+        var post = Post.CreateNew("xDDD", author, new Tag[]{ new Tag("fsharp")});
+        var post2 = Post.CreateNew("xDDD", author2, new Tag[]{ new Tag("csharp")} );
+        await writer.CreatePost(post);
+        await writer.CreatePost(post2);
+        // Act
+        var subject = await reader.GetPosts(new GetPostQuery(1, 12, AuthorId: author2.Id), CancellationToken.None).ToListAsync();
+        
+        // Test
+        subject.Should().NotBeNull();
+        subject.Should().NotBeEmpty();
+        subject.Should().HaveCount(1);
+        subject.Should().Contain(x => x.Id == post2.Id && x.Author == author2);
+    }
+    
+    [Fact]
+    public async Task GetPostWithAuthorIDTestsWhenNotExist()
+    {
+        // Arrange
+        await _fixture.Store.Advanced.Clean.CompletelyRemoveAllAsync();
+        var reader = new MartenPostReader(_fixture.Store);
+        var writer = new MartenPostWriter(_fixture.Store);
+        var author = new Author(AuthorId.New(), "jan pawel 2");
+        var author2 = new Author(AuthorId.New(), "testoviron");
+        var post = Post.CreateNew("xDDD", author, new Tag[]{ new Tag("fsharp")});
+        var post2 = Post.CreateNew("xDDD", author2, new Tag[]{ new Tag("csharp")} );
+        await writer.CreatePost(post);
+        await writer.CreatePost(post2);
+        // Act
+        var subject = await reader.GetPosts(new GetPostQuery(1, 12, AuthorId: AuthorId.New()), CancellationToken.None).ToListAsync();
+        
+        // Test
+        subject.Should().NotBeNull();
+        subject.Should().BeEmpty();
+    }
 }

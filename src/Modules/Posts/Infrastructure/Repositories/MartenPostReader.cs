@@ -37,10 +37,16 @@ internal class MartenPostReader : IPostsReader
         await using var session = _store.QuerySession();
         IQueryable<MartenPost> q = session.Query<MartenPost>();
 
+        if (query.AuthorId.HasValue)
+        {
+            var id = query.AuthorId.Value;
+            q = q.Where(x => x.AuthorId == id.Value);
+        }
         if (!string.IsNullOrEmpty(query.Tag))
         {
             q = q.Where(x => x.Tags!.Contains(query.Tag));
         }
+        
         var skipCount = (query.Page - 1) * query.PageSize;
         var result = await q.OrderByDescending(x => x.CreatedAt).Skip(skipCount).Take(query.PageSize).ToListAsync(token: cancellationToken);
         
