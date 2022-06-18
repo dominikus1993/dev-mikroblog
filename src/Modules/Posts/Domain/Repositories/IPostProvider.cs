@@ -8,7 +8,7 @@ using LanguageExt;
 [assembly: InternalsVisibleTo("Posts.FunctionalTests")]
 namespace DevMikroblog.Modules.Posts.Domain.Repositories;
 
-public record GetPostQuery(int Page, int PageSize, string? Tag = null);
+public record GetPostQuery(int Page, int PageSize, string? Tag = null, AuthorId? AuthorId = null);
 
 public interface IPostsReader
 {
