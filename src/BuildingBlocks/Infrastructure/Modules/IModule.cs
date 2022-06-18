@@ -1,10 +1,10 @@
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace DevMikroblog.BuildingBlocks.Infrastructure.Modules;
 
 public interface IModule
 {
-    IServiceCollection RegisterModule(IServiceCollection builder);
-    IEndpointRouteBuilder MapEndpoints(IEndpointRouteBuilder endpoints);
+    static abstract WebApplicationBuilder RegisterModule(WebApplicationBuilder builder);
+    static abstract IEndpointRouteBuilder MapEndpoints(IEndpointRouteBuilder endpoints);
 }
