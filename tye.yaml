@@ -4,7 +4,9 @@ services:
   project: src/Api/DevMikroblog.Api/DevMikroblog.Api.csproj
   env:
     - name: ASPNETCORE_ENVIRONMENT
-      value: tye
+      value: Development
+    - name: RabbitMq__AmqpConnection
+      value: amqp://guest:guest@localhost:5672
 - name: postgres
   image: postgres:14.1
   env:

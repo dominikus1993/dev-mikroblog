@@ -1,5 +1,7 @@
+using DevMikroblog.BuildingBlocks.Infrastructure.Messaging.IoC;
 using DevMikroblog.BuildingBlocks.Infrastructure.Modules;
 using DevMikroblog.Modules.Posts.Application.PostCreator;
+using DevMikroblog.Modules.Posts.Application.PostCreator.Events;
 using DevMikroblog.Modules.Posts.Application.PostProvider;
 using DevMikroblog.Modules.Posts.Domain.Model;
 using DevMikroblog.Modules.Posts.Domain.Repositories;
@@ -26,7 +28,7 @@ public class PostsEndpoint : IModule
         builder.Services.AddTransient<IPostWriter, MartenPostWriter>();
         builder.Services.AddMarten(MartenDocumentStoreConfig.Configure(
             builder.Configuration.GetConnectionString("PostsDb"), builder.Environment.IsDevelopment()));
-
+        builder.Services.AddPublisher<PostCreated>("posts", "created");
         return builder;
     }
 

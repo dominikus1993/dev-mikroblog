@@ -1,6 +1,7 @@
 using System.Diagnostics;
 
 using DevMikroblog.BuildingBlocks.Infrastructure.Logging;
+using DevMikroblog.BuildingBlocks.Infrastructure.Messaging.IoC;
 
 using Microsoft.AspNetCore.Builder;
 
@@ -10,6 +11,7 @@ builder.UseLogging("DevMikroblog.Api");
 // Add services to the container.
 
 builder.Services.AddControllers();
+builder.Services.AddRabbitMq(builder.Configuration);
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
