@@ -1,3 +1,4 @@
+using DevMikroblog.Modules.Posts.Infrastructure.Configuration;
 using DevMikroblog.Modules.Posts.Infrastructure.Model;
 
 using DotNet.Testcontainers.Builders;
@@ -30,14 +31,7 @@ public sealed class PostgresSqlSqlFixture : IAsyncLifetime, IDisposable
     {
         await this.PostgreSql.StartAsync()
             .ConfigureAwait(false);
-        Store = DocumentStore.For(options =>
-        {
-            options.Connection(PostgreSql.ConnectionString);
-
-            options.AutoCreateSchemaObjects = AutoCreate.All;
-
-            options.Schema.For<MartenPost>();
-        });
+        Store = DocumentStore.For(MartenDocumentStoreConfig.Configure(PostgreSql.ConnectionString, true));
     }
 
     public async Task DisposeAsync()

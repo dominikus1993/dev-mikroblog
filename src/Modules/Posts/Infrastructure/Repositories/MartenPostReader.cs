@@ -43,6 +43,7 @@ internal class MartenPostReader : IPostsReader
         }
         var skipCount = (query.Page - 1) * query.PageSize;
         var result = await q.OrderByDescending(x => x.CreatedAt).Skip(skipCount).Take(query.PageSize).ToListAsync(token: cancellationToken);
+        
         foreach (var post in result)
         {
             yield return post.MapToPost();
