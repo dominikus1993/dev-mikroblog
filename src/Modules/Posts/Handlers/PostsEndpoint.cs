@@ -5,12 +5,15 @@ using DevMikroblog.Modules.Posts.Application.PostCreator.Events;
 using DevMikroblog.Modules.Posts.Application.PostProvider;
 using DevMikroblog.Modules.Posts.Domain.Model;
 using DevMikroblog.Modules.Posts.Domain.Repositories;
+using DevMikroblog.Modules.Posts.Handlers.Requests;
 using DevMikroblog.Modules.Posts.Infrastructure.Configuration;
 using DevMikroblog.Modules.Posts.Infrastructure.Repositories;
 
 using Marten;
 
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -34,8 +37,20 @@ public class PostsEndpoint : IModule
 
     public static IEndpointRouteBuilder MapEndpoints(IEndpointRouteBuilder endpoints)
     {
-        endpoints.MapGet("/posts", () => Post.CreateNew("x", new Author(AuthorId.New(), "")));
+        endpoints.MapPost("/posts", GetPosts);
 
         return endpoints;
+    }
+
+    private static async Task<IResult> GetPosts(GetPostsRequest request, GetPostsUseCase useCase,
+        CancellationToken cancellationToken)
+    {
+        AuthorId? authorId = request.AuthorId is null ? null : new AuthorId(Guid.Parse(request.AuthorId));
+        var result = await useCase.Execute(new GetPostsQuery(request.Page, request.PageSize, request.Tag, authorId), cancellationToken);
+        if (result.Count == 0)
+        {
+            return Results.NoContent();
+        }
+        return Results.Ok(result);
     }
 }

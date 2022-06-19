@@ -2,6 +2,7 @@ using System.Diagnostics;
 
 using DevMikroblog.BuildingBlocks.Infrastructure.Logging;
 using DevMikroblog.BuildingBlocks.Infrastructure.Messaging.IoC;
+using DevMikroblog.Modules.Posts.Handlers;
 
 using Microsoft.AspNetCore.Builder;
 
@@ -15,6 +16,7 @@ builder.Services.AddRabbitMq(builder.Configuration);
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+PostsEndpoint.RegisterModule(builder);
 
 var app = builder.Build();
 
@@ -31,5 +33,6 @@ app.UseRequestLogging();
 app.UseAuthorization();
 
 app.MapControllers();
+PostsEndpoint.MapEndpoints(app);
 
 app.Run();
