@@ -32,6 +32,7 @@ internal class RabbitMqSubscriber<T> : BackgroundService where T : notnull, IMes
         _serviceProvider = serviceProvider;
         _config = config;
         _channel = connection.CreateModel();
+        _channel.BasicQos(0, 1, false);
         _logger = logger;
     }
 
@@ -61,6 +62,10 @@ internal class RabbitMqSubscriber<T> : BackgroundService where T : notnull, IMes
 
     public override void Dispose()
     {
+        if (!_channel.IsClosed)
+        {
+            _channel.Close();
+        }
         _channel.Dispose();
         base.Dispose();
     }
