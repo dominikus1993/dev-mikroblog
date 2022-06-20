@@ -9,6 +9,8 @@ public class PostCreated : IMessage
     public Guid PostId { get; init; }
     public Guid? ReplyToPost { get; init; }
     public string Content { get; init; } = null!;
-    public Guid AuthorId { get; set; }
+    public Guid AuthorId { get; init; }
+    
+    public List<string> Tags { get; init; }
     public static string Name => nameof(PostCreated);
 }
