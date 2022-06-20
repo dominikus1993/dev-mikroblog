@@ -62,9 +62,9 @@ internal class RabbitMqPublisher : BackgroundService
         { "X-Message-Type", "DevMikroblog.BuildingBlocks.Infrastructure.Messaging.Abstractions.RabbitmMqMessage" },
     };
 
-    public RabbitMqPublisher(Channel<RabbitMqMessage> stream, IConnection model, ILogger<RabbitMqPublisher> logger)
+    public RabbitMqPublisher(ChannelReader<RabbitMqMessage> stream, IConnection model, ILogger<RabbitMqPublisher> logger)
     {
-        _messageStream = stream.Reader;
+        _messageStream = stream;
         _model = model.CreateModel();
         _logger = logger;
     }
