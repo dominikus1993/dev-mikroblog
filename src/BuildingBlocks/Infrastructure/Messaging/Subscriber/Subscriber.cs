@@ -27,11 +27,11 @@ internal class RabbitMqSubscriber<T> : BackgroundService where T : notnull, IMes
     private readonly ILogger<RabbitMqSubscriber<T>> _logger;
     private readonly IModel _channel;
 
-    public RabbitMqSubscriber(IServiceProvider serviceProvider, RabbtMqSubscriptionConfig<T> config, IModel channel, ILogger<RabbitMqSubscriber<T>> logger)
+    public RabbitMqSubscriber(IServiceProvider serviceProvider, RabbtMqSubscriptionConfig<T> config, IConnection connection, ILogger<RabbitMqSubscriber<T>> logger)
     {
         _serviceProvider = serviceProvider;
         _config = config;
-        _channel = channel;
+        _channel = connection.CreateModel();
         _logger = logger;
     }
 
@@ -57,5 +57,11 @@ internal class RabbitMqSubscriber<T> : BackgroundService where T : notnull, IMes
         }
         var messageHandler = _serviceProvider.GetService<IMessageHandler<T>>()!;
         await messageHandler!.Handle(message);
+    }
+
+    public override void Dispose()
+    {
+        _channel.Dispose();
+        base.Dispose();
     }
 }

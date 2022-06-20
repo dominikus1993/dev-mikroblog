@@ -1,3 +1,6 @@
+using System.Security.Claims;
+
+using DevMikroblog.BuildingBlocks.Infrastructure.Auth;
 using DevMikroblog.BuildingBlocks.Infrastructure.Messaging.IoC;
 using DevMikroblog.BuildingBlocks.Infrastructure.Modules;
 using DevMikroblog.Modules.Posts.Application.PostCreator;
@@ -38,7 +41,8 @@ public class PostsEndpoint : IModule
     public static IEndpointRouteBuilder MapEndpoints(IEndpointRouteBuilder endpoints)
     {
         endpoints.MapPost("/posts", GetPosts);
-
+        endpoints.MapPost("/post", CreatePost);
+        endpoints.MapGet("/post/{postId}", GetPostById);
         return endpoints;
     }
 
@@ -52,5 +56,23 @@ public class PostsEndpoint : IModule
             return Results.NoContent();
         }
         return Results.Ok(result);
+    }
+    
+    private static async Task<IResult> GetPostById(Guid postId, GetPostsUseCase useCase,
+        CancellationToken cancellationToken)
+    {
+        return Results.Ok();
+    }
+    
+    private static async Task<IResult> CreatePost(HttpContext context, CreatePostRequest request, CreatePostUseCase useCase,
+        CancellationToken cancellationToken)
+    {
+        var authorId = new AuthorId(context.User.UserId());
+        var author = new Author(authorId, context.User.UserName());
+        var command =
+            new CreatePostCommand(author, request.Content, new ReplyToPost(new PostId(request.ReplyToPostId)));
+        await useCase.Execute(command, cancellationToken);
+        
+        return Results.Ok();
     }
 }

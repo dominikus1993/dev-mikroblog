@@ -12,7 +12,7 @@ public sealed class CreatePostUseCase
     private readonly IPostWriter _postWriter;
     private readonly IMessagePublisher<PostCreated> _messagePublisher;
 
-    internal CreatePostUseCase(IPostWriter postWriter, IMessagePublisher<PostCreated> messagePublisher)
+    public CreatePostUseCase(IPostWriter postWriter, IMessagePublisher<PostCreated> messagePublisher)
     {
         _postWriter = postWriter;
         _messagePublisher = messagePublisher;
