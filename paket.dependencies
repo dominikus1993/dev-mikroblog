@@ -41,6 +41,6 @@ nuget xunit
 nuget xunit.runner.visualstudio
 nuget Moq
 nuget coverlet.collector
-nuget DotNet.Testcontainers >= 1.6.0-beta.2130
+nuget Testcontainers
 nuget Microsoft.NET.Test.Sdk
 nuget Ogooreck

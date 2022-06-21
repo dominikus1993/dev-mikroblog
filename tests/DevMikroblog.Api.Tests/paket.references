@@ -4,6 +4,6 @@ FluentAssertions
 xunit
 xunit.runner.visualstudio
 Moq
-DotNet.Testcontainers
+Testcontainers
 coverlet.collector
 Microsoft.NET.Test.Sdk
