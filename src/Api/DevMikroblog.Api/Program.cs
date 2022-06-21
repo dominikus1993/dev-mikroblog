@@ -5,8 +5,12 @@ using DevMikroblog.BuildingBlocks.Infrastructure.Logging;
 using DevMikroblog.BuildingBlocks.Infrastructure.Messaging.IoC;
 using DevMikroblog.Modules.Posts.Handlers;
 
+using HealthChecks.UI.Client;
+
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -15,7 +19,7 @@ builder.UseLogging("DevMikroblog.Api");
 // Add services to the container.
 
 builder.Services.AddControllers();
-builder.Services.AddRabbitMq(builder.Configuration);
+builder.Services.AddRabbitMq(builder.Configuration); 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -38,6 +42,8 @@ builder.Services.AddAuthentication(options =>
 });
 PostsEndpoint.RegisterModule(builder);
 
+builder.Services.AddHealthChecks().AddRabbitMq();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -55,4 +61,16 @@ app.UseAuthorization();
 app.MapControllers();
 PostsEndpoint.MapEndpoints(app);
 
+app.MapHealthChecks("/health",
+    new HealthCheckOptions() { Predicate = _ => true, ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse });
+app.MapHealthChecks("/ping",
+    new HealthCheckOptions() { Predicate = r => r.Name.Contains("self"), ResponseWriter = PongWriteResponse, });
 app.Run();
+
+
+static Task PongWriteResponse(HttpContext httpContext,
+    HealthReport result)
+{
+    httpContext.Response.ContentType = "application/json";
+    return httpContext.Response.WriteAsync("{\"pong\": \"message\"}");
+}

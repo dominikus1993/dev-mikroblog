@@ -19,14 +19,19 @@ public static class ServicesCollectionExtensions
         return services.AddRabbitMq(configuration.GetSection("RabbitMq").Get<RabbitMqConfiguration>());
     }
     
+    public static IHealthChecksBuilder AddRabbitMq(this IHealthChecksBuilder services)
+    {
+        return services.AddRabbitMQ();
+    }
+    
     public static IServiceCollection AddRabbitMq(this IServiceCollection services, RabbitMqConfiguration? configuration)
     {
         ArgumentNullException.ThrowIfNull(configuration, nameof(configuration));
-        services.AddSingleton(new ConnectionFactory()
+        services.AddSingleton<IConnectionFactory>(new ConnectionFactory()
         {
             Uri = new Uri(configuration.AmqpConnection)
         });
-        services.AddSingleton<IConnection>(sp => sp.GetService<ConnectionFactory>()!.CreateConnection());
+        services.AddSingleton<IConnection>(sp => sp.GetService<IConnectionFactory>()!.CreateConnection());
         services.AddScoped<IModel>(sp => sp.GetService<IConnection>()!.CreateModel());
         var stream = Channel.CreateUnbounded<RabbitMqMessage>();
         services.AddSingleton(stream);
