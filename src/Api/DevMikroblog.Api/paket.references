@@ -1,2 +1,4 @@
 Swashbuckle.AspNetCore
+Microsoft.AspNetCore.Authentication.JwtBearer
 Microsoft.Tye.Extensions.Configuration
+AspNetCore.HealthChecks.UI.Client

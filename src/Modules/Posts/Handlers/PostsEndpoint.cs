@@ -5,6 +5,7 @@ using DevMikroblog.BuildingBlocks.Infrastructure.Messaging.IoC;
 using DevMikroblog.BuildingBlocks.Infrastructure.Modules;
 using DevMikroblog.Modules.Posts.Application.PostCreator;
 using DevMikroblog.Modules.Posts.Application.PostCreator.Events;
+using DevMikroblog.Modules.Posts.Application.PostCreator.Parsers;
 using DevMikroblog.Modules.Posts.Application.PostProvider;
 using DevMikroblog.Modules.Posts.Domain.Model;
 using DevMikroblog.Modules.Posts.Domain.Repositories;
@@ -32,6 +33,7 @@ public class PostsEndpoint : IModule
         builder.Services.AddTransient<CreatePostUseCase>();
         builder.Services.AddTransient<IPostsReader, MartenPostReader>();
         builder.Services.AddTransient<IPostWriter, MartenPostWriter>();
+        builder.Services.AddTransient<IPostTagParser, PostTagParser>();
         builder.Services.AddMarten(MartenDocumentStoreConfig.Configure(
             builder.Configuration.GetConnectionString("PostsDb"), builder.Environment.IsDevelopment()));
         builder.Services.AddPublisher<PostCreated>("posts", "created");
@@ -41,7 +43,8 @@ public class PostsEndpoint : IModule
     public static IEndpointRouteBuilder MapEndpoints(IEndpointRouteBuilder endpoints)
     {
         endpoints.MapPost("/posts", GetPosts);
-        endpoints.MapPost("/post", CreatePost);
+        endpoints.MapPost("/post", CreatePost)
+            .RequireAuthorization();
         endpoints.MapGet("/post/{postId}", GetPostById);
         return endpoints;
     }

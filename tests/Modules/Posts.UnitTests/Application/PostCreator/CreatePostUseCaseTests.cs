@@ -1,6 +1,7 @@
 using DevMikroblog.BuildingBlocks.Infrastructure.Messaging.Abstractions;
 using DevMikroblog.Modules.Posts.Application.PostCreator;
 using DevMikroblog.Modules.Posts.Application.PostCreator.Events;
+using DevMikroblog.Modules.Posts.Application.PostCreator.Parsers;
 using DevMikroblog.Modules.Posts.Domain.Model;
 using DevMikroblog.Modules.Posts.Domain.Repositories;
 
@@ -27,14 +28,16 @@ public class CreatePostUseCaseTests
         var publisherMock = new Mock<IMessagePublisher<PostCreated>>();
         publisherMock.Setup(x => x.Publish(It.IsAny<PostCreated>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(Unit.Default);
+        var parserMock = new Mock<IPostTagParser>();
+        parserMock.Setup(x => x.ParseTagsFromPostContent(It.IsAny<string>()));
 
-        var useCase = new CreatePostUseCase(writerMock.Object, publisherMock.Object);
+        var useCase = new CreatePostUseCase(writerMock.Object, publisherMock.Object, parserMock.Object);
         
         // Act
         await useCase.Execute(post, CancellationToken.None);
         
         // Test
-        
+        parserMock.Verify(x => x.ParseTagsFromPostContent(It.IsAny<string>()), Times.Once);
         writerMock.Verify(x => x.CreatePost(It.IsAny<Post>(), It.IsAny<CancellationToken>()), Times.Once);
         publisherMock.Verify(x => x.Publish(It.IsAny<PostCreated>(), It.IsAny<CancellationToken>()), Times.Once);
     }
@@ -52,15 +55,16 @@ public class CreatePostUseCaseTests
         var publisherMock = new Mock<IMessagePublisher<PostCreated>>();
         publisherMock.Setup(x => x.Publish(It.IsAny<PostCreated>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(Unit.Default);
-
-        var useCase = new CreatePostUseCase(writerMock.Object, publisherMock.Object);
+        var parserMock = new Mock<IPostTagParser>();
+        parserMock.Setup(x => x.ParseTagsFromPostContent(It.IsAny<string>()));
+        var useCase = new CreatePostUseCase(writerMock.Object, publisherMock.Object, parserMock.Object);
         
         // Act
         
         await Assert.ThrowsAsync<Exception>(() => useCase.Execute(post, CancellationToken.None));
         
         // Test
-        
+        parserMock.Verify(x => x.ParseTagsFromPostContent(It.IsAny<string>()), Times.Once);
         writerMock.Verify(x => x.CreatePost(It.IsAny<Post>(), It.IsAny<CancellationToken>()), Times.Once);
         publisherMock.Verify(x => x.Publish(It.IsAny<PostCreated>(), It.IsAny<CancellationToken>()), Times.Never);
     }

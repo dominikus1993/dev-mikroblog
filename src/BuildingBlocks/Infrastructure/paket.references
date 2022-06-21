@@ -18,3 +18,4 @@ LanguageExt.Core
 Microsoft.Extensions.Hosting.Abstractions
 RabbitMQ.Client
 Microsoft.Tye.Extensions.Configuration
+AspNetCore.HealthChecks.Rabbitmq

@@ -7,6 +7,12 @@ services:
       value: Development
     - name: RabbitMq__AmqpConnection
       value: amqp://guest:guest@localhost:5672
+  liveness:
+    http:
+      path: /health
+  readiness:
+    http:
+      path: /ping
 - name: postgres
   image: postgres:14.1
   env:
