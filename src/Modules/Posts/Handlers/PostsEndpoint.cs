@@ -72,8 +72,9 @@ public class PostsEndpoint : IModule
     {
         var authorId = new AuthorId(context.User.UserId());
         var author = new Author(authorId, context.User.UserName());
+        ReplyToPost? replyToPost = request.ReplyToPostId.HasValue ? new ReplyToPost(new PostId(request.ReplyToPostId.Value)) : null;
         var command =
-            new CreatePostCommand(author, request.Content, new ReplyToPost(new PostId(request.ReplyToPostId)));
+            new CreatePostCommand(author, request.Content, replyToPost);
         await useCase.Execute(command, cancellationToken);
         
         return Results.Ok();

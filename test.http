@@ -1,0 +1,8 @@
+POST http://localhost:62228/post
+Content-Type: application/json
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJkZXYtbWlrcm9ibG9nIiwiaWF0IjoxNjU1OTEyNzY4LCJleHAiOjE3ODIxNDMxNjgsImF1ZCI6ImRldi1taWtyb2Jsb2ciLCJzdWIiOiJlZWUwZDNiNy0xZmI2LTRiMWEtOGM3OC1iODI3YjBiNjQ2NWIiLCJOYW1lIjoiamFuIFBhd2XFgiAzMzMifQ.sD2w31diMX5rEYNcnBhOs-RoaTXUPN1BMfhfMCJIqwTrAYPE-gwuVERMc_QiOqhsaAw-u5nCzBuVhBHJvKUBSA
+Accept: application/json
+
+{
+  "content": "xDDD"
+}
