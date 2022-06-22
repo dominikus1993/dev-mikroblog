@@ -15,6 +15,7 @@ using DevMikroblog.Modules.Posts.Infrastructure.Repositories;
 
 using Marten;
 
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -67,6 +68,7 @@ public class PostsEndpoint : IModule
         return Results.Ok();
     }
     
+    [Authorize]
     private static async Task<IResult> CreatePost(HttpContext context, CreatePostRequest request, CreatePostUseCase useCase,
         CancellationToken cancellationToken)
     {

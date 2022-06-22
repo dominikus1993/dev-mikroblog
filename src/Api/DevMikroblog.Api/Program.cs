@@ -55,10 +55,9 @@ if (app.Environment.IsDevelopment() || app.Environment.IsEnvironment("tye"))
 }
 
 app.UseRequestLogging();
-
+app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapControllers();
 PostsEndpoint.MapEndpoints(app);
 
 app.MapHealthChecks("/health",
