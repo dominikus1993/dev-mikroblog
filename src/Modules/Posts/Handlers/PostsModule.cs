@@ -26,7 +26,15 @@ using Microsoft.Extensions.Hosting;
 
 namespace DevMikroblog.Modules.Posts.Handlers;
 
-public class PostsEndpoint : IModule
+public static class PostModuleExtensions
+{
+    public static IHealthChecksBuilder AddPostsModuleHealthChecks(this IHealthChecksBuilder builder, IConfiguration configuration)
+    {
+        return builder.AddNpgSql(configuration.GetConnectionString("PostDb"));
+    }
+}
+
+public class PostsModule : IModule
 {
     public static WebApplicationBuilder RegisterModule(WebApplicationBuilder builder)
     {

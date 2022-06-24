@@ -5,6 +5,7 @@ framework: net6.0
 
 nuget Swashbuckle.AspNetCore
 
+nuget AspNetCore.HealthChecks.NpgSql
 nuget Microsoft.AspNetCore.Authentication.JwtBearer
 nuget Serilog.AspNetCore
 nuget Serilog.Enrichers.ClientInfo
@@ -19,7 +20,7 @@ nuget Serilog.Sinks.Trace
 nuget Serilog.Formatting.Elasticsearch
 nuget Serilog.Sinks.Seq
 nuget Microsoft.Extensions.Hosting.Abstractions
-nuget StronglyTypedId >= 1.0.0-beta06
+nuget StronglyTypedId prerelease
 nuget RabbitMQ.Client 
 nuget Microsoft.Tye.Extensions.Configuration
 nuget AspNetCore.HealthChecks.UI.Client

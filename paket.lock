@@ -2,6 +2,9 @@ STORAGE: NONE
 RESTRICTION: == net6.0
 NUGET
   remote: https://api.nuget.org/v3/index.json
+    AspNetCore.HealthChecks.NpgSql (6.0.2)
+      Microsoft.Extensions.Diagnostics.HealthChecks (>= 6.0.2)
+      Npgsql (>= 6.0)
     AspNetCore.HealthChecks.Rabbitmq (6.0.2)
       Microsoft.Extensions.Diagnostics.HealthChecks (>= 6.0.2)
       RabbitMQ.Client (>= 6.2.2)
@@ -321,7 +324,7 @@ NUGET
       Microsoft.TestPlatform.TestHost (>= 17.2)
     Microsoft.NETCore.Platforms (6.0.4)
     Microsoft.NETCore.Targets (5.0)
-    Microsoft.OpenApi (1.3.1)
+    Microsoft.OpenApi (1.3.2)
     Microsoft.TestPlatform.ObjectModel (17.2)
       NuGet.Frameworks (>= 5.11)
       System.Reflection.Metadata (>= 1.6)

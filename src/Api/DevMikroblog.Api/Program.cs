@@ -40,9 +40,9 @@ builder.Services.AddAuthentication(options =>
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSection["SecretKey"])),
     };
 });
-PostsEndpoint.RegisterModule(builder);
+PostsModule.RegisterModule(builder);
 
-builder.Services.AddHealthChecks().AddRabbitMq();
+builder.Services.AddHealthChecks().AddRabbitMq().AddPostsModuleHealthChecks(builder.Configuration);
 
 var app = builder.Build();
 
@@ -58,7 +58,7 @@ app.UseRequestLogging();
 app.UseAuthentication();
 app.UseAuthorization();
 
-PostsEndpoint.MapEndpoints(app);
+PostsModule.MapEndpoints(app);
 
 app.MapHealthChecks("/health",
     new HealthCheckOptions() { Predicate = _ => true, ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse });
