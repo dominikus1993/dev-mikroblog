@@ -34,6 +34,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "project", "project", "{8AD4
 		tye.yaml = tye.yaml
 		paket.dependencies = paket.dependencies
 		paket.lock = paket.lock
+		test.http = test.http
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DevMikroblog.Api.Tests", "tests\DevMikroblog.Api.Tests\DevMikroblog.Api.Tests.csproj", "{0E8A70FE-FAA0-452B-8173-6D6A52F081BB}"

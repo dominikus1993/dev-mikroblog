@@ -1,8 +1,22 @@
-POST http://localhost:62228/post
+@port = 53766 
+@jwt_key = eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJkZXYtbWlrcm9ibG9nIiwiaWF0IjoxNjU1OTEyNzY4LCJleHAiOjE3ODIxNDMxNjgsImF1ZCI6ImRldi1taWtyb2Jsb2ciLCJzdWIiOiJlZWUwZDNiNy0xZmI2LTRiMWEtOGM3OC1iODI3YjBiNjQ2NWIiLCJOYW1lIjoiamFuIFBhd2XFgiAzMzMifQ.sD2w31diMX5rEYNcnBhOs-RoaTXUPN1BMfhfMCJIqwTrAYPE-gwuVERMc_QiOqhsaAw-u5nCzBuVhBHJvKUBSA
+
+###
+
+POST http://localhost:{{port}}/post
 Content-Type: application/json
-Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJkZXYtbWlrcm9ibG9nIiwiaWF0IjoxNjU1OTEyNzY4LCJleHAiOjE3ODIxNDMxNjgsImF1ZCI6ImRldi1taWtyb2Jsb2ciLCJzdWIiOiJlZWUwZDNiNy0xZmI2LTRiMWEtOGM3OC1iODI3YjBiNjQ2NWIiLCJOYW1lIjoiamFuIFBhd2XFgiAzMzMifQ.sD2w31diMX5rEYNcnBhOs-RoaTXUPN1BMfhfMCJIqwTrAYPE-gwuVERMc_QiOqhsaAw-u5nCzBuVhBHJvKUBSA
+Authorization: Bearer {{jwt_key}}
 Accept: application/json
 
 {
   "content": "xDDD"
+}
+
+### 
+
+POST http://localhost:{{port}}/posts HTTP/1.1
+Accept: application/json
+Content-Type: application/json
+
+{
 }

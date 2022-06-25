@@ -12,6 +12,7 @@ internal static class MartenDocumentStoreConfig
 {
     public static Action<StoreOptions> Configure(string connectionString, bool isDev)
     {
+        ArgumentNullException.ThrowIfNull(connectionString, nameof(connectionString));
         return options =>
         {
             options.Connection(connectionString);
