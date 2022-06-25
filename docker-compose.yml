@@ -4,10 +4,12 @@ services:
   app:
     image: devmikroblog
     ports: 
-      - 80:5000
+      - 5005:80
     environment: 
       - RabbitMq__AmqpConnection=amqp://guest:guest@rabbitmq:5672
-      - ConnectionStrings__PostsDb=Host=localhost;Port=5432;User Id=postgres;Password=postgres;Database=postgres;
+      - ConnectionStrings__PostsDb=Host=db;Port=5432;User Id=postgres;Password=postgres;Database=postgres;
+      - Seq__Url=http://seq:5341
+      - ASPNETCORE_ENVIRONMENT=Development
     depends_on:
       - "db"
       - "seq"
