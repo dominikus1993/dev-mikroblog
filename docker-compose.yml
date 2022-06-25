@@ -3,6 +3,11 @@ version: '3.8'
 services:
   app:
     image: devmikroblog
+    ports: 
+      - 80:5000
+    environment: 
+      - RabbitMq__AmqpConnection=amqp://guest:guest@rabbitmq:5672
+      - ConnectionStrings__PostsDb=Host=localhost;Port=5432;User Id=postgres;Password=postgres;Database=postgres;
     depends_on:
       - "db"
       - "seq"
