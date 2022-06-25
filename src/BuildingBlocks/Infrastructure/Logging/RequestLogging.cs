@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 
 using Serilog;
+using Serilog.Core;
 using Serilog.Events;
 
 namespace DevMikroblog.BuildingBlocks.Infrastructure.Logging;
@@ -79,11 +80,14 @@ public static class RequestLogging
         return identity?.IsAuthenticated ?? false;
     }
 
-    private static int? GetUserId(ClaimsPrincipal user)
+    private static Guid? GetUserId(ClaimsPrincipal user)
     {
-        return int.TryParse(user.FindFirst(c => c.Type == ClaimTypes.NameIdentifier)?.Value, out var userId)
-            ? userId
-            : null;
+        if (Guid.TryParse(user.FindFirst( ClaimTypes.NameIdentifier)?.Value, out var userId))
+        {
+            return userId;
+        }
+
+        return null;
     }
 
     public static IApplicationBuilder UseRequestLogging(this IApplicationBuilder app)

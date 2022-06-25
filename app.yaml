@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dev-mikroblog
+spec:
+  selector:
+    matchLabels:
+      app: dev-mikroblog
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: dev-mikroblog
+    spec:
+      containers:
+      - name: dev-mikroblog
+        image: dev-mikroblog
+        ports:
+        - containerPort: 80

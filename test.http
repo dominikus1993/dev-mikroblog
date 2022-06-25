@@ -9,7 +9,7 @@ Authorization: Bearer {{jwt_key}}
 Accept: application/json
 
 {
-  "content": "xDDD"
+  "content": "xDDD #fsharp"
 }
 
 ### 
