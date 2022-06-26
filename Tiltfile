@@ -3,7 +3,7 @@ local_resource(
     'build',
     'dotnet publish -c Debug -o out',
     deps=['src/Api/DevMikroblog.Api'],
-    ignore=['src/Api/DevMikroblog.Api/obj']
+    ignore=['*/bin', '*/obj', '**/bin', '**/obj'],
 )
 
 docker_build("devmikroblog", 'out', dockerfile="Dockerfile")
