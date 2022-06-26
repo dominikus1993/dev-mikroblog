@@ -63,11 +63,7 @@ public class PostsModule : IModule
     {
         AuthorId? authorId = request.AuthorId is null ? null : new AuthorId(Guid.Parse(request.AuthorId));
         var result = await useCase.Execute(new GetPostsQuery(request.Page, request.PageSize, request.Tag, authorId), cancellationToken);
-        if (result.Count == 0)
-        {
-            return Results.NoContent();
-        }
-        return Results.Ok(result);
+        return result.Match<IResult>(posts => Results.Ok(posts), () => Results.NotFound());
     }
     
     private static async Task<IResult> GetPostById(Guid postId, GetPostsUseCase useCase,

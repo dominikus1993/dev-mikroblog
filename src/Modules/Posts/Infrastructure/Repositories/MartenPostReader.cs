@@ -17,6 +17,8 @@ using static LanguageExt.Prelude;
 
 namespace DevMikroblog.Modules.Posts.Infrastructure.Repositories;
 
+public record PagedPosts(IReadOnlyList<Post> Posts, long TotalPages, long TotalPostsQuantity);
+
 internal class MartenPostReader : IPostsReader
 {
     private readonly IDocumentStore _store;
@@ -33,7 +35,7 @@ internal class MartenPostReader : IPostsReader
         return Optional(result).Map(post => post.MapToPost());
     }
 
-    public async IAsyncEnumerable<Post> GetPosts(GetPostQuery query, [EnumeratorCancellation] CancellationToken cancellationToken)
+    public async Task<Option<PagedPosts>> GetPosts(GetPostQuery query, CancellationToken cancellationToken)
     {
         await using var session = _store.QuerySession();
         IQueryable<MartenPost> q = session.Query<MartenPost>();
@@ -49,9 +51,13 @@ internal class MartenPostReader : IPostsReader
         }
         
         var result = await q.OrderByDescending(x => x.CreatedAt).ToPagedListAsync(pageNumber: query.Page, pageSize: query.PageSize, cancellationToken);
-        foreach (var post in result)
+        if (result.Count == 0)
         {
-            yield return post.MapToPost();
+            return None;
         }
+
+        var postList = result.Select(x => x.MapToPost()).ToList();
+
+        return Some(new PagedPosts(postList, result.PageCount, result.TotalItemCount));
     }
 }

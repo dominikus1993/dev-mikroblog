@@ -71,13 +71,17 @@ public class PostReaderTests : IClassFixture<PostgresSqlSqlFixture>
         await writer.CreatePost(post);
         await writer.CreatePost(post2);
         // Act
-        var subject = await reader.GetPosts(new GetPostQuery(1, 12), CancellationToken.None).ToListAsync();
+        var subject = await reader.GetPosts(new GetPostQuery(1, 12), CancellationToken.None);
         
         // Test
-        subject.Should().NotBeNull();
-        subject.Should().NotBeEmpty();
-        subject.Should().HaveCount(2);
-        subject.Should().Contain(x => x.Id == post.Id).And.Contain(x => x.Id == post2.Id);
+        subject.IsSome.Should().BeTrue();
+        var data = subject.ValueUnsafe();
+        data.Should().NotBeNull();
+        data.Posts.Should().NotBeEmpty();
+        data.Posts.Should().HaveCount(2);
+        data.Posts.Should().Contain(x => x.Id == post.Id).And.Contain(x => x.Id == post2.Id);
+        data.TotalPages.Should().Be(1);
+        data.TotalPostsQuantity.Should().Be(2);
     }
     
     [Fact]
@@ -93,13 +97,17 @@ public class PostReaderTests : IClassFixture<PostgresSqlSqlFixture>
         await writer.CreatePost(post);
         await writer.CreatePost(post2);
         // Act
-        var subject = await reader.GetPosts(new GetPostQuery(1, 1), CancellationToken.None).ToListAsync();
+        var subject = await reader.GetPosts(new GetPostQuery(1, 1), CancellationToken.None);
         
         // Test
-        subject.Should().NotBeNull();
-        subject.Should().NotBeEmpty();
-        subject.Should().HaveCount(1);
-        subject.Should().Contain(x => x.Id == post2.Id);
+        subject.IsSome.Should().BeTrue();
+        var data = subject.ValueUnsafe();
+        data.Should().NotBeNull();
+        data.Posts.Should().NotBeEmpty();
+        data.Posts.Should().HaveCount(1);
+        data.Posts.Should().Contain(x => x.Id == post2.Id);
+        data.TotalPages.Should().Be(2);
+        data.TotalPostsQuantity.Should().Be(2);
     }
     
     [Fact]
@@ -108,12 +116,11 @@ public class PostReaderTests : IClassFixture<PostgresSqlSqlFixture>
         // Arrange
         await _fixture.Store.Advanced.Clean.CompletelyRemoveAllAsync();
         var reader = new MartenPostReader(_fixture.Store);
-        // Act
-        var subject = await reader.GetPosts(new GetPostQuery(1, 12), CancellationToken.None).ToListAsync();
+        // 
+        var subject = await reader.GetPosts(new GetPostQuery(1, 12), CancellationToken.None);
         
         // Test
-        subject.Should().NotBeNull();
-        subject.Should().BeEmpty();
+        subject.IsNone.Should().BeTrue();
     }
     
     [Fact]
@@ -123,11 +130,10 @@ public class PostReaderTests : IClassFixture<PostgresSqlSqlFixture>
         await _fixture.Store.Advanced.Clean.CompletelyRemoveAllAsync();
         var reader = new MartenPostReader(_fixture.Store);
         // Act
-        var subject = await reader.GetPosts(new GetPostQuery(1, 12, "fsharp"), CancellationToken.None).ToListAsync();
+        var subject = await reader.GetPosts(new GetPostQuery(1, 12, "fsharp"), CancellationToken.None);
         
         // Test
-        subject.Should().NotBeNull();
-        subject.Should().BeEmpty();
+        subject.IsNone.Should().BeTrue();
     }
     
     [Fact]
@@ -143,13 +149,17 @@ public class PostReaderTests : IClassFixture<PostgresSqlSqlFixture>
         await writer.CreatePost(post);
         await writer.CreatePost(post2);
         // Act
-        var subject = await reader.GetPosts(new GetPostQuery(1, 12, "fsharp"), CancellationToken.None).ToListAsync();
+        var subject = await reader.GetPosts(new GetPostQuery(1, 12, "fsharp"), CancellationToken.None);
         
         // Test
-        subject.Should().NotBeNull();
-        subject.Should().NotBeEmpty();
-        subject.Should().HaveCount(2);
-        subject.Should().Contain(x => x.Id == post.Id).And.Contain(x => x.Id == post2.Id);
+        subject.IsSome.Should().BeTrue();
+        var data = subject.ValueUnsafe();
+        data.Posts.Should().NotBeNull();
+        data.Posts.Should().NotBeEmpty();
+        data.Posts.Should().HaveCount(2);
+        data.Posts.Should().Contain(x => x.Id == post.Id).And.Contain(x => x.Id == post2.Id);
+        data.TotalPages.Should().Be(1);
+        data.TotalPostsQuantity.Should().Be(2);
     }
     
     [Fact]
@@ -165,13 +175,17 @@ public class PostReaderTests : IClassFixture<PostgresSqlSqlFixture>
         await writer.CreatePost(post);
         await writer.CreatePost(post2);
         // Act
-        var subject = await reader.GetPosts(new GetPostQuery(1, 12, "fsharp"), CancellationToken.None).ToListAsync();
+        var subject = await reader.GetPosts(new GetPostQuery(1, 12, "fsharp"), CancellationToken.None);
         
         // Test
-        subject.Should().NotBeNull();
-        subject.Should().NotBeEmpty();
-        subject.Should().HaveCount(1);
-        subject.Should().Contain(x => x.Id == post.Id);
+        subject.IsSome.Should().BeTrue();
+        var data = subject.ValueUnsafe();
+        data.Should().NotBeNull();
+        data.Posts.Should().NotBeEmpty();
+        data.Posts.Should().HaveCount(1);
+        data.Posts.Should().Contain(x => x.Id == post.Id);
+        data.TotalPages.Should().Be(1);
+        data.TotalPostsQuantity.Should().Be(1);
     }
     
     [Fact]
@@ -188,13 +202,17 @@ public class PostReaderTests : IClassFixture<PostgresSqlSqlFixture>
         await writer.CreatePost(post);
         await writer.CreatePost(post2);
         // Act
-        var subject = await reader.GetPosts(new GetPostQuery(1, 12, AuthorId: author2.Id), CancellationToken.None).ToListAsync();
+        var subject = await reader.GetPosts(new GetPostQuery(1, 12, AuthorId: author2.Id), CancellationToken.None);
         
         // Test
-        subject.Should().NotBeNull();
-        subject.Should().NotBeEmpty();
-        subject.Should().HaveCount(1);
-        subject.Should().Contain(x => x.Id == post2.Id && x.Author == author2);
+        subject.IsSome.Should().BeTrue();
+        var data = subject.ValueUnsafe();
+        data.Should().NotBeNull();
+        data.Posts.Should().NotBeEmpty();
+        data.Posts.Should().HaveCount(1);
+        data.Posts.Should().Contain(x => x.Id == post2.Id && x.Author == author2);
+        data.TotalPages.Should().Be(1);
+        data.TotalPostsQuantity.Should().Be(1);
     }
     
     [Fact]
@@ -211,10 +229,9 @@ public class PostReaderTests : IClassFixture<PostgresSqlSqlFixture>
         await writer.CreatePost(post);
         await writer.CreatePost(post2);
         // Act
-        var subject = await reader.GetPosts(new GetPostQuery(1, 12, AuthorId: AuthorId.New()), CancellationToken.None).ToListAsync();
+        var subject = await reader.GetPosts(new GetPostQuery(1, 12, AuthorId: AuthorId.New()), CancellationToken.None);
         
         // Test
-        subject.Should().NotBeNull();
-        subject.Should().BeEmpty();
+        subject.IsNone.Should().BeTrue();
     }
 }

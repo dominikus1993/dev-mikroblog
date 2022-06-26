@@ -1,6 +1,7 @@
 using System.Runtime.CompilerServices;
 
 using DevMikroblog.Modules.Posts.Domain.Model;
+using DevMikroblog.Modules.Posts.Infrastructure.Repositories;
 
 using LanguageExt;
 
@@ -13,5 +14,5 @@ public record GetPostQuery(int Page, int PageSize, string? Tag = null, AuthorId?
 public interface IPostsReader
 {
     Task<Option<Post>> GetPostById(PostId postId, CancellationToken cancellationToken = default);
-    IAsyncEnumerable<Post> GetPosts(GetPostQuery query, CancellationToken cancellationToken);
+    Task<Option<PagedPosts>> GetPosts(GetPostQuery query, CancellationToken cancellationToken);
 }
