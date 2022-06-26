@@ -11,6 +11,7 @@ using Marten;
 using Marten.Linq;
 using Marten.Linq.Fields;
 using Marten.Linq.Parsing;
+using Marten.Pagination;
 
 using static LanguageExt.Prelude;
 
@@ -47,9 +48,7 @@ internal class MartenPostReader : IPostsReader
             q = q.Where(x => x.Tags!.Contains(query.Tag));
         }
         
-        var skipCount = (query.Page - 1) * query.PageSize;
-        var result = await q.OrderByDescending(x => x.CreatedAt).Skip(skipCount).Take(query.PageSize).ToListAsync(token: cancellationToken);
-        
+        var result = await q.OrderByDescending(x => x.CreatedAt).ToPagedListAsync(pageNumber: query.Page, pageSize: query.PageSize, cancellationToken);
         foreach (var post in result)
         {
             yield return post.MapToPost();
