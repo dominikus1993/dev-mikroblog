@@ -10,6 +10,7 @@ using LanguageExt;
 namespace DevMikroblog.Modules.Posts.Domain.Repositories;
 
 public record GetPostQuery(int Page, int PageSize, string? Tag = null, AuthorId? AuthorId = null);
+public record PagedPosts(IReadOnlyList<Post> Posts, long TotalPages, long TotalPostsQuantity);
 
 public interface IPostsReader
 {

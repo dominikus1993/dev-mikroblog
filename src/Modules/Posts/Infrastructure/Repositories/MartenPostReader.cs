@@ -17,8 +17,6 @@ using static LanguageExt.Prelude;
 
 namespace DevMikroblog.Modules.Posts.Infrastructure.Repositories;
 
-public record PagedPosts(IReadOnlyList<Post> Posts, long TotalPages, long TotalPostsQuantity);
-
 internal class MartenPostReader : IPostsReader
 {
     private readonly IDocumentStore _store;
