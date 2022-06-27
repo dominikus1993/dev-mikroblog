@@ -13,9 +13,7 @@ public sealed class PostDto
     public Guid PostId { get; init; }
     public AuthorDto Author { get; init; } = null!;
     public string Content { get; init; }
-    
     public List<string>? Tags { get; init; }
-    
     public int Likes { get; init; }
     
     

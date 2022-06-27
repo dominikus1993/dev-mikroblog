@@ -34,7 +34,7 @@ public static class PostModuleExtensions
     }
 }
 
-public class PostsModule : IModule
+public sealed class PostsModule : IModule
 {
     public static WebApplicationBuilder RegisterModule(WebApplicationBuilder builder)
     {
