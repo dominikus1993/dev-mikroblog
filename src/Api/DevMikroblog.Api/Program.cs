@@ -1,8 +1,8 @@
 using System.Diagnostics;
 using System.Text;
-
 using DevMikroblog.BuildingBlocks.Infrastructure.Logging;
 using DevMikroblog.BuildingBlocks.Infrastructure.Messaging.IoC;
+using DevMikroblog.BuildingBlocks.Infrastructure.Modules;
 using DevMikroblog.Modules.Posts.Handlers;
 
 using HealthChecks.UI.Client;
@@ -17,7 +17,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.UseLogging("DevMikroblog.Api");
 // Add services to the container.
-
+builder.AddModule<PostsModule>();
 builder.Services.AddControllers();
 builder.Services.AddRabbitMq(builder.Configuration); 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -40,7 +40,7 @@ builder.Services.AddAuthentication(options =>
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSection["SecretKey"])),
     };
 });
-PostsModule.RegisterModule(builder);
+
 
 builder.Services.AddHealthChecks().AddRabbitMq().AddPostsModuleHealthChecks(builder.Configuration);
 
@@ -58,7 +58,7 @@ app.UseRequestLogging();
 app.UseAuthentication();
 app.UseAuthorization();
 
-PostsModule.MapEndpoints(app);
+app.MapModule<PostsModule>();
 
 app.MapHealthChecks("/health",
     new HealthCheckOptions() { Predicate = _ => true, ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse });
