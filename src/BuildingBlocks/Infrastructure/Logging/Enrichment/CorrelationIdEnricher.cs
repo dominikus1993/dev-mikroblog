@@ -42,10 +42,10 @@ internal class CorrelationIdEnricher : ILogEventEnricher
 
 internal class CorrelationIdHeaderEnricher : ILogEventEnricher
 {
-    private const string CorrelationIdPropertyName = "CorrelationId";
+    public const string CorrelationIdPropertyName = "CorrelationId";
     private readonly string _headerKey;
     private readonly IHttpContextAccessor _contextAccessor;
-    private const string HeaderKey = "x-correlation-id";
+    internal const string HeaderKey = "x-correlation-id";
 
     public CorrelationIdHeaderEnricher() : this(HeaderKey)
     {
@@ -73,7 +73,7 @@ internal class CorrelationIdHeaderEnricher : ILogEventEnricher
         logEvent.AddOrUpdateProperty(correlationIdProperty);
     }
 
-    private static string? FirstOrDefault(StringValues values)
+    public static string? FirstOrDefault(StringValues values)
     {
         if (values.Count > 0)
         {

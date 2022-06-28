@@ -1,6 +1,8 @@
 using System.Security.Claims;
 using System.Security.Principal;
 
+using DevMikroblog.BuildingBlocks.Infrastructure.Logging.Enrichment;
+
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 
@@ -67,11 +69,22 @@ public static class RequestLogging
                 diagnosticContext.Set("UserId", userId.Value);
             }
         }
-
+        
+        AddCorrelationIdIfExists(httpContext, diagnosticContext);
+        
         var endpoint = httpContext.GetEndpoint();
         if (endpoint != null)
         {
             diagnosticContext.Set("EndpointName", endpoint.DisplayName);
+        }
+    }
+    
+    private static void AddCorrelationIdIfExists(HttpContext httpContext, IDiagnosticContext context)
+    {
+        if (httpContext.Request.Headers.TryGetValue(CorrelationIdHeaderEnricher.HeaderKey, out var values))
+        {
+            var header = CorrelationIdHeaderEnricher.FirstOrDefault(values);
+            context.Set(CorrelationIdHeaderEnricher.CorrelationIdPropertyName, header);
         }
     }
 

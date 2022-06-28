@@ -34,6 +34,8 @@ services:
       - ACCEPT_EULA=Y
     ports:
       - 5341:80
+    depends_on:
+      - "rabbitmq"
       
   rabbitmq:
     image: rabbitmq:3.10-management-alpine
@@ -46,5 +48,7 @@ services:
     ports:
       - "6831:6831/udp"
       - "16686:16686"
+    depends_on:
+      - "rabbitmq"
 volumes:
   postgres-data: null
