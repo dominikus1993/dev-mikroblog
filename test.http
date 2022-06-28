@@ -7,6 +7,7 @@ POST http://localhost:{{port}}/post
 Content-Type: application/json
 Authorization: Bearer {{jwt_key}}
 Accept: application/json
+x-correlation-id: eee0d3b7-1fb6-4b1a-8c78-b827b0b6465b
 
 {
   "content": "xDDD #fsharp"
