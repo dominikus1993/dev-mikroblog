@@ -85,6 +85,8 @@ public static class Extensionss
                 .Enrich.WithProperty("ApplicationName", appName)
                 .Enrich.WithClientAgent()
                 .Enrich.WithCustomerId()
+                .Enrich.WithCorrelationId()
+                .Enrich.WithCorrelationIdHeader()
                 .Enrich.WithExceptionDetails();
 
             foreach ((string name, string lvl) in BindOverride(serilogOptions.Override))
