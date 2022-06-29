@@ -27,7 +27,7 @@ public class RabbitMqPublisherConfig<T> where T : notnull, IMessage
     public string MessageName { get; } = T.Name;
 }
 
-public readonly record struct RabbitMqMessage(ReadOnlyMemory<byte> Body, string Exchange, string Topic, string MessageName, string? CorrelationId);
+public readonly record struct RabbitMqMessage(ReadOnlyMemory<byte> Body, string Exchange, string Topic, string MessageName);
 
 internal class RabbitMqMessagePublisher<T> : IMessagePublisher<T> where T : notnull, IMessage
 {
@@ -35,13 +35,11 @@ internal class RabbitMqMessagePublisher<T> : IMessagePublisher<T> where T : notn
     private readonly RabbitMqPublisherConfig<T> _config;
     private readonly ChannelWriter<RabbitMqMessage> _stream;
     private readonly ILogger<RabbitMqMessagePublisher<T>> _logger;
-    private readonly IHttpContextAccessor _contextAccessor;
 
-    public RabbitMqMessagePublisher(RabbitMqPublisherConfig<T> config, Channel<RabbitMqMessage> stream, ILogger<RabbitMqMessagePublisher<T>> logger, IHttpContextAccessor contextAccessor)
+    public RabbitMqMessagePublisher(RabbitMqPublisherConfig<T> config, Channel<RabbitMqMessage> stream, ILogger<RabbitMqMessagePublisher<T>> logger)
     {
         _config = config;
         _logger = logger;
-        _contextAccessor = contextAccessor;
         _stream = stream.Writer;
     }
 
@@ -50,7 +48,7 @@ internal class RabbitMqMessagePublisher<T> : IMessagePublisher<T> where T : notn
         ArgumentNullException.ThrowIfNull(message, nameof(message));
         _logger.LogPublishRabbitMqMessage(T.Name, _config.Exchange, _config.Topic);
         var json = JsonSerializer.SerializeToUtf8Bytes(message, _options);
-        await _stream.WriteAsync(new RabbitMqMessage(json, _config.Exchange, _config.Topic, T.Name, _contextAccessor.HttpContext?.TraceIdentifier), cancellationToken);
+        await _stream.WriteAsync(new RabbitMqMessage(json, _config.Exchange, _config.Topic, T.Name), cancellationToken);
         return Unit.Default;
     }
 }

@@ -1,5 +1,7 @@
 using System.Diagnostics;
 using System.Text;
+
+using DevMikroblog.BuildingBlocks.Infrastructure.AspNetCore;
 using DevMikroblog.BuildingBlocks.Infrastructure.Logging;
 using DevMikroblog.BuildingBlocks.Infrastructure.Messaging.IoC;
 using DevMikroblog.BuildingBlocks.Infrastructure.Modules;
@@ -12,8 +14,17 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.IdentityModel.Tokens;
+
+using Npgsql;
+
 Activity.DefaultIdFormat = ActivityIdFormat.W3C;
 Activity.ForceDefaultIdFormat = true;
+AppContext.SetSwitch( "System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
+
+var otelConfig = new OpenTelemetryConfiguration()
+{
+    ServiceName = "devmikroblog", ServiceVersion = "v1.0.0", OpenTelemetryEnabled = true
+};
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,7 +32,7 @@ builder.UseLogging("DevMikroblog.Api");
 // Add services to the container.
 builder.AddModule<PostsModule>();
 builder.Services.AddControllers();
-builder.Services.AddRabbitMq(builder.Configuration); 
+builder.Services.AddRabbitMq(builder.Configuration);
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -43,6 +54,10 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
+builder.AddOpenTelemetryTracing(otelConfig, builder =>
+{
+    builder.AddNpgsql();
+});
 
 builder.Services.AddHealthChecks().AddRabbitMq().AddPostsModuleHealthChecks(builder.Configuration);
 

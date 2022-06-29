@@ -20,3 +20,8 @@ Microsoft.Extensions.Hosting.Abstractions
 RabbitMQ.Client
 Microsoft.Tye.Extensions.Configuration
 AspNetCore.HealthChecks.Rabbitmq
+
+OpenTelemetry.Extensions.Hosting
+OpenTelemetry.Instrumentation.AspNetCore
+OpenTelemetry.Exporter.OpenTelemetryProtocol.Logs
+OpenTelemetry.Exporter.OpenTelemetryProtocol

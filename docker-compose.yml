@@ -10,12 +10,11 @@ services:
       - ConnectionStrings__PostsDb=Host=db;Port=5432;User Id=postgres;Password=postgres;Database=postgres;
       - Seq__Url=http://seq:5341
       - ASPNETCORE_ENVIRONMENT=Development
+      - OTEL_COLLECTOR_URL=http://otel-collector:4317
     depends_on:
       - "db"
       - "seq"
       - "rabbitmq"
-
-
   db:
     image: postgres:14.1
     restart: unless-stopped
@@ -50,5 +49,27 @@ services:
       - "16686:16686"
     depends_on:
       - "rabbitmq"
+  zipkin:
+    image: openzipkin/zipkin
+    container_name: zipkin
+    ports:
+      - 9411:9411
+
+  otel-collector:
+    image: otel/opentelemetry-collector:0.48.0
+    command: ["--config=/etc/otel-collector-config.yml"]
+    volumes:
+      - ./otel-collector-config.yml:/etc/otel-collector-config.yml
+    ports:
+      - "1888:1888"   # pprof extension
+      - "8888:8888"   # Prometheus metrics exposed by the collector
+      - "8889:8889"   # Prometheus exporter metrics
+      - "13133:13133" # health_check extension
+      - "9411"   # Zipkin receiver
+      - "55679:55679" # zpages extension
+      - "4317:4317"
+    depends_on:
+      - jaeger
+      - zipkin
 volumes:
   postgres-data: null
