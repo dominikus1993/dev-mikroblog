@@ -16,7 +16,7 @@ namespace DevMikroblog.BuildingBlocks.Infrastructure.Messaging.IoC;
 
 public static class ServicesCollectionExtensions
 {
-    internal const string RabbitMqOpenTelemetrySourceName = $"{nameof(RabbitMqOpenTelemetrySourceName)}.Source";
+    internal const string RabbitMqOpenTelemetrySourceName = $"{nameof(DevMikroblog)}.Rabbitmq";
     
     public static IServiceCollection AddRabbitMq(this IServiceCollection services, IConfiguration configuration)
     {

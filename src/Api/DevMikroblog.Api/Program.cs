@@ -45,8 +45,8 @@ builder.Services.AddAuthentication(options =>
     var jwtSection = builder.Configuration.GetSection("Jwt");
     config.IncludeErrorDetails = true;
     config.TokenValidationParameters = new TokenValidationParameters()
-    { 
-        ValidateAudience = true, 
+    {
+        ValidateAudience = true,
         ValidateIssuer = true,
         ValidIssuer = jwtSection["Issuer"],
         ValidAudience = jwtSection["Audience"],
@@ -54,10 +54,10 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
-builder.AddOpenTelemetryTracing(otelConfig, builder =>
+builder.AddOpenTelemetryTracing(otelConfig, b =>
 {
-    builder.AddNpgsql();
-    builder.AddRabbitMqTelemetry();
+    b.AddNpgsql();
+    b.AddRabbitMqTelemetry();
 });
 
 builder.Services.AddHealthChecks().AddRabbitMq().AddPostsModuleHealthChecks(builder.Configuration);
