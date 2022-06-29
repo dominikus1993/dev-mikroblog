@@ -8,16 +8,16 @@ using Serilog.Events;
 
 namespace DevMikroblog.BuildingBlocks.Infrastructure.Logging.Enrichment;
 
-internal class CustomerIdEnricher : ILogEventEnricher
+internal class UserIdEnricher : ILogEventEnricher
 {
     private const string UserIdPropertyName = "UserId";
     private readonly IHttpContextAccessor _contextAccessor;
 
-    public CustomerIdEnricher() : this(new HttpContextAccessor())
+    public UserIdEnricher() : this(new HttpContextAccessor())
     {
     }
 
-    internal CustomerIdEnricher(IHttpContextAccessor contextAccessor)
+    internal UserIdEnricher(IHttpContextAccessor contextAccessor)
     {
         _contextAccessor = contextAccessor;
     }

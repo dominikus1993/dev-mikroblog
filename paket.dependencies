@@ -14,6 +14,7 @@ nuget Serilog.Enrichers.Process
 nuget Serilog.Enrichers.Thread
 nuget Serilog.Exceptions
 nuget Serilog.Extensions.Hosting
+nuget Serilog.Enrichers.Span
 nuget Serilog.Sinks.Async
 nuget Serilog.Sinks.Console
 nuget Serilog.Sinks.Trace

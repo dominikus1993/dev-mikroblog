@@ -10,6 +10,7 @@ Serilog.Sinks.Console
 Serilog.Sinks.Trace
 Serilog.Formatting.Elasticsearch
 Serilog.Sinks.Seq
+Serilog.Enrichers.Span
 Roslynator.Analyzers
 SonarAnalyzer.CSharp
 AsyncFixer

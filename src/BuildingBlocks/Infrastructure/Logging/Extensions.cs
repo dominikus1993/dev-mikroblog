@@ -10,6 +10,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 
 using Serilog;
+using Serilog.Enrichers.Span;
 using Serilog.Events;
 using Serilog.Exceptions;
 using Serilog.Formatting.Compact;
@@ -85,8 +86,7 @@ public static class Extensionss
                 .Enrich.WithProperty("ApplicationName", appName)
                 .Enrich.WithClientAgent()
                 .Enrich.WithCustomerId()
-                .Enrich.WithCorrelationId()
-                .Enrich.WithCorrelationIdHeader()
+                .Enrich.WithSpan()
                 .Enrich.WithExceptionDetails();
 
             foreach ((string name, string lvl) in BindOverride(serilogOptions.Override))

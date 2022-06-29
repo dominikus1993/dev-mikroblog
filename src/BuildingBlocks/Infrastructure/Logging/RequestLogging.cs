@@ -70,21 +70,10 @@ public static class RequestLogging
             }
         }
         
-        AddCorrelationIdIfExists(httpContext, diagnosticContext);
-        
         var endpoint = httpContext.GetEndpoint();
         if (endpoint != null)
         {
             diagnosticContext.Set("EndpointName", endpoint.DisplayName);
-        }
-    }
-    
-    private static void AddCorrelationIdIfExists(HttpContext httpContext, IDiagnosticContext context)
-    {
-        if (httpContext.Request.Headers.TryGetValue(CorrelationIdHeaderEnricher.HeaderKey, out var values))
-        {
-            var header = CorrelationIdHeaderEnricher.FirstOrDefault(values);
-            context.Set(CorrelationIdHeaderEnricher.CorrelationIdPropertyName, header);
         }
     }
 
@@ -95,7 +84,7 @@ public static class RequestLogging
 
     private static Guid? GetUserId(ClaimsPrincipal user)
     {
-        if (Guid.TryParse(user.FindFirst( ClaimTypes.NameIdentifier)?.Value, out var userId))
+        if (Guid.TryParse(user.FindFirst(ClaimTypes.NameIdentifier)?.Value, out var userId))
         {
             return userId;
         }
