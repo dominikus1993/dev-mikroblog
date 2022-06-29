@@ -16,6 +16,8 @@ namespace DevMikroblog.BuildingBlocks.Infrastructure.Messaging.IoC;
 
 public static class ServicesCollectionExtensions
 {
+    internal const string RabbitMqOpenTelemetrySourceName = $"{nameof(RabbitMqOpenTelemetrySourceName)}.Source";
+    
     public static IServiceCollection AddRabbitMq(this IServiceCollection services, IConfiguration configuration)
     {
         return services.AddRabbitMq(configuration.GetSection("RabbitMq").Get<RabbitMqConfiguration>());
@@ -35,11 +37,7 @@ public static class ServicesCollectionExtensions
         });
         services.AddSingleton<IConnection>(sp => sp.GetService<IConnectionFactory>()!.CreateConnection());
         services.AddScoped<IModel>(sp => sp.GetService<IConnection>()!.CreateModel());
-        var stream = Channel.CreateUnbounded<RabbitMqMessage>();
-        services.AddSingleton(stream);
-        services.AddSingleton(stream.Writer);
-        services.AddSingleton(stream.Reader);
-        services.AddHostedService<RabbitMqPublisher>();
+        services.AddSingleton(sp => new RabbitMqPublishChannel(sp.GetService<IConnection>()!.CreateModel()));
         return services;
     }
     
@@ -58,6 +56,6 @@ public static class ServicesCollectionExtensions
 
     public static TracerProviderBuilder AddRabbitMqTelemetry(this TracerProviderBuilder builder)
     {
-        return builder.AddSource(RabbitMqPublisher.RabbitMqOpenTelemetrySourceName);
+        return builder.AddSource(RabbitMqOpenTelemetrySourceName);
     }
 }

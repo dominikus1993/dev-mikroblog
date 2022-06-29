@@ -45,7 +45,7 @@ builder.Services.AddAuthentication(options =>
     var jwtSection = builder.Configuration.GetSection("Jwt");
     config.IncludeErrorDetails = true;
     config.TokenValidationParameters = new TokenValidationParameters()
-    {
+    { 
         ValidateAudience = true, 
         ValidateIssuer = true,
         ValidIssuer = jwtSection["Issuer"],
