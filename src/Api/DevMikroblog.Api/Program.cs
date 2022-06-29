@@ -36,17 +36,17 @@ builder.Services.AddRabbitMq(builder.Configuration);
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddAuthentication(options =>
+builder.Services.AddAuthentication(options => 
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
     options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-}).AddJwtBearer(config =>
+}).AddJwtBearer(config => 
 {
     var jwtSection = builder.Configuration.GetSection("Jwt");
     config.IncludeErrorDetails = true;
     config.TokenValidationParameters = new TokenValidationParameters()
     {
-        ValidateAudience = true,
+        ValidateAudience = true, 
         ValidateIssuer = true,
         ValidIssuer = jwtSection["Issuer"],
         ValidAudience = jwtSection["Audience"],
@@ -57,6 +57,7 @@ builder.Services.AddAuthentication(options =>
 builder.AddOpenTelemetryTracing(otelConfig, builder =>
 {
     builder.AddNpgsql();
+    builder.AddRabbitMqTelemetry();
 });
 
 builder.Services.AddHealthChecks().AddRabbitMq().AddPostsModuleHealthChecks(builder.Configuration);

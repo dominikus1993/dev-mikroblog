@@ -8,6 +8,8 @@ using DevMikroblog.BuildingBlocks.Infrastructure.Messaging.Publisher;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
+using OpenTelemetry.Trace;
+
 using RabbitMQ.Client;
 
 namespace DevMikroblog.BuildingBlocks.Infrastructure.Messaging.IoC;
@@ -52,5 +54,10 @@ public static class ServicesCollectionExtensions
     public static IServiceCollection AddSubscriber(this IServiceCollection services, IConfiguration configuration)
     {
         return services;
+    }
+
+    public static TracerProviderBuilder AddRabbitMqTelemetry(this TracerProviderBuilder builder)
+    {
+        return builder.AddSource(RabbitMqPublisher.RabbitMqOpenTelemetrySourceName);
     }
 }

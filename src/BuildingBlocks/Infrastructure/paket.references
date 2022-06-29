@@ -15,6 +15,7 @@ Roslynator.Analyzers
 SonarAnalyzer.CSharp
 AsyncFixer
 ClrHeapAllocationAnalyzer
+Scrutor
 LanguageExt.Core
 Microsoft.Extensions.Hosting.Abstractions
 RabbitMQ.Client

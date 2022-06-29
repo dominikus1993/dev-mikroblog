@@ -41,6 +41,7 @@ nuget OpenTelemetry.Instrumentation.AspNetCore prerelease
 nuget OpenTelemetry.Exporter.OpenTelemetryProtocol.Logs prerelease
 nuget OpenTelemetry.Exporter.OpenTelemetryProtocol prerelease
 nuget Npgsql.OpenTelemetry
+nuget Scrutor
 
 nuget AutoFixture
 nuget FluentAssertions

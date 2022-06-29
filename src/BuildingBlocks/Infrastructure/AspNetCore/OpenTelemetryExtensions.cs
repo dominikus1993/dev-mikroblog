@@ -1,5 +1,7 @@
 ﻿using System.Reflection;
 
+using DevMikroblog.BuildingBlocks.Infrastructure.Messaging.Publisher;
+
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
