@@ -1,9 +1,6 @@
-using System.ComponentModel;
 using System.Diagnostics;
 
 using DevMikroblog.BuildingBlocks.Infrastructure.Messaging.IoC;
-
-using Microsoft.AspNetCore.Http;
 
 using OpenTelemetry;
 using OpenTelemetry.Context.Propagation;
@@ -12,15 +9,13 @@ namespace DevMikroblog.BuildingBlocks.Infrastructure.Messaging.Publisher;
 
 using System.Text.Json;
 using System.Threading;
-using System.Threading.Channels;
 using System.Threading.Tasks;
 
-using DevMikroblog.BuildingBlocks.Infrastructure.Messaging.Abstractions;
-using DevMikroblog.BuildingBlocks.Infrastructure.Messaging.Logging;
+using Abstractions;
+using Logging;
 
 using LanguageExt;
 
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
 using RabbitMQ.Client;
@@ -50,7 +45,7 @@ internal class RabbitMqPublishChannel : IDisposable
         }
     }
 }
-internal class RabbitMqMessagePublisher<T> : IMessagePublisher<T> where T : notnull, IMessage
+internal class RabbitMqMessagePublisher<T> : IMessagePublisher<T> where T : class, IMessage
 {
     private static readonly JsonSerializerOptions
         _options = new() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
@@ -84,7 +79,6 @@ internal class RabbitMqMessagePublisher<T> : IMessagePublisher<T> where T : notn
         props.Headers["X-Message-Name"] = T.Name;
         if (activity is not null)
         {
-                
             activity.SetTag("messaging.rabbitmq.routing_key", _config.Topic);
             activity.SetTag("messaging.destination", _config.Exchange);
             activity.SetTag("messaging.system", "rabbitmq");
