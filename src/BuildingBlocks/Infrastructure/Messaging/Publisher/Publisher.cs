@@ -2,6 +2,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 
 using DevMikroblog.BuildingBlocks.Infrastructure.Messaging.IoC;
+using DevMikroblog.BuildingBlocks.Infrastructure.Messaging.OpenTelemetry;
 
 using Microsoft.AspNetCore.Http;
 
@@ -54,7 +55,6 @@ internal class RabbitMqMessagePublisher<T> : IMessagePublisher<T> where T : notn
 {
     private static readonly JsonSerializerOptions
         _options = new() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
-    private static ActivitySource source = new(ServicesCollectionExtensions.RabbitMqOpenTelemetrySourceName, "v1.0.0");
     private readonly RabbitMqPublisherConfig<T> _config;
     private readonly RabbitMqPublishChannel _channel;
     private readonly ILogger<RabbitMqMessagePublisher<T>> _logger;
@@ -77,7 +77,7 @@ internal class RabbitMqMessagePublisher<T> : IMessagePublisher<T> where T : notn
         ArgumentNullException.ThrowIfNull(message, nameof(message));
         _logger.LogPublishRabbitMqMessage(T.Name, _config.Exchange, _config.Topic);
         var json = JsonSerializer.SerializeToUtf8Bytes(message, _options);
-        using var activity = source.StartActivity("rabbitmq", ActivityKind.Internal);
+        using var activity = RabbitMqOpenTelemetry.RabbitMqSource.StartActivity("rabbitmq", ActivityKind.Internal);
         _channel.Model.ExchangeDeclare(exchange: _config.Exchange, type: ExchangeType.Topic);
         var props = _channel.Model.CreateBasicProperties();
         props.Headers = _defaultHeaders;
@@ -92,23 +92,11 @@ internal class RabbitMqMessagePublisher<T> : IMessagePublisher<T> where T : notn
             activity.SetTag("messaging.protocol", "AMQP");
             activity.SetTag("messaging.protocol_version", "0.9.1");
             activity.SetTag("messaging.message_name", T.Name);
-            AddActivityToHeader(activity, props);
+            RabbitMqOpenTelemetry.AddActivityToHeader(activity, props);
         }
         _channel.Model.BasicPublish(exchange: _config.Exchange, routingKey: _config.Topic, basicProperties: props,
             body: json);
         _logger.LogMessagePublished(_config.Exchange, _config.Topic);
         return new ValueTask<Unit>(Unit.Default);
-    }
-    
-    private static void AddActivityToHeader(Activity activity, IBasicProperties props)
-    {
-        var context = new PropagationContext(activity.Context, Baggage.Current);
-        Propagators.DefaultTextMapPropagator.Inject(context, props,(properties, key, value) =>  InjectContextIntoHeader(properties, key, value));
-    }
-
-    private static void InjectContextIntoHeader(IBasicProperties props, string key, string value)
-    {
-        props.Headers ??= new Dictionary<string, object>();
-        props.Headers[key] = value;
     }
 }

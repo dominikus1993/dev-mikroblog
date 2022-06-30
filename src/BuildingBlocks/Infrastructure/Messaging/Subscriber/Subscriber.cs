@@ -1,7 +1,9 @@
+using System.Diagnostics;
 using System.Text.Json;
 
 using DevMikroblog.BuildingBlocks.Infrastructure.Messaging.Abstractions;
 using DevMikroblog.BuildingBlocks.Infrastructure.Messaging.Logging;
+using DevMikroblog.BuildingBlocks.Infrastructure.Messaging.OpenTelemetry;
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -50,10 +52,24 @@ internal class RabbitMqSubscriber<T> : BackgroundService where T : notnull, IMes
     private async Task OnMessageReceived(object sender, BasicDeliverEventArgs ea)
     {
         _logger.LogReceivedRabbitMqMessage(T.Name, _config.Exchange, _config.Queue, _config.Topic);
+        using var activity = RabbitMqOpenTelemetry.RabbitMqSource.StartActivity(ActivityKind.Consumer,
+            RabbitMqOpenTelemetry.GetHeaderFromProps(ea.BasicProperties).ActivityContext);
+        if (activity is not null)
+        {
+            activity.SetTag("messaging.rabbitmq.routing_key", _config.Topic);
+            activity.SetTag("messaging.exchange", _config.Exchange);
+            activity.SetTag("messaging.destination", _config.Queue);
+            activity.SetTag("messaging.system", "rabbitmq");
+            activity.SetTag("messaging.destination_kind", "queue");
+            activity.SetTag("messaging.protocol", "AMQP");
+            activity.SetTag("messaging.protocol_version", "0.9.1");
+            activity.SetTag("messaging.message_name", T.Name);
+        }
         var message = JsonSerializer.Deserialize<T>(ea.Body.Span, _options);
         if (message is null)
         {
             _logger.LogRabbitmqMessageIsNull(ea.Exchange, ea.RoutingKey);
+            activity?.AddEvent(new ActivityEvent("message is null"));
             return;
         }
         var messageHandler = _serviceProvider.GetService<IMessageHandler<T>>()!;

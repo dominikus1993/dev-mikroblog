@@ -3,6 +3,7 @@ using System.Threading.Channels;
 
 using DevMikroblog.BuildingBlocks.Infrastructure.Messaging.Abstractions;
 using DevMikroblog.BuildingBlocks.Infrastructure.Messaging.Configuration;
+using DevMikroblog.BuildingBlocks.Infrastructure.Messaging.OpenTelemetry;
 using DevMikroblog.BuildingBlocks.Infrastructure.Messaging.Publisher;
 
 using Microsoft.Extensions.Configuration;
@@ -16,8 +17,7 @@ namespace DevMikroblog.BuildingBlocks.Infrastructure.Messaging.IoC;
 
 public static class ServicesCollectionExtensions
 {
-    internal const string RabbitMqOpenTelemetrySourceName = $"{nameof(DevMikroblog)}.Rabbitmq";
-    
+
     public static IServiceCollection AddRabbitMq(this IServiceCollection services, IConfiguration configuration)
     {
         return services.AddRabbitMq(configuration.GetSection("RabbitMq").Get<RabbitMqConfiguration>());
@@ -57,6 +57,6 @@ public static class ServicesCollectionExtensions
 
     public static TracerProviderBuilder AddRabbitMqTelemetry(this TracerProviderBuilder builder)
     {
-        return builder.AddSource(RabbitMqOpenTelemetrySourceName);
+        return builder.AddSource(RabbitMqOpenTelemetry.RabbitMqOpenTelemetrySourceName);
     }
 }
