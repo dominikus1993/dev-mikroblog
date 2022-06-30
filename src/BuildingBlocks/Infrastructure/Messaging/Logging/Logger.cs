@@ -15,4 +15,7 @@ internal static partial class RabbitMqLogger
     
     [LoggerMessage(EventId = 3, Level = LogLevel.Debug, Message = "Received RabbitMq message of {Name} to {Exchange}/{Queue} and {Topic}")]
     public static partial void LogReceivedRabbitMqMessage(this ILogger logger, string name, string exchange, string queue, string topic);
+    
+    [LoggerMessage(EventId = 4, Level = LogLevel.Error, Message = "Error when processing rabbitmq message of {Name} to {Exchange}/{Queue} and {Topic}")]
+    public static partial void LogProcessingMessageError(this ILogger logger, Exception exc, string name, string exchange, string queue, string topic);
 }

@@ -9,6 +9,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
+using OpenTelemetry.Trace;
+
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 
@@ -72,8 +74,17 @@ internal class RabbitMqSubscriber<T> : BackgroundService where T : notnull, IMes
             activity?.AddEvent(new ActivityEvent("message is null"));
             return;
         }
-        var messageHandler = _serviceProvider.GetService<IMessageHandler<T>>()!;
-        await messageHandler!.Handle(message);
+        try
+        {
+            var messageHandler = _serviceProvider.GetService<IMessageHandler<T>>()!;
+            await messageHandler!.Handle(message);
+        }
+        catch (Exception e)
+        {
+            activity?.RecordException(e);
+            _logger.LogProcessingMessageError(e, T.Name, _config.Exchange, _config.Queue, _config.Topic);
+        }
+
     }
 
     public override void Dispose()

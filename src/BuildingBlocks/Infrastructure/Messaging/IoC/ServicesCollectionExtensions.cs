@@ -5,6 +5,7 @@ using DevMikroblog.BuildingBlocks.Infrastructure.Messaging.Abstractions;
 using DevMikroblog.BuildingBlocks.Infrastructure.Messaging.Configuration;
 using DevMikroblog.BuildingBlocks.Infrastructure.Messaging.OpenTelemetry;
 using DevMikroblog.BuildingBlocks.Infrastructure.Messaging.Publisher;
+using DevMikroblog.BuildingBlocks.Infrastructure.Messaging.Subscriber;
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -15,9 +16,11 @@ using RabbitMQ.Client;
 
 namespace DevMikroblog.BuildingBlocks.Infrastructure.Messaging.IoC;
 
+public record RabbitMqSubscription(string Exchange, string Queue, string Topic = "#");
+public record RabbitMqPublishing(string Exchange, string Queue, string Topic = "#");
+
 public static class ServicesCollectionExtensions
 {
-
     public static IServiceCollection AddRabbitMq(this IServiceCollection services, IConfiguration configuration)
     {
         return services.AddRabbitMq(configuration.GetSection("RabbitMq").Get<RabbitMqConfiguration>());
@@ -50,8 +53,12 @@ public static class ServicesCollectionExtensions
         return services;
     }
     
-    public static IServiceCollection AddSubscriber(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddSubscriber<TMessage, THandler>(this IServiceCollection services, RabbitMqSubscription subscription) where TMessage : notnull, IMessage where THandler: class, IMessageHandler<TMessage>
     {
+        var config = new RabbtMqSubscriptionConfig<TMessage> { Exchange = subscription.Exchange, Topic = subscription.Topic, Queue = subscription.Queue};
+        services.AddSingleton(config);
+        services.AddTransient<IMessageHandler<TMessage>, THandler>();
+        services.AddHostedService<RabbitMqSubscriber<TMessage>>();
         return services;
     }
 

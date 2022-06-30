@@ -1,10 +1,12 @@
 using System.Diagnostics;
 using System.Text;
 
+using DevMikroblog.Api.Handlers;
 using DevMikroblog.BuildingBlocks.Infrastructure.AspNetCore;
 using DevMikroblog.BuildingBlocks.Infrastructure.Logging;
 using DevMikroblog.BuildingBlocks.Infrastructure.Messaging.IoC;
 using DevMikroblog.BuildingBlocks.Infrastructure.Modules;
+using DevMikroblog.Modules.Posts.Application.PostCreator.Events;
 using DevMikroblog.Modules.Posts.Handlers;
 
 using HealthChecks.UI.Client;
@@ -33,6 +35,7 @@ builder.UseLogging("DevMikroblog.Api");
 builder.AddModule<PostsModule>();
 builder.Services.AddControllers();
 builder.Services.AddRabbitMq(builder.Configuration);
+builder.Services.AddSubscriber<PostCreated, PostCreatedMessageHandler>(new RabbitMqSubscription("", "", ""));
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
