@@ -1,9 +1,12 @@
 using System.Diagnostics;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 using DevMikroblog.BuildingBlocks.Infrastructure.Messaging.Abstractions;
 using DevMikroblog.BuildingBlocks.Infrastructure.Messaging.Logging;
 using DevMikroblog.BuildingBlocks.Infrastructure.Messaging.OpenTelemetry;
+
+using LanguageExt.Pretty;
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -42,6 +45,7 @@ internal class RabbitMqSubscriber<T> : BackgroundService where T : notnull, IMes
 
     protected override Task ExecuteAsync(CancellationToken stoppingToken)
     {
+        _logger.LogConsumerStart(T.Name, _config.Exchange, _config.Topic, _config.Queue);
         _channel.ExchangeDeclare(exchange: _config.Exchange, type: ExchangeType.Topic);
         _channel.QueueDeclare(queue: _config.Queue, durable: true, exclusive: false, autoDelete: false, arguments: null);
         _channel.QueueBind(queue: _config.Queue, exchange: _config.Exchange, routingKey: _config.Topic);

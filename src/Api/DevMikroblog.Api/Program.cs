@@ -31,18 +31,18 @@ var otelConfig = new OpenTelemetryConfiguration()
 var builder = WebApplication.CreateBuilder(args);
 
 builder.UseLogging("DevMikroblog.Api");
-// Add services to the container.
+// Add services to the container. 
 builder.AddModule<PostsModule>();
 builder.Services.AddControllers();
 builder.Services.AddRabbitMq(builder.Configuration);
-builder.Services.AddSubscriber<PostCreated, PostCreatedMessageHandler>(new RabbitMqSubscription("", "", ""));
+builder.Services.AddSubscriber<PostCreated, PostCreatedMessageHandler>("posts", "created");
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen();  
 builder.Services.AddAuthentication(options => 
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme; 
 }).AddJwtBearer(config => 
 {
     var jwtSection = builder.Configuration.GetSection("Jwt");

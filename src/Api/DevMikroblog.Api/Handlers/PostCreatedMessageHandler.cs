@@ -16,7 +16,7 @@ public class PostCreatedMessageHandler : IMessageHandler<PostCreated>
 
     public Task<Unit> Handle(PostCreated message, CancellationToken cancellationToken = default)
     {
-        _logger.LogInformation("XDDD");
+        _logger.LogInformation("XDDD 21 {Content}", message.Content);
         return Task.FromResult(Unit.Default);
     }
 }

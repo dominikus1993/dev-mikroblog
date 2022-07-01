@@ -16,9 +16,6 @@ using RabbitMQ.Client;
 
 namespace DevMikroblog.BuildingBlocks.Infrastructure.Messaging.IoC;
 
-public record RabbitMqSubscription(string Exchange, string Queue, string Topic = "#");
-public record RabbitMqPublishing(string Exchange, string Queue, string Topic = "#");
-
 public static class ServicesCollectionExtensions
 {
     public static IServiceCollection AddRabbitMq(this IServiceCollection services, IConfiguration configuration)
@@ -37,7 +34,8 @@ public static class ServicesCollectionExtensions
         ArgumentNullException.ThrowIfNull(configuration.AmqpConnection, $"{nameof(configuration)}.{nameof(configuration.AmqpConnection)}");
         services.AddSingleton<IConnectionFactory>(new ConnectionFactory()
         {
-            Uri = new Uri(configuration.AmqpConnection)
+            Uri = new Uri(configuration.AmqpConnection),
+            DispatchConsumersAsync = true
         });
         services.AddSingleton<IConnection>(sp => sp.GetService<IConnectionFactory>()!.CreateConnection());
         services.AddScoped<IModel>(sp => sp.GetService<IConnection>()!.CreateModel());
@@ -53,9 +51,10 @@ public static class ServicesCollectionExtensions
         return services;
     }
     
-    public static IServiceCollection AddSubscriber<TMessage, THandler>(this IServiceCollection services, RabbitMqSubscription subscription) where TMessage : notnull, IMessage where THandler: class, IMessageHandler<TMessage>
+    public static IServiceCollection AddSubscriber<TMessage, THandler>(this IServiceCollection services, string exchange, string topic = "#", string? queuename = null) where TMessage : notnull, IMessage where THandler: class, IMessageHandler<TMessage>
     {
-        var config = new RabbtMqSubscriptionConfig<TMessage> { Exchange = subscription.Exchange, Topic = subscription.Topic, Queue = subscription.Queue};
+        queuename ??= $"{exchange}.{typeof(TMessage).FullName}";
+        var config = new RabbtMqSubscriptionConfig<TMessage> { Exchange = exchange, Topic = topic, Queue = queuename};
         services.AddSingleton(config);
         services.AddTransient<IMessageHandler<TMessage>, THandler>();
         services.AddHostedService<RabbitMqSubscriber<TMessage>>();
