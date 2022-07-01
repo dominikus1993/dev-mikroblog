@@ -58,7 +58,7 @@ internal class RabbitMqSubscriber<T> : BackgroundService where T : notnull, IMes
     private async Task OnMessageReceived(object sender, BasicDeliverEventArgs ea)
     {
         _logger.LogReceivedRabbitMqMessage(T.Name, _config.Exchange, _config.Queue, _config.Topic);
-        using var activity = RabbitMqOpenTelemetry.RabbitMqSource.StartActivity(ActivityKind.Consumer,
+        using var activity = RabbitMqOpenTelemetry.RabbitMqSource.StartActivity(name: "rabbitmq.consumer", ActivityKind.Consumer,
             RabbitMqOpenTelemetry.GetHeaderFromProps(ea.BasicProperties).ActivityContext);
         if (activity is not null)
         {

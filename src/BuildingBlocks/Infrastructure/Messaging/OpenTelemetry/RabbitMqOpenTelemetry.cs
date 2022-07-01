@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Text.Json;
 
 using DevMikroblog.BuildingBlocks.Infrastructure.Messaging.IoC;
 
@@ -29,20 +30,26 @@ internal static class RabbitMqOpenTelemetry
 
     private static void InjectContextIntoHeader(IBasicProperties props, string key, string value)
     {
+        Console.WriteLine("inject" + key + " " + value);
         props.Headers ??= new Dictionary<string, object>();
         props.Headers[key] = value;
     }
     
     private static IEnumerable<string> InjectContextIntoHeader(IBasicProperties props, string key)
     {
+        Console.WriteLine("XXXX " + key);
+        Console.WriteLine(props.Headers.Exists(x => x.Key == key));
         if (props.Headers is null)
         {
             yield break;
         }
-        
-        if(props.Headers.TryGetValue(key, out var value) && value is string header)
+
+        var get = props.Headers.TryGetValue(key, out var value);
+        Console.WriteLine(get  + " and is string " + value is string);
+        if(get && value is string result)
         {
-            yield return header;
+            Console.WriteLine("Result " + result);
+            yield return result;
         }
     }
 }
