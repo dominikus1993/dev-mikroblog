@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using System.Text.Json;
 
 using DevMikroblog.BuildingBlocks.Infrastructure.Messaging.IoC;
@@ -8,6 +9,9 @@ using OpenTelemetry.Context.Propagation;
 
 using RabbitMQ.Client;
 
+using Serilog;
+
+[assembly: InternalsVisibleTo("Infrastructure.Tests")]
 namespace DevMikroblog.BuildingBlocks.Infrastructure.Messaging.OpenTelemetry;
 
 internal static class RabbitMqOpenTelemetry
@@ -25,31 +29,25 @@ internal static class RabbitMqOpenTelemetry
     public static PropagationContext GetHeaderFromProps(IBasicProperties props)
     {
         var context = new PropagationContext();
-        return Propagators.DefaultTextMapPropagator.Extract(context, props, (properties, s) => InjectContextIntoHeader(properties, s));
+        return Propagators.DefaultTextMapPropagator.Extract(context, props, (properties, s) => ExtractContextFromHeader(properties, s));
     }
 
-    private static void InjectContextIntoHeader(IBasicProperties props, string key, string value)
+    public static void InjectContextIntoHeader(IBasicProperties props, string key, string value)
     {
-        Console.WriteLine("inject" + key + " " + value);
         props.Headers ??= new Dictionary<string, object>();
         props.Headers[key] = value;
     }
     
-    private static IEnumerable<string> InjectContextIntoHeader(IBasicProperties props, string key)
+    public static IEnumerable<string> ExtractContextFromHeader(IBasicProperties props, string key)
     {
-        Console.WriteLine("XXXX " + key);
-        Console.WriteLine(props.Headers.Exists(x => x.Key == key));
         if (props.Headers is null)
         {
-            yield break;
+            return Enumerable.Empty<string>();
         }
-
-        var get = props.Headers.TryGetValue(key, out var value);
-        Console.WriteLine(get  + " and is string " + value is string);
-        if(get && value is string result)
+        if(props.Headers.TryGetValue(key, out var value) && value is string result)
         {
-            Console.WriteLine("Result " + result);
-            yield return result;
+            return new List<string>() { result };
         }
+        return Enumerable.Empty<string>();
     }
 }
