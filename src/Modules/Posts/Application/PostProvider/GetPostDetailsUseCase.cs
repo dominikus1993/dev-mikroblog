@@ -8,7 +8,7 @@ namespace DevMikroblog.Modules.Posts.Application.PostProvider;
 
 public record PostDetailsDto(PostDto? ReplyTo, PostDto Post, IReadOnlyList<PostDto>? Replies)
 {
-    public static PostDetailsDto FromPostDetails(PostDetails details)
+    internal static PostDetailsDto FromPostDetails(PostDetails details)
     {
         var replies = details.Replies.Map<IReadOnlyList<PostDto>>(posts => posts.Select(x => PostDto.FromPost(x)).ToList()).IfNoneUnsafe(() => null);
         var replyTo = details.ReplyTo.Map(post => PostDto.FromPost(post)).IfNoneUnsafe(() => null);
