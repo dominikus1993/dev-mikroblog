@@ -2,7 +2,7 @@
 local_resource(
     'build',
     'dotnet publish -c Debug -o out',
-    deps=['src/Api/DevMikroblog.Api'],
+    deps=['src'],
     ignore=['*/bin', '*/obj', '**/bin', '**/obj'],
 )
 

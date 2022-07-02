@@ -1,3 +1,5 @@
+using System.Text;
+
 using DevMikroblog.BuildingBlocks.Infrastructure.Messaging.OpenTelemetry;
 
 using FluentAssertions;
@@ -19,7 +21,7 @@ public class RabbitMqOpenTelemetryTests
         {
             {
                 "traceparent",
-                "30302D39303039666462373133376630353366343833613162666661363837373862382D613438633166363834383338323238372D3031"
+                Encoding.UTF8.GetBytes("30302D39303039666462373133376630353366343833613162666661363837373862382D613438633166363834383338323238372D3031")
             }
         });
         
@@ -58,7 +60,7 @@ public class RabbitMqOpenTelemetryTests
         {
             {
                 "traceparent",
-                "30302D39303039666462373133376630353366343833613162666661363837373862382D613438633166363834383338323238372D3031"
+                Encoding.UTF8.GetBytes("30302D39303039666462373133376630353366343833613162666661363837373862382D613438633166363834383338323238372D3031")
             }
         });
         

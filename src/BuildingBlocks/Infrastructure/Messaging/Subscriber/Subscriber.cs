@@ -60,6 +60,7 @@ internal class RabbitMqSubscriber<T> : BackgroundService where T : notnull, IMes
         _logger.LogReceivedRabbitMqMessage(T.Name, _config.Exchange, _config.Queue, _config.Topic);
         using var activity = RabbitMqOpenTelemetry.RabbitMqSource.StartActivity(name: "rabbitmq.consumer", ActivityKind.Consumer,
             RabbitMqOpenTelemetry.GetHeaderFromProps(ea.BasicProperties).ActivityContext);
+        
         if (activity is not null)
         {
             activity.SetTag("messaging.rabbitmq.routing_key", _config.Topic);

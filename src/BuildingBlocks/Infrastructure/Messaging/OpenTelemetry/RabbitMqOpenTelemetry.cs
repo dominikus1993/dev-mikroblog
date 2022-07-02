@@ -1,8 +1,11 @@
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
+using System.Text;
 using System.Text.Json;
 
 using DevMikroblog.BuildingBlocks.Infrastructure.Messaging.IoC;
+
+using LanguageExt;
 
 using OpenTelemetry;
 using OpenTelemetry.Context.Propagation;
@@ -38,16 +41,18 @@ internal static class RabbitMqOpenTelemetry
         props.Headers[key] = value;
     }
     
-    public static IEnumerable<string> ExtractContextFromHeader(IBasicProperties props, string key)
+    public static string[] ExtractContextFromHeader(IBasicProperties props, string key)
     {
         if (props.Headers is null)
         {
-            return Enumerable.Empty<string>();
+            return Array.Empty<string>();
         }
-        if(props.Headers.TryGetValue(key, out var value) && value is string result)
+        
+        if(props.Headers.TryGetValue(key, out var value) && value is byte[] result)
         {
-            return new List<string>() { result };
+            var res = Encoding.UTF8.GetString(result);
+            return new[] { res };
         }
-        return Enumerable.Empty<string>();
+        return Array.Empty<string>();
     }
 }
