@@ -58,10 +58,10 @@ internal class RabbitMqMessagePublisher<T> : IMessagePublisher<T> where T : notn
     private readonly RabbitMqPublisherConfig<T> _config;
     private readonly RabbitMqPublishChannel _channel;
     private readonly ILogger<RabbitMqMessagePublisher<T>> _logger;
-    private readonly Dictionary<string, object> _defaultHeaders = new()
+    private static readonly Dictionary<string, object> _defaultHeaders = new()
     {
         { "Content-Type", "application/json" },
-        { "X-Message-Type", "DevMikroblog.BuildingBlocks.Infrastructure.Messaging.Abstractions.RabbitmMqMessage" },
+        { "X-Message-Type", typeof(T).FullName },
     };
 
     public RabbitMqMessagePublisher(RabbitMqPublisherConfig<T> config, RabbitMqPublishChannel channel,
@@ -77,11 +77,10 @@ internal class RabbitMqMessagePublisher<T> : IMessagePublisher<T> where T : notn
         ArgumentNullException.ThrowIfNull(message, nameof(message));
         _logger.LogPublishRabbitMqMessage(T.Name, _config.Exchange, _config.Topic);
         var json = JsonSerializer.SerializeToUtf8Bytes(message, _options);
-        using var activity = RabbitMqOpenTelemetry.RabbitMqSource.StartActivity("rabbitmq", ActivityKind.Internal);
+        using var activity = RabbitMqOpenTelemetry.RabbitMqSource.StartActivity("rabbitmq", ActivityKind.Producer);
         _channel.Model.ExchangeDeclare(exchange: _config.Exchange, type: ExchangeType.Topic);
         var props = _channel.Model.CreateBasicProperties();
-        props.Headers = _defaultHeaders;
-        props.Headers["X-Message-Name"] = T.Name;
+        InjectIntoHeader(props);
         if (activity is not null)
         {
                 
@@ -98,5 +97,15 @@ internal class RabbitMqMessagePublisher<T> : IMessagePublisher<T> where T : notn
             body: json);
         _logger.LogMessagePublished(_config.Exchange, _config.Topic);
         return new ValueTask<Unit>(Unit.Default);
+    }
+
+    private void InjectIntoHeader(IBasicProperties properties)
+    {
+        properties.Headers ??= new Dictionary<string, object>();
+        foreach (var header in _defaultHeaders)
+        {
+            properties.Headers.Add(header.Key, header.Value);
+        }
+        properties.Headers["X-Message-Name"] = T.Name;
     }
 }

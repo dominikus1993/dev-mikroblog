@@ -8,7 +8,7 @@ namespace DevMikroblog.Modules.Posts.Application.PostProvider;
 
 public sealed class GetPostByIdUseCase
 {
-    private IPostsReader _postsReader;
+    private readonly IPostsReader _postsReader;
 
     public GetPostByIdUseCase(IPostsReader postsReader)
     {

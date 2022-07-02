@@ -11,6 +11,6 @@ public class PostCreated : IMessage
     public string Content { get; init; } = null!;
     public Guid AuthorId { get; init; }
     
-    public List<string> Tags { get; init; }
+    public List<string>? Tags { get; init; }
     public static string Name => nameof(PostCreated);
 }

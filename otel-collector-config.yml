@@ -28,3 +28,7 @@ service:
       receivers: [otlp, zipkin]
       exporters: [zipkin, jaeger, logging]
       processors: [batch]
+    logs:
+      receivers: [otlp]
+      processors: []
+      exporters: [logging]

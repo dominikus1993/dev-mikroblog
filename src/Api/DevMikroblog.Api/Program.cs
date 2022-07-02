@@ -63,6 +63,13 @@ builder.AddOpenTelemetryTracing(otelConfig, b =>
     b.AddRabbitMqTelemetry();
 });
 
+builder.AddOpenTelemetryLogging(otelConfig, options =>
+{
+    options.IncludeFormattedMessage = true;
+    options.IncludeScopes = true;
+    options.ParseStateValues = true;
+});
+
 builder.Services.AddHealthChecks().AddRabbitMq().AddPostsModuleHealthChecks(builder.Configuration);
 
 var app = builder.Build();
