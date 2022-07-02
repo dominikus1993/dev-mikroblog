@@ -1,8 +1,6 @@
 using System.Diagnostics;
 using System.Text;
 using System.Text.Json.Serialization;
-
-using DevMikroblog.Api.Handlers;
 using DevMikroblog.BuildingBlocks.Infrastructure.AspNetCore;
 using DevMikroblog.BuildingBlocks.Infrastructure.Logging;
 using DevMikroblog.BuildingBlocks.Infrastructure.Messaging.IoC;
@@ -39,7 +37,6 @@ builder.Services.AddControllers().AddJsonOptions(options =>
     options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
 });
 builder.Services.AddRabbitMq(builder.Configuration);
-builder.Services.AddSubscriber<PostCreated, PostCreatedMessageHandler>("posts", "created");
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

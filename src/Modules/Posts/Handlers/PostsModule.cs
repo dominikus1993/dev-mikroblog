@@ -5,6 +5,7 @@ using DevMikroblog.BuildingBlocks.Infrastructure.Messaging.IoC;
 using DevMikroblog.BuildingBlocks.Infrastructure.Modules;
 using DevMikroblog.Modules.Posts.Application.PostCreator;
 using DevMikroblog.Modules.Posts.Application.PostCreator.Events;
+using DevMikroblog.Modules.Posts.Application.PostCreator.Handlers;
 using DevMikroblog.Modules.Posts.Application.PostCreator.Parsers;
 using DevMikroblog.Modules.Posts.Application.PostProvider;
 using DevMikroblog.Modules.Posts.Domain.Model;
@@ -47,6 +48,7 @@ public sealed class PostsModule : IModule
         builder.Services.AddMarten(MartenDocumentStoreConfig.Configure(
             builder.Configuration.GetConnectionString("PostsDb"), builder.Environment.IsDevelopment()));
         builder.Services.AddPublisher<PostCreated>("posts", "created");
+        builder.Services.AddSubscriber<PostCreated, PostCreatedHandler>("posts", "created");
         return builder;
     }
 

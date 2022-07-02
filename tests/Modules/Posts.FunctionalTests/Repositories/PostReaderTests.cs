@@ -45,7 +45,7 @@ public class PostReaderTests : IClassFixture<PostgresSqlSqlFixture>
         var reader = new MartenPostReader(_fixture.Store);
         var writer = new MartenPostWriter(_fixture.Store);
         var post = Post.CreateNew("xDDD", new Author(AuthorId.New(), "jan pawel 2"), null);
-        await writer.CreatePost(post);
+        await writer.Save(post);
         // Act
         var subject = await reader.GetPostDetails(post.Id, CancellationToken.None);
         
@@ -70,9 +70,9 @@ public class PostReaderTests : IClassFixture<PostgresSqlSqlFixture>
         var reader = new MartenPostReader(_fixture.Store);
         var writer = new MartenPostWriter(_fixture.Store);
         var post = Post.CreateNew("xDDD", new Author(AuthorId.New(), "jan pawel 2"), null);
-        await writer.CreatePost(post);
+        await writer.Save(post);
         var post2 = Post.CreateNew("xDDD2", new Author(AuthorId.New(), "jan pawel 2"), null, new ReplyToPost(post.Id));
-        await writer.CreatePost(post2);
+        await writer.Save(post2);
         // Act
         var subject = await reader.GetPostDetails(post.Id, CancellationToken.None);
         
@@ -99,11 +99,11 @@ public class PostReaderTests : IClassFixture<PostgresSqlSqlFixture>
         var reader = new MartenPostReader(_fixture.Store);
         var writer = new MartenPostWriter(_fixture.Store);
         var parentPost = Post.CreateNew("xDDD", new Author(AuthorId.New(), "jan pawel 2"), null);
-        await writer.CreatePost(parentPost);      
+        await writer.Save(parentPost);      
         var post = Post.CreateNew("xDDD", new Author(AuthorId.New(), "jan pawel 2"), null, new ReplyToPost(parentPost.Id));
-        await writer.CreatePost(post);
+        await writer.Save(post);
         var post2 = Post.CreateNew("xDDD2", new Author(AuthorId.New(), "jan pawel 2"), null, new ReplyToPost(post.Id));
-        await writer.CreatePost(post2);
+        await writer.Save(post2);
         // Act
         var subject = await reader.GetPostDetails(post.Id, CancellationToken.None);
         
@@ -135,8 +135,8 @@ public class PostReaderTests : IClassFixture<PostgresSqlSqlFixture>
         var author = new Author(AuthorId.New(), "jan pawel 2");
         var post = Post.CreateNew("xDDD", author, None);
         var post2 = Post.CreateNew("xDDD", author, None);
-        await writer.CreatePost(post);
-        await writer.CreatePost(post2);
+        await writer.Save(post);
+        await writer.Save(post2);
         // Act
         var subject = await reader.GetPosts(new GetPostQuery(1, 12), CancellationToken.None);
         
@@ -161,8 +161,8 @@ public class PostReaderTests : IClassFixture<PostgresSqlSqlFixture>
         var author = new Author(AuthorId.New(), "jan pawel 2");
         var post = Post.CreateNew("xDDD", author, None);
         var post2 = Post.CreateNew("xDDD", author, None);
-        await writer.CreatePost(post);
-        await writer.CreatePost(post2);
+        await writer.Save(post);
+        await writer.Save(post2);
         // Act
         var subject = await reader.GetPosts(new GetPostQuery(1, 1), CancellationToken.None);
         
@@ -213,8 +213,8 @@ public class PostReaderTests : IClassFixture<PostgresSqlSqlFixture>
         var author = new Author(AuthorId.New(), "jan pawel 2");
         var post = Post.CreateNew("xDDD", author, new Tag[]{ new Tag("fsharp")});
         var post2 = Post.CreateNew("xDDD", author, new Tag[]{ new Tag("fsharp")} );
-        await writer.CreatePost(post);
-        await writer.CreatePost(post2);
+        await writer.Save(post);
+        await writer.Save(post2);
         // Act
         var subject = await reader.GetPosts(new GetPostQuery(1, 12, "fsharp"), CancellationToken.None);
         
@@ -239,8 +239,8 @@ public class PostReaderTests : IClassFixture<PostgresSqlSqlFixture>
         var author = new Author(AuthorId.New(), "jan pawel 2");
         var post = Post.CreateNew("xDDD", author, new Tag[]{ new Tag("fsharp")});
         var post2 = Post.CreateNew("xDDD", author, new Tag[]{ new Tag("csharp")} );
-        await writer.CreatePost(post);
-        await writer.CreatePost(post2);
+        await writer.Save(post);
+        await writer.Save(post2);
         // Act
         var subject = await reader.GetPosts(new GetPostQuery(1, 12, "fsharp"), CancellationToken.None);
         
@@ -266,8 +266,8 @@ public class PostReaderTests : IClassFixture<PostgresSqlSqlFixture>
         var author2 = new Author(AuthorId.New(), "testoviron");
         var post = Post.CreateNew("xDDD", author, new Tag[]{ new Tag("fsharp")});
         var post2 = Post.CreateNew("xDDD", author2, new Tag[]{ new Tag("csharp")} );
-        await writer.CreatePost(post);
-        await writer.CreatePost(post2);
+        await writer.Save(post);
+        await writer.Save(post2);
         // Act
         var subject = await reader.GetPosts(new GetPostQuery(1, 12, AuthorId: author2.Id), CancellationToken.None);
         
@@ -293,8 +293,8 @@ public class PostReaderTests : IClassFixture<PostgresSqlSqlFixture>
         var author2 = new Author(AuthorId.New(), "testoviron");
         var post = Post.CreateNew("xDDD", author, new Tag[]{ new Tag("fsharp")});
         var post2 = Post.CreateNew("xDDD", author2, new Tag[]{ new Tag("csharp")} );
-        await writer.CreatePost(post);
-        await writer.CreatePost(post2);
+        await writer.Save(post);
+        await writer.Save(post2);
         // Act
         var subject = await reader.GetPosts(new GetPostQuery(1, 12, AuthorId: AuthorId.New()), CancellationToken.None);
         
@@ -314,8 +314,8 @@ public class PostReaderTests : IClassFixture<PostgresSqlSqlFixture>
         var author2 = new Author(AuthorId.New(), "testoviron");
         var post = Post.CreateNew("xDDD", author, new Tag[]{ new Tag("fsharp")});
         var post2 = Post.CreateNew("xDDD", author2, new Tag[]{ new Tag("csharp")} );
-        await writer.CreatePost(post);
-        await writer.CreatePost(post2);
+        await writer.Save(post);
+        await writer.Save(post2);
         // Act
         var subject = await reader.GetPosts(new GetPostQuery(1, 12, AuthorId: AuthorId.New()), CancellationToken.None);
         

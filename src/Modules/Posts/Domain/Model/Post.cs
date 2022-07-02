@@ -18,6 +18,11 @@ public record Author(AuthorId Id, string? Name);
 public readonly record struct ReplyToPost(PostId Id);
 public record Post(PostId Id, string Content, ReplyToPost? ReplyTo, DateTime CreatedAt, Author Author, Option<IReadOnlyList<Tag>> Tags, int Likes, int RepliesQuantity)
 {
+    public Post IncrementRepliesQuantity()
+    {
+        return this with { RepliesQuantity = RepliesQuantity + 1 };
+    }
+    
     public static Post CreateNew(string content, Author author, Option<IReadOnlyList<Tag>> tags, ReplyToPost? replyTo = null)
     {
         var id = PostId.New();

@@ -22,7 +22,7 @@ Accept: application/json
 x-correlation-id: eee0d3b7-1fb6-4b1a-8c78-b827b0b6465b
 
 {
-  "content": "co xDDDDD #fsharp",
+  "content": "co2 xDDDDD #fsharp",
   "replyToPostId": "5cb85f01-4834-4e1f-ad53-8debf5e099a0"
 }
 

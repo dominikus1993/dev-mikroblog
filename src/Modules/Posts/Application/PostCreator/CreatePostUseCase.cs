@@ -26,7 +26,7 @@ public sealed class CreatePostUseCase
         var tags = _postTagParser.ParseTagsFromPostContent(command.Content);
         var post = Post.CreateNew(command.Content, command.Author, tags, command.ReplyTo);
 
-        await _postWriter.CreatePost(post, cancellationToken);
+        await _postWriter.Save(post, cancellationToken);
 
         await _messagePublisher.Publish(new PostCreated()
         {
