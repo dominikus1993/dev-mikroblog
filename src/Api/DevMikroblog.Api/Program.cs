@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Text;
+using System.Text.Json.Serialization;
 
 using DevMikroblog.Api.Handlers;
 using DevMikroblog.BuildingBlocks.Infrastructure.AspNetCore;
@@ -33,7 +34,10 @@ var builder = WebApplication.CreateBuilder(args);
 builder.UseLogging("DevMikroblog.Api");
 // Add services to the container. 
 builder.AddModule<PostsModule>();
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddJsonOptions(options =>
+{
+    options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+});
 builder.Services.AddRabbitMq(builder.Configuration);
 builder.Services.AddSubscriber<PostCreated, PostCreatedMessageHandler>("posts", "created");
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

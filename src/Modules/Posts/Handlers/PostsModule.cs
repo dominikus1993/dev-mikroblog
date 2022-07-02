@@ -40,7 +40,7 @@ public sealed class PostsModule : IModule
     {
         builder.Services.AddTransient<GetPostsUseCase>();
         builder.Services.AddTransient<CreatePostUseCase>();
-        builder.Services.AddTransient<GetPostByIdUseCase>();
+        builder.Services.AddTransient<GetPostDetailsUseCase>();
         builder.Services.AddTransient<IPostsReader, MartenPostReader>();
         builder.Services.AddTransient<IPostWriter, MartenPostWriter>();
         builder.Services.AddTransient<IPostTagParser, PostTagParser>();
@@ -67,7 +67,7 @@ public sealed class PostsModule : IModule
         return result.Match<IResult>(posts => Results.Ok(posts), () => Results.NotFound());
     }
     
-    private static async Task<IResult> GetPostById(Guid postId, GetPostByIdUseCase useCase,
+    private static async Task<IResult> GetPostById(Guid postId, GetPostDetailsUseCase useCase,
         CancellationToken cancellationToken)
     {
         var result = await useCase.Execute(new PostId(postId), cancellationToken);

@@ -26,11 +26,27 @@ internal class MartenPostReader : IPostsReader
         _store = store;
     }
 
-    public async Task<Option<Post>> GetPostById(PostId postId, CancellationToken cancellationToken = default)
+    public async Task<Option<PostDetails>> GetPostDetails(PostId postId, CancellationToken cancellationToken)
     {
         await using var session = _store.QuerySession();
         var result = await session.LoadAsync<MartenPost>(postId.Value, cancellationToken);
-        return Optional(result).Map(post => post.MapToPost());
+        if (result is null)
+        {
+            return None;
+        }
+
+        var parent = result.ReplyToPostId.HasValue ?
+            await session.LoadAsync<MartenPost>(result.ReplyToPostId.Value, cancellationToken)
+            : null;
+
+        var replies = await session.Query<MartenPost>().Where(x => x.ReplyToPostId == postId.Value).OrderByDescending(x => x.CreatedAt)
+            .ToListAsync(cancellationToken);
+        
+        var postParent = Optional(parent).Map(x => x.MapToPost());
+        var postReplies = Optional(replies).Where(x => x.Count > 0)
+            .Map<IReadOnlyList<Post>>(posts => posts.Select(post => post.MapToPost()).ToList());
+
+        return new PostDetails(postParent, result.MapToPost(), postReplies);
     }
 
     public async Task<Option<PagedPosts>> GetPosts(GetPostQuery query, CancellationToken cancellationToken)

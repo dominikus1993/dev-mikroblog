@@ -16,11 +16,11 @@ public partial struct AuthorId {}
 public readonly record struct Tag(string Value);
 public record Author(AuthorId Id, string? Name);
 public readonly record struct ReplyToPost(PostId Id);
-public record Post(PostId Id, string? Content, ReplyToPost? ReplyTo, DateTime CreatedAt, Author Author, Option<IReadOnlyList<Tag>> Tags, int Likes)
+public record Post(PostId Id, string Content, ReplyToPost? ReplyTo, DateTime CreatedAt, Author Author, Option<IReadOnlyList<Tag>> Tags, int Likes, int RepliesQuantity)
 {
     public static Post CreateNew(string content, Author author, Option<IReadOnlyList<Tag>> tags, ReplyToPost? replyTo = null)
     {
         var id = PostId.New();
-        return new Post(id, content, replyTo, DateTime.UtcNow, author, tags, 0);
+        return new Post(id, content, replyTo, DateTime.UtcNow, author, tags, 0, 0);
     }
 }

@@ -13,6 +13,20 @@ x-correlation-id: eee0d3b7-1fb6-4b1a-8c78-b827b0b6465b
   "content": "xDDD #fsharp"
 }
 
+###
+
+POST http://localhost:{{port}}/post
+Content-Type: application/json
+Authorization: Bearer {{jwt_key}}
+Accept: application/json
+x-correlation-id: eee0d3b7-1fb6-4b1a-8c78-b827b0b6465b
+
+{
+  "content": "co xDDDDD #fsharp",
+  "replyToPostId": "5cb85f01-4834-4e1f-ad53-8debf5e099a0"
+}
+
+
 ### 
 
 POST http://localhost:{{port}}/posts HTTP/1.1
@@ -20,7 +34,19 @@ Accept: application/json
 Content-Type: application/json
 
 {
-  "page": 2,
+  "page": 1,
+  "pageSize": 12,
+  "tag": "fsharp"
+}
+
+###
+
+GET http://localhost:{{port}}/post/6a205a5b-4f4c-44d7-98d2-8299109bc781 HTTP/1.1
+Accept: application/json
+Content-Type: application/json
+
+{
+  "page": 1,
   "pageSize": 12,
   "tag": "fsharp"
 }

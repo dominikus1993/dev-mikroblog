@@ -24,21 +24,21 @@ public class PostReaderTests : IClassFixture<PostgresSqlSqlFixture>
     }
 
     [Fact]
-    public async Task GetPostByIdTestsWhenNotExists()
+    public async Task GetPostDetailsTestsWhenNotExists()
     {
         // Arrange
         await _fixture.Store.Advanced.Clean.CompletelyRemoveAllAsync();
         var reader = new MartenPostReader(_fixture.Store);
         
         // Act
-        var post = await reader.GetPostById(PostId.New());
+        var post = await reader.GetPostDetails(PostId.New(), default);
         
         // Test
         post.IsSome.Should().BeFalse();
     }
     
     [Fact]
-    public async Task GetPostByIdTestsWhenExists()
+    public async Task GetPostDetailsTestsWhenExistsAndHasNoParentsOrReplies()
     {
         // Arrange
         await _fixture.Store.Advanced.Clean.CompletelyRemoveAllAsync();
@@ -47,16 +47,82 @@ public class PostReaderTests : IClassFixture<PostgresSqlSqlFixture>
         var post = Post.CreateNew("xDDD", new Author(AuthorId.New(), "jan pawel 2"), null);
         await writer.CreatePost(post);
         // Act
-        var subject = await reader.GetPostById(post.Id);
+        var subject = await reader.GetPostDetails(post.Id, CancellationToken.None);
         
         // Test
         subject.IsSome.Should().BeTrue();
-        var result = subject.ValueUnsafe();
-        result.Id.Should().Be(post.Id);
-        result.Author.Should().Be(post.Author);
-        result.Likes.Should().Be(0);
-        result.ReplyTo.Should().BeNull();
-        result.Content.Should().Be(post.Content);
+        var details = subject.ValueUnsafe();
+        
+        details.ReplyTo.IsNone.Should().BeTrue();
+        details.Replies.IsNone.Should().BeTrue();
+        details.Post.Id.Should().Be(post.Id);
+        details.Post.Author.Should().Be(post.Author);
+        details.Post.Likes.Should().Be(0);
+        details.Post.ReplyTo.Should().BeNull();
+        details.Post.Content.Should().Be(post.Content);
+    }
+    
+    [Fact]
+    public async Task GetPostDetailsTestsWhenExistsAndHasNoParentsAndHasReplies()
+    {
+        // Arrange
+        await _fixture.Store.Advanced.Clean.CompletelyRemoveAllAsync();
+        var reader = new MartenPostReader(_fixture.Store);
+        var writer = new MartenPostWriter(_fixture.Store);
+        var post = Post.CreateNew("xDDD", new Author(AuthorId.New(), "jan pawel 2"), null);
+        await writer.CreatePost(post);
+        var post2 = Post.CreateNew("xDDD2", new Author(AuthorId.New(), "jan pawel 2"), null, new ReplyToPost(post.Id));
+        await writer.CreatePost(post2);
+        // Act
+        var subject = await reader.GetPostDetails(post.Id, CancellationToken.None);
+        
+        // Test
+        subject.IsSome.Should().BeTrue();
+        var details = subject.ValueUnsafe();
+        details.Post.Id.Should().Be(post.Id);
+        details.Post.Author.Should().Be(post.Author);
+        details.Post.Likes.Should().Be(0);
+        details.Post.ReplyTo.Should().BeNull();
+        details.Post.Content.Should().Be(post.Content);
+        details.Replies.IsSome.Should().BeTrue();
+        var replies = details.Replies.ValueUnsafe();
+        replies.Should().NotBeEmpty();
+        replies.Should().HaveCount(1);
+        replies.Should().Contain(x => x.Id == post2.Id);
+    }
+    
+    [Fact]
+    public async Task GetPostDetailsTestsWhenExistsAndHasParentsAndHasReplies()
+    {
+        // Arrange
+        await _fixture.Store.Advanced.Clean.CompletelyRemoveAllAsync();
+        var reader = new MartenPostReader(_fixture.Store);
+        var writer = new MartenPostWriter(_fixture.Store);
+        var parentPost = Post.CreateNew("xDDD", new Author(AuthorId.New(), "jan pawel 2"), null);
+        await writer.CreatePost(parentPost);      
+        var post = Post.CreateNew("xDDD", new Author(AuthorId.New(), "jan pawel 2"), null, new ReplyToPost(parentPost.Id));
+        await writer.CreatePost(post);
+        var post2 = Post.CreateNew("xDDD2", new Author(AuthorId.New(), "jan pawel 2"), null, new ReplyToPost(post.Id));
+        await writer.CreatePost(post2);
+        // Act
+        var subject = await reader.GetPostDetails(post.Id, CancellationToken.None);
+        
+        // Test
+        subject.IsSome.Should().BeTrue();
+        var details = subject.ValueUnsafe();
+        details.Post.Id.Should().Be(post.Id);
+        details.Post.Author.Should().Be(post.Author);
+        details.Post.Likes.Should().Be(0);
+        details.Post.ReplyTo.Should().Be(new ReplyToPost(parentPost.Id));
+        details.Post.Content.Should().Be(post.Content);
+        details.Replies.IsSome.Should().BeTrue();
+        var replies = details.Replies.ValueUnsafe();
+        replies.Should().NotBeEmpty();
+        replies.Should().HaveCount(1);
+        replies.Should().Contain(x => x.Id == post2.Id);
+        details.ReplyTo.IsSome.Should().BeTrue();
+        var parent = details.ReplyTo.ValueUnsafe();
+        parent.Id.Should().Be(parentPost.Id);
     }
     
     [Fact]
@@ -218,6 +284,27 @@ public class PostReaderTests : IClassFixture<PostgresSqlSqlFixture>
     
     [Fact]
     public async Task GetPostWithAuthorIDTestsWhenNotExist()
+    {
+        // Arrange
+        await _fixture.Store.Advanced.Clean.CompletelyRemoveAllAsync();
+        var reader = new MartenPostReader(_fixture.Store);
+        var writer = new MartenPostWriter(_fixture.Store);
+        var author = new Author(AuthorId.New(), "jan pawel 2");
+        var author2 = new Author(AuthorId.New(), "testoviron");
+        var post = Post.CreateNew("xDDD", author, new Tag[]{ new Tag("fsharp")});
+        var post2 = Post.CreateNew("xDDD", author2, new Tag[]{ new Tag("csharp")} );
+        await writer.CreatePost(post);
+        await writer.CreatePost(post2);
+        // Act
+        var subject = await reader.GetPosts(new GetPostQuery(1, 12, AuthorId: AuthorId.New()), CancellationToken.None);
+        
+        // Test
+        subject.IsNone.Should().BeTrue();
+    }
+    
+    
+    [Fact]
+    public async Task TestReadPostsReplies()
     {
         // Arrange
         await _fixture.Store.Advanced.Clean.CompletelyRemoveAllAsync();
