@@ -58,7 +58,7 @@ internal class RabbitMqMessagePublisher<T> : IMessagePublisher<T> where T : notn
     private readonly RabbitMqPublisherConfig<T> _config;
     private readonly RabbitMqPublishChannel _channel;
     private readonly ILogger<RabbitMqMessagePublisher<T>> _logger;
-    private static readonly Dictionary<string, object> _defaultHeaders = new()
+    private static readonly Dictionary<string, object> DefaultHeaders = new()
     {
         { "Content-Type", "application/json" },
         { "X-Message-Type", typeof(T).FullName },
@@ -103,7 +103,7 @@ internal class RabbitMqMessagePublisher<T> : IMessagePublisher<T> where T : notn
     private void InjectIntoHeader(IBasicProperties properties)
     {
         properties.Headers ??= new Dictionary<string, object>();
-        foreach (var header in _defaultHeaders)
+        foreach (var header in DefaultHeaders)
         {
             properties.Headers.Add(header.Key, header.Value);
         }
