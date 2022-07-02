@@ -62,6 +62,7 @@ internal class RabbitMqMessagePublisher<T> : IMessagePublisher<T> where T : notn
     {
         { "Content-Type", "application/json" },
         { "X-Message-Type", typeof(T).FullName },
+        { "X-Message-Name", T.Name }
     };
 
     public RabbitMqMessagePublisher(RabbitMqPublisherConfig<T> config, RabbitMqPublishChannel channel,
@@ -106,6 +107,5 @@ internal class RabbitMqMessagePublisher<T> : IMessagePublisher<T> where T : notn
         {
             properties.Headers.Add(header.Key, header.Value);
         }
-        properties.Headers["X-Message-Name"] = T.Name;
     }
 }
