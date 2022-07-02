@@ -6,7 +6,7 @@ using DevMikroblog.Modules.Posts.Domain.Repositories;
 
 namespace DevMikroblog.Modules.Posts.Application.PostCreator;
 
-public readonly record struct CreatePostCommand(Author Author, string Content, ReplyToPost? ReplyTo);
+public record CreatePostCommand(Author Author, string Content, ReplyToPost? ReplyTo);
 
 public sealed class CreatePostUseCase
 {

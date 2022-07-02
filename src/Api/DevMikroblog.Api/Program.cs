@@ -25,7 +25,7 @@ AppContext.SetSwitch( "System.Net.Http.SocketsHttpHandler.Http2UnencryptedSuppor
 
 var otelConfig = new OpenTelemetryConfiguration()
 {
-    ServiceName = "devmikroblog", ServiceVersion = "v1.0.0", OpenTelemetryEnabled = true
+    ServiceName = "devmikroblog", ServiceVersion = "v1.0.0", OpenTelemetryEnabled = true, OpenTelemetryLoggingEnabled = true
 };
 
 var builder = WebApplication.CreateBuilder(args);
@@ -38,7 +38,7 @@ builder.Services.AddRabbitMq(builder.Configuration);
 builder.Services.AddSubscriber<PostCreated, PostCreatedMessageHandler>("posts", "created");
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();  
+builder.Services.AddSwaggerGen();
 builder.Services.AddAuthentication(options => 
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -48,7 +48,7 @@ builder.Services.AddAuthentication(options =>
     var jwtSection = builder.Configuration.GetSection("Jwt");
     config.IncludeErrorDetails = true;
     config.TokenValidationParameters = new TokenValidationParameters()
-    { 
+    {
         ValidateAudience = true,
         ValidateIssuer = true,
         ValidIssuer = jwtSection["Issuer"],
