@@ -3,6 +3,8 @@ using DevMikroblog.Modules.Posts.Domain.Model;
 
 using FluentAssertions;
 
+using LanguageExt.UnsafeValueAccess;
+
 using Xunit;
 
 namespace Posts.FunctionalTests.Application.PostCreator.Parsers;
@@ -22,7 +24,7 @@ public class PostTagParserTests
         
         // Test
 
-        tags.Should().BeEmpty();
+        tags.IsNone.Should().BeTrue();
     }
     
     [Fact]
@@ -34,10 +36,11 @@ public class PostTagParserTests
         
         // Act
 
-        var tags = parser.ParseTagsFromPostContent(content);
+        var subject = parser.ParseTagsFromPostContent(content);
         
         // Test
-
+        subject.IsSome.Should().BeTrue();
+        var tags = subject.ValueUnsafe();
         tags.Should().HaveCount(2);
         tags.Should().Contain(new Tag("csharp")).And.Contain(new Tag("fsharp"));
     }

@@ -10,6 +10,7 @@ using LanguageExt.UnsafeValueAccess;
 using Posts.FunctionalTests.Fixtures;
 
 using Xunit;
+using static LanguageExt.Prelude;
 
 namespace Posts.FunctionalTests.Repositories;
 
@@ -66,8 +67,8 @@ public class PostReaderTests : IClassFixture<PostgresSqlSqlFixture>
         var reader = new MartenPostReader(_fixture.Store);
         var writer = new MartenPostWriter(_fixture.Store);
         var author = new Author(AuthorId.New(), "jan pawel 2");
-        var post = Post.CreateNew("xDDD", author);
-        var post2 = Post.CreateNew("xDDD", author);
+        var post = Post.CreateNew("xDDD", author, None);
+        var post2 = Post.CreateNew("xDDD", author, None);
         await writer.CreatePost(post);
         await writer.CreatePost(post2);
         // Act
@@ -92,8 +93,8 @@ public class PostReaderTests : IClassFixture<PostgresSqlSqlFixture>
         var reader = new MartenPostReader(_fixture.Store);
         var writer = new MartenPostWriter(_fixture.Store);
         var author = new Author(AuthorId.New(), "jan pawel 2");
-        var post = Post.CreateNew("xDDD", author);
-        var post2 = Post.CreateNew("xDDD", author);
+        var post = Post.CreateNew("xDDD", author, None);
+        var post2 = Post.CreateNew("xDDD", author, None);
         await writer.CreatePost(post);
         await writer.CreatePost(post2);
         // Act

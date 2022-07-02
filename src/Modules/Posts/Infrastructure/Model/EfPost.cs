@@ -1,6 +1,7 @@
 using DevMikroblog.Modules.Posts.Domain.Model;
 
 using Marten.Schema;
+using static LanguageExt.Prelude;
 
 namespace DevMikroblog.Modules.Posts.Infrastructure.Model;
 
@@ -34,13 +35,13 @@ public class MartenPost
         AuthorId = post.Author.Id.Value;
         AuthorName = post.Author.Name;
         CreatedAt = post.CreatedAt;
-        Tags = post.Tags?.Select(x => x.Value).ToList();
+        Tags = post.Tags.Map(x => x.Select(tag => tag.Value).ToList()).IfNoneUnsafe(() => null);
     }
     
     public Post MapToPost()
     {
         ReplyToPost? replyTo = ReplyToPostId.HasValue ? new ReplyToPost(new PostId(ReplyToPostId.Value)) : null;
-        var tags = Tags?.Select(x => new Tag(x)).ToList();
+        var tags = Optional<IReadOnlyList<Tag>>(Tags?.Select(x => new Tag(x)).ToList());
         return new Post(new PostId(Id), Content, replyTo, CreatedAt, new Author(new AuthorId(AuthorId), AuthorName), tags,
             Likes);
     }
