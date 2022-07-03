@@ -19,6 +19,7 @@ public class MartenPostModifier : IPostModifier
     
     public async Task<Unit> Modify(PostId postId, Func<Post, Post> modifyF, CancellationToken cancellationToken)
     {
+        ArgumentNullException.ThrowIfNull(modifyF, nameof(modifyF));
         await using var session = _store.LightweightSession();
         var post = await session.LoadAsync<MartenPost>(postId.Value, cancellationToken);
         if (post is null)
