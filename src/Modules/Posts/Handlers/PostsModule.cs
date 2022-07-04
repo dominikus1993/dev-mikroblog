@@ -5,6 +5,7 @@ using DevMikroblog.BuildingBlocks.Infrastructure.Messaging.IoC;
 using DevMikroblog.BuildingBlocks.Infrastructure.Modules;
 using DevMikroblog.Modules.Posts.Application.PostCreator;
 using DevMikroblog.Modules.Posts.Application.PostCreator.Events;
+using DevMikroblog.Modules.Posts.Application.PostCreator.Handlers;
 using DevMikroblog.Modules.Posts.Application.PostCreator.Parsers;
 using DevMikroblog.Modules.Posts.Application.PostProvider;
 using DevMikroblog.Modules.Posts.Domain.Model;
@@ -40,13 +41,15 @@ public sealed class PostsModule : IModule
     {
         builder.Services.AddTransient<GetPostsUseCase>();
         builder.Services.AddTransient<CreatePostUseCase>();
-        builder.Services.AddTransient<GetPostByIdUseCase>();
+        builder.Services.AddTransient<GetPostDetailsUseCase>();
         builder.Services.AddTransient<IPostsReader, MartenPostReader>();
         builder.Services.AddTransient<IPostWriter, MartenPostWriter>();
+        builder.Services.AddTransient<IPostModifier, MartenPostModifier>();
         builder.Services.AddTransient<IPostTagParser, PostTagParser>();
         builder.Services.AddMarten(MartenDocumentStoreConfig.Configure(
             builder.Configuration.GetConnectionString("PostsDb"), builder.Environment.IsDevelopment()));
         builder.Services.AddPublisher<PostCreated>("posts", "created");
+        builder.Services.AddSubscriber<PostCreated, PostCreatedHandler>("posts", "created");
         return builder;
     }
 
@@ -67,7 +70,7 @@ public sealed class PostsModule : IModule
         return result.Match<IResult>(posts => Results.Ok(posts), () => Results.NotFound());
     }
     
-    private static async Task<IResult> GetPostById(Guid postId, GetPostByIdUseCase useCase,
+    private static async Task<IResult> GetPostById(Guid postId, GetPostDetailsUseCase useCase,
         CancellationToken cancellationToken)
     {
         var result = await useCase.Execute(new PostId(postId), cancellationToken);

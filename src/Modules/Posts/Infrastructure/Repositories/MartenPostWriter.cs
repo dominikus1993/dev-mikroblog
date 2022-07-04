@@ -15,7 +15,7 @@ public class MartenPostWriter : IPostWriter
         _store = store;
     }
 
-    public async Task CreatePost(Post post, CancellationToken cancellationToken = default)
+    public async Task Save(Post post, CancellationToken cancellationToken = default)
     {
         var dbPost = new MartenPost(post);
         await using var session = _store.LightweightSession();

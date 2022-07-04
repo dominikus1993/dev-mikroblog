@@ -3,7 +3,9 @@ using System.Threading.Channels;
 
 using DevMikroblog.BuildingBlocks.Infrastructure.Messaging.Abstractions;
 using DevMikroblog.BuildingBlocks.Infrastructure.Messaging.Configuration;
+using DevMikroblog.BuildingBlocks.Infrastructure.Messaging.OpenTelemetry;
 using DevMikroblog.BuildingBlocks.Infrastructure.Messaging.Publisher;
+using DevMikroblog.BuildingBlocks.Infrastructure.Messaging.Subscriber;
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -16,8 +18,6 @@ namespace DevMikroblog.BuildingBlocks.Infrastructure.Messaging.IoC;
 
 public static class ServicesCollectionExtensions
 {
-    internal const string RabbitMqOpenTelemetrySourceName = $"{nameof(DevMikroblog)}.Rabbitmq";
-    
     public static IServiceCollection AddRabbitMq(this IServiceCollection services, IConfiguration configuration)
     {
         return services.AddRabbitMq(configuration.GetSection("RabbitMq").Get<RabbitMqConfiguration>());
@@ -34,7 +34,8 @@ public static class ServicesCollectionExtensions
         ArgumentNullException.ThrowIfNull(configuration.AmqpConnection, $"{nameof(configuration)}.{nameof(configuration.AmqpConnection)}");
         services.AddSingleton<IConnectionFactory>(new ConnectionFactory()
         {
-            Uri = new Uri(configuration.AmqpConnection)
+            Uri = new Uri(configuration.AmqpConnection),
+            DispatchConsumersAsync = true
         });
         services.AddSingleton<IConnection>(sp => sp.GetService<IConnectionFactory>()!.CreateConnection());
         services.AddScoped<IModel>(sp => sp.GetService<IConnection>()!.CreateModel());
@@ -50,13 +51,18 @@ public static class ServicesCollectionExtensions
         return services;
     }
     
-    public static IServiceCollection AddSubscriber(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddSubscriber<TMessage, THandler>(this IServiceCollection services, string exchange, string topic = "#", string? queuename = null) where TMessage : notnull, IMessage where THandler: class, IMessageHandler<TMessage>
     {
+        queuename ??= $"{exchange}.{typeof(TMessage).FullName}";
+        var config = new RabbtMqSubscriptionConfig<TMessage> { Exchange = exchange, Topic = topic, Queue = queuename};
+        services.AddSingleton(config);
+        services.AddTransient<IMessageHandler<TMessage>, THandler>();
+        services.AddHostedService<RabbitMqSubscriber<TMessage>>();
         return services;
     }
 
     public static TracerProviderBuilder AddRabbitMqTelemetry(this TracerProviderBuilder builder)
     {
-        return builder.AddSource(RabbitMqOpenTelemetrySourceName);
+        return builder.AddSource(RabbitMqOpenTelemetry.RabbitMqOpenTelemetrySourceName);
     }
 }

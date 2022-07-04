@@ -16,6 +16,8 @@ public sealed class PostDto
     public List<string>? Tags { get; init; }
     public int Likes { get; init; }
     
+    public int RepliesQuantity { get; init; }
+    
     
     private PostDto(Post post)
     {
@@ -23,7 +25,8 @@ public sealed class PostDto
         Content = post.Content;
         Author = new AuthorDto() { AuthorId = post.Author.Id.Value, AuthorName = post.Author.Name };
         Likes = post.Likes;
-        Tags = post.Tags?.Select(x => x.Value).ToList();
+        Tags = post.Tags.Map(tags => tags.Select(tag => tag.Value).ToList()).IfNoneUnsafe(() => null);
+        RepliesQuantity = post.RepliesQuantity;
     }
 
     public static PostDto FromPost(Post post) => new(post);

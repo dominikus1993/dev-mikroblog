@@ -1,5 +1,7 @@
 using System.Runtime.CompilerServices;
 
+using LanguageExt;
+
 using StronglyTypedIds;
 
 [assembly: InternalsVisibleTo("Posts.UnitTests")]
@@ -14,11 +16,16 @@ public partial struct AuthorId {}
 public readonly record struct Tag(string Value);
 public record Author(AuthorId Id, string? Name);
 public readonly record struct ReplyToPost(PostId Id);
-public record Post(PostId Id, string Content, ReplyToPost? ReplyTo, DateTime CreatedAt, Author Author, IReadOnlyList<Tag>? Tags, int Likes)
+public record Post(PostId Id, string Content, ReplyToPost? ReplyTo, DateTime CreatedAt, Author Author, Option<IReadOnlyList<Tag>> Tags, int Likes, int RepliesQuantity)
 {
-    public static Post CreateNew(string content, Author author, IReadOnlyList<Tag>? tags = null, ReplyToPost? replyTo = null)
+    public Post IncrementRepliesQuantity()
+    {
+        return this with { RepliesQuantity = RepliesQuantity + 1 };
+    }
+    
+    public static Post CreateNew(string content, Author author, Option<IReadOnlyList<Tag>> tags, ReplyToPost? replyTo = null)
     {
         var id = PostId.New();
-        return new Post(id, content, replyTo, DateTime.UtcNow, author, tags, 0);
+        return new Post(id, content, replyTo, DateTime.UtcNow, author, tags, 0, 0);
     }
 }

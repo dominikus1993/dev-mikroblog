@@ -20,7 +20,7 @@ internal static class MartenDocumentStoreConfig
             {
                 options.AutoCreateSchemaObjects = AutoCreate.All;
             }
-            options.Schema.For<MartenPost>().Index(x => x.CreatedAt).Index(x => x.AuthorId);
+            options.Schema.For<MartenPost>().Index(x => x.CreatedAt).Index(x => x.AuthorId).Index(x => x.ReplyToPostId);
         };
     }
 }

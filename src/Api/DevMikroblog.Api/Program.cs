@@ -1,10 +1,11 @@
 using System.Diagnostics;
 using System.Text;
-
+using System.Text.Json.Serialization;
 using DevMikroblog.BuildingBlocks.Infrastructure.AspNetCore;
 using DevMikroblog.BuildingBlocks.Infrastructure.Logging;
 using DevMikroblog.BuildingBlocks.Infrastructure.Messaging.IoC;
 using DevMikroblog.BuildingBlocks.Infrastructure.Modules;
+using DevMikroblog.Modules.Posts.Application.PostCreator.Events;
 using DevMikroblog.Modules.Posts.Handlers;
 
 using HealthChecks.UI.Client;
@@ -23,15 +24,18 @@ AppContext.SetSwitch( "System.Net.Http.SocketsHttpHandler.Http2UnencryptedSuppor
 
 var otelConfig = new OpenTelemetryConfiguration()
 {
-    ServiceName = "devmikroblog", ServiceVersion = "v1.0.0", OpenTelemetryEnabled = true
+    ServiceName = "devmikroblog", ServiceVersion = "v1.0.0", OpenTelemetryEnabled = true, OpenTelemetryLoggingEnabled = true
 };
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.UseLogging("DevMikroblog.Api");
-// Add services to the container.
+// Add services to the container. 
 builder.AddModule<PostsModule>();
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddJsonOptions(options =>
+{
+    options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+});
 builder.Services.AddRabbitMq(builder.Configuration);
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -39,7 +43,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddAuthentication(options => 
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme; 
 }).AddJwtBearer(config => 
 {
     var jwtSection = builder.Configuration.GetSection("Jwt");
@@ -60,6 +64,13 @@ builder.AddOpenTelemetryTracing(otelConfig, b =>
     b.AddRabbitMqTelemetry();
 });
 
+builder.AddOpenTelemetryLogging(otelConfig, options =>
+{
+    options.IncludeFormattedMessage = true;
+    options.IncludeScopes = true;
+    options.ParseStateValues = true;
+});
+
 builder.Services.AddHealthChecks().AddRabbitMq().AddPostsModuleHealthChecks(builder.Configuration);
 
 var app = builder.Build();
@@ -74,7 +85,7 @@ if (app.Environment.IsDevelopment() || app.Environment.IsEnvironment("tye"))
 
 app.UseRequestLogging();
 app.UseAuthentication();
-app.UseAuthorization();
+app.UseAuthorization(); 
 
 app.MapModule<PostsModule>();
 

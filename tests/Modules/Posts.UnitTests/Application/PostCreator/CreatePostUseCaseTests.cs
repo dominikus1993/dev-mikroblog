@@ -23,7 +23,7 @@ public class CreatePostUseCaseTests
         var post = new CreatePostCommand(author, "xDDDD", null);
         
         var writerMock = new Mock<IPostWriter>();
-        writerMock.Setup(writer => writer.CreatePost(It.IsAny<Post>(), It.IsAny<CancellationToken>()))
+        writerMock.Setup(writer => writer.Save(It.IsAny<Post>(), It.IsAny<CancellationToken>()))
             .Returns(Task.CompletedTask);
         var publisherMock = new Mock<IMessagePublisher<PostCreated>>();
         publisherMock.Setup(x => x.Publish(It.IsAny<PostCreated>(), It.IsAny<CancellationToken>()))
@@ -38,7 +38,7 @@ public class CreatePostUseCaseTests
         
         // Test
         parserMock.Verify(x => x.ParseTagsFromPostContent(It.IsAny<string>()), Times.Once);
-        writerMock.Verify(x => x.CreatePost(It.IsAny<Post>(), It.IsAny<CancellationToken>()), Times.Once);
+        writerMock.Verify(x => x.Save(It.IsAny<Post>(), It.IsAny<CancellationToken>()), Times.Once);
         publisherMock.Verify(x => x.Publish(It.IsAny<PostCreated>(), It.IsAny<CancellationToken>()), Times.Once);
     }
     
@@ -50,7 +50,7 @@ public class CreatePostUseCaseTests
         var post = new CreatePostCommand(author, "xDDDD", null);
         
         var writerMock = new Mock<IPostWriter>();
-        writerMock.Setup(writer => writer.CreatePost(It.IsAny<Post>(), It.IsAny<CancellationToken>()))
+        writerMock.Setup(writer => writer.Save(It.IsAny<Post>(), It.IsAny<CancellationToken>()))
             .Throws(new Exception("Error"));
         var publisherMock = new Mock<IMessagePublisher<PostCreated>>();
         publisherMock.Setup(x => x.Publish(It.IsAny<PostCreated>(), It.IsAny<CancellationToken>()))
@@ -65,7 +65,7 @@ public class CreatePostUseCaseTests
         
         // Test
         parserMock.Verify(x => x.ParseTagsFromPostContent(It.IsAny<string>()), Times.Once);
-        writerMock.Verify(x => x.CreatePost(It.IsAny<Post>(), It.IsAny<CancellationToken>()), Times.Once);
+        writerMock.Verify(x => x.Save(It.IsAny<Post>(), It.IsAny<CancellationToken>()), Times.Once);
         publisherMock.Verify(x => x.Publish(It.IsAny<PostCreated>(), It.IsAny<CancellationToken>()), Times.Never);
     }
 }

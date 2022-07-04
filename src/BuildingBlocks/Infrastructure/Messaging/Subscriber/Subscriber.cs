@@ -1,11 +1,18 @@
+using System.Diagnostics;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 using DevMikroblog.BuildingBlocks.Infrastructure.Messaging.Abstractions;
 using DevMikroblog.BuildingBlocks.Infrastructure.Messaging.Logging;
+using DevMikroblog.BuildingBlocks.Infrastructure.Messaging.OpenTelemetry;
+
+using LanguageExt.Pretty;
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+
+using OpenTelemetry.Trace;
 
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
@@ -38,6 +45,7 @@ internal class RabbitMqSubscriber<T> : BackgroundService where T : notnull, IMes
 
     protected override Task ExecuteAsync(CancellationToken stoppingToken)
     {
+        _logger.LogConsumerStart(T.Name, _config.Exchange, _config.Topic, _config.Queue);
         _channel.ExchangeDeclare(exchange: _config.Exchange, type: ExchangeType.Topic);
         _channel.QueueDeclare(queue: _config.Queue, durable: true, exclusive: false, autoDelete: false, arguments: null);
         _channel.QueueBind(queue: _config.Queue, exchange: _config.Exchange, routingKey: _config.Topic);
@@ -50,14 +58,38 @@ internal class RabbitMqSubscriber<T> : BackgroundService where T : notnull, IMes
     private async Task OnMessageReceived(object sender, BasicDeliverEventArgs ea)
     {
         _logger.LogReceivedRabbitMqMessage(T.Name, _config.Exchange, _config.Queue, _config.Topic);
+        using var activity = RabbitMqOpenTelemetry.RabbitMqSource.StartActivity(name: "rabbitmq.consumer", ActivityKind.Consumer,
+            RabbitMqOpenTelemetry.GetHeaderFromProps(ea.BasicProperties).ActivityContext);
+        
+        if (activity is not null)
+        {
+            activity.SetTag("messaging.rabbitmq.routing_key", _config.Topic);
+            activity.SetTag("messaging.exchange", _config.Exchange);
+            activity.SetTag("messaging.destination", _config.Queue);
+            activity.SetTag("messaging.system", "rabbitmq");
+            activity.SetTag("messaging.destination_kind", "queue");
+            activity.SetTag("messaging.protocol", "AMQP");
+            activity.SetTag("messaging.protocol_version", "0.9.1");
+            activity.SetTag("messaging.message_name", T.Name);
+        }
         var message = JsonSerializer.Deserialize<T>(ea.Body.Span, _options);
         if (message is null)
         {
             _logger.LogRabbitmqMessageIsNull(ea.Exchange, ea.RoutingKey);
+            activity?.AddEvent(new ActivityEvent("message is null"));
             return;
         }
-        var messageHandler = _serviceProvider.GetService<IMessageHandler<T>>()!;
-        await messageHandler!.Handle(message);
+        try
+        {
+            var messageHandler = _serviceProvider.GetService<IMessageHandler<T>>()!;
+            await messageHandler!.Handle(message);
+        }
+        catch (Exception e)
+        {
+            activity?.RecordException(e);
+            _logger.LogProcessingMessageError(e, T.Name, _config.Exchange, _config.Queue, _config.Topic);
+        }
+
     }
 
     public override void Dispose()

@@ -6,7 +6,7 @@ using DevMikroblog.Modules.Posts.Domain.Repositories;
 
 namespace DevMikroblog.Modules.Posts.Application.PostCreator;
 
-public readonly record struct CreatePostCommand(Author Author, string Content, ReplyToPost? ReplyTo);
+public record CreatePostCommand(Author Author, string Content, ReplyToPost? ReplyTo);
 
 public sealed class CreatePostUseCase
 {
@@ -26,7 +26,7 @@ public sealed class CreatePostUseCase
         var tags = _postTagParser.ParseTagsFromPostContent(command.Content);
         var post = Post.CreateNew(command.Content, command.Author, tags, command.ReplyTo);
 
-        await _postWriter.CreatePost(post, cancellationToken);
+        await _postWriter.Save(post, cancellationToken);
 
         await _messagePublisher.Publish(new PostCreated()
         {

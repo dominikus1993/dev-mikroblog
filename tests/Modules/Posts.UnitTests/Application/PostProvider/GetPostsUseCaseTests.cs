@@ -50,7 +50,7 @@ public class GetPostsUseCaseTests
         // Arrange
         var data = new List<Post>()
         {
-            new(PostId.New(), "test", null, DateTime.UtcNow, new Author(AuthorId.New(), "xD"), null, 2)
+            new(PostId.New(), "test", null, DateTime.UtcNow, new Author(AuthorId.New(), "xD"), null, 2, 0 )
         };
         var mock = new Mock<IPostsReader>();
         mock
