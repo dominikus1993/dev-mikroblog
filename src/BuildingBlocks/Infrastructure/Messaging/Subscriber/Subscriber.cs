@@ -28,7 +28,7 @@ public class RabbtMqSubscriptionConfig<T> where T : notnull, IMessage
 
 internal class RabbitMqSubscriber<T> : BackgroundService where T : notnull, IMessage
 {
-    private static readonly JsonSerializerOptions _options = new() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
+    private static readonly JsonSerializerOptions Options = new() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
     private readonly IServiceProvider _serviceProvider;
     private readonly RabbtMqSubscriptionConfig<T> _config;
     private readonly ILogger<RabbitMqSubscriber<T>> _logger;
@@ -58,9 +58,9 @@ internal class RabbitMqSubscriber<T> : BackgroundService where T : notnull, IMes
     private async Task OnMessageReceived(object sender, BasicDeliverEventArgs ea)
     {
         _logger.LogReceivedRabbitMqMessage(T.Name, _config.Exchange, _config.Queue, _config.Topic);
-        using var activity = RabbitMqOpenTelemetry.RabbitMqSource.StartActivity(name: "rabbitmq.consumer", ActivityKind.Consumer,
+        using var activity = RabbitMqOpenTelemetry.RabbitMqSource.StartActivity(name: "rabbitmq.consumer",
+            ActivityKind.Consumer,
             RabbitMqOpenTelemetry.GetHeaderFromProps(ea.BasicProperties).ActivityContext);
-        
         if (activity is not null)
         {
             activity.SetTag("messaging.rabbitmq.routing_key", _config.Topic);
@@ -72,7 +72,7 @@ internal class RabbitMqSubscriber<T> : BackgroundService where T : notnull, IMes
             activity.SetTag("messaging.protocol_version", "0.9.1");
             activity.SetTag("messaging.message_name", T.Name);
         }
-        var message = JsonSerializer.Deserialize<T>(ea.Body.Span, _options);
+        var message = JsonSerializer.Deserialize<T>(ea.Body.Span, Options);
         if (message is null)
         {
             _logger.LogRabbitmqMessageIsNull(ea.Exchange, ea.RoutingKey);
