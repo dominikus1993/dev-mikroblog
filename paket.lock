@@ -467,7 +467,7 @@ NUGET
     Serilog.Sinks.Trace (3.0)
       Serilog (>= 2.10)
     SharpZipLib (1.3.3)
-    SonarAnalyzer.CSharp (8.40.0.48530)
+    SonarAnalyzer.CSharp (8.41.0.50478)
     StronglyTypedId (1.0.0-beta06)
     Swashbuckle.AspNetCore (6.3.1)
       Microsoft.Extensions.ApiDescription.Server (>= 3.0)

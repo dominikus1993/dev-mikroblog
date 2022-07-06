@@ -10,7 +10,8 @@ services:
       - ConnectionStrings__PostsDb=Host=db;Port=5432;User Id=postgres;Password=postgres;Database=postgres;
       - Seq__Url=http://seq:5341
       - ASPNETCORE_ENVIRONMENT=Development
-      - OTEL_COLLECTOR_URL=http://otel-collector:4317
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4317
+      - OPENTELEMETRY_OLTP_EXPORTER_ENABLED=true
     depends_on:
       - "db"
       - "seq"

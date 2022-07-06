@@ -24,7 +24,7 @@ AppContext.SetSwitch( "System.Net.Http.SocketsHttpHandler.Http2UnencryptedSuppor
 
 var otelConfig = new OpenTelemetryConfiguration()
 {
-    ServiceName = "devmikroblog", ServiceVersion = "v1.0.0", OpenTelemetryEnabled = true, OpenTelemetryLoggingEnabled = true
+    ServiceName = "devmikroblog", ServiceVersion = "v1.0.0", OpenTelemetryEnabled = true, OpenTelemetryMetricsEnabled = true
 };
 
 var builder = WebApplication.CreateBuilder(args);
