@@ -16,9 +16,10 @@ namespace DevMikroblog.BuildingBlocks.Infrastructure.AspNetCore;
 
 public class OpenTelemetryConfiguration
 {
-    public string? CollecttorUrl { get; set; }
     public string? ServiceName { get; set; }
     public string? ServiceVersion { get; set; }
+    public bool OltpExporterEnabled { get; set; }
+    public bool ConsoleExporterEnabled { get; set; }
     public bool OpenTelemetryEnabled { get; set; } = false;
     public bool OpenTelemetryLoggingEnabled { get; set; } = false;
     public bool OpenTelemetryMetricsEnabled { get; set; } = false;
@@ -28,7 +29,6 @@ public static class OpenTelemetryExtensions
 {
     private static void SetupWithDefaults(OpenTelemetryConfiguration configuration)
     {
-        configuration.CollecttorUrl ??= Environment.GetEnvironmentVariable("OTEL_COLLECTOR_URL");
         configuration.ServiceName ??= System.Environment.GetEnvironmentVariable("SERVICE_NAME") ??
                                       Assembly.GetExecutingAssembly().FullName;
         configuration.ServiceVersion ??= System.Environment.GetEnvironmentVariable("SERVICE_VERSION") ?? "v1.0.0";
@@ -44,6 +44,14 @@ public static class OpenTelemetryExtensions
         if (bool.TryParse(Environment.GetEnvironmentVariable("OPENTELEMETRY_METRICS_ENABLED"), out var ome))
         {
             configuration.OpenTelemetryMetricsEnabled = ome;
+        }
+        if (bool.TryParse(Environment.GetEnvironmentVariable("OPENTELEMETRY_OLTP_EXPORTER_ENABLED"), out var oltpEnabled))
+        {
+            configuration.OltpExporterEnabled = oltpEnabled;
+        }
+        if (bool.TryParse(Environment.GetEnvironmentVariable("OPENTELEMETRY_CONSOLE_EXPORTER_ENABLED"), out var consoleEnabled))
+        {
+            configuration.ConsoleExporterEnabled = consoleEnabled;
         }
     }
 
@@ -62,9 +70,9 @@ public static class OpenTelemetryExtensions
                 b.SetResourceBuilder(
                     ResourceBuilder.CreateDefault()
                         .AddService(serviceName: config.ServiceName, serviceVersion: config.ServiceVersion));
-                if (!string.IsNullOrEmpty(config.CollecttorUrl))
+                if (config.OltpExporterEnabled)
                 {
-                    b.AddOtlpExporter(options => options.Endpoint = new Uri(config.CollecttorUrl));
+                    b.AddOtlpExporter();
                 }
             });
         }
@@ -85,9 +93,9 @@ public static class OpenTelemetryExtensions
                 b.SetResourceBuilder(
                     ResourceBuilder.CreateDefault()
                         .AddService(serviceName: config.ServiceName, serviceVersion: config.ServiceVersion));
-                if (!string.IsNullOrEmpty(config.CollecttorUrl))
+                if (config.OltpExporterEnabled)
                 {
-                    b.AddOtlpExporter(options => options.Endpoint = new Uri(config.CollecttorUrl));
+                    b.AddOtlpExporter();
                 }
             });
         }
@@ -108,9 +116,9 @@ public static class OpenTelemetryExtensions
                 b.IncludeScopes = true;
                 b.ParseStateValues = true;
                 setup?.Invoke(b);
-                if (!string.IsNullOrEmpty(config.CollecttorUrl))
+                if (config.OltpExporterEnabled)
                 {
-                    b.AddOtlpExporter(options => options.Endpoint = new Uri(config.CollecttorUrl));
+                    b.AddOtlpExporter();
                 }
             });
         }
@@ -130,9 +138,9 @@ public static class OpenTelemetryExtensions
                 b.IncludeScopes = true;
                 b.ParseStateValues = true;
                 setup?.Invoke(b);
-                if (!string.IsNullOrEmpty(config.CollecttorUrl))
+                if (config.OltpExporterEnabled)
                 {
-                    b.AddOtlpExporter(options => options.Endpoint = new Uri(config.CollecttorUrl));
+                    b.AddOtlpExporter();
                 }
             });
         }
@@ -151,9 +159,9 @@ public static class OpenTelemetryExtensions
             {
                 b.AddAspNetCoreInstrumentation();
                 setup?.Invoke(b);
-                if (!string.IsNullOrEmpty(config.CollecttorUrl))
+                if (config.OltpExporterEnabled)
                 {
-                    b.AddOtlpExporter(options => options.Endpoint = new Uri(config.CollecttorUrl));
+                    b.AddOtlpExporter();
                 }
             });
         }
@@ -171,9 +179,9 @@ public static class OpenTelemetryExtensions
             {
                 b.AddAspNetCoreInstrumentation();
                 setup?.Invoke(b);
-                if (!string.IsNullOrEmpty(config.CollecttorUrl))
+                if (config.OltpExporterEnabled)
                 {
-                    b.AddOtlpExporter(options => options.Endpoint = new Uri(config.CollecttorUrl));
+                    b.AddOtlpExporter();
                 }
             });
         }

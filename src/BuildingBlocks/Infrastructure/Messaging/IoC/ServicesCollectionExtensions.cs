@@ -43,7 +43,7 @@ public static class ServicesCollectionExtensions
         return services;
     }
     
-    public static IServiceCollection AddPublisher<TMessage>(this IServiceCollection services, string exchangeName, string topic = "#") where TMessage : notnull, IMessage
+    public static IServiceCollection AddPublisher<TMessage>(this IServiceCollection services, string exchangeName, string topic = "#") where TMessage : class, IMessage
     {
         var config = new RabbitMqPublisherConfig<TMessage> { Exchange = exchangeName, Topic = topic };
         services.AddSingleton(config);
