@@ -12,6 +12,8 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4317
       - OPENTELEMETRY_OLTP_EXPORTER_ENABLED=true
+      - OPENTELEMETRY_ENABLED=true
+      - OPENTELEMETRY_LOGGING_ENABLED=true
     depends_on:
       - "db"
       - "seq"
