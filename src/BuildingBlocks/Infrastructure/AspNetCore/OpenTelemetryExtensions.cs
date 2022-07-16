@@ -115,6 +115,7 @@ public static class OpenTelemetryExtensions
                 b.IncludeFormattedMessage = true;
                 b.IncludeScopes = true;
                 b.ParseStateValues = true;
+                b.AttachLogsToActivityEvent();
                 b.SetResourceBuilder(GetResourceBuilder(config));
                 setup?.Invoke(b);
                 if (config.OltpExporterEnabled)
