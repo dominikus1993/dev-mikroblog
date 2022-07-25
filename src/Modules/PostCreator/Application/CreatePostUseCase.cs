@@ -1,8 +1,9 @@
 using DevMikroblog.BuildingBlocks.Infrastructure.Messaging.Abstractions;
 using DevMikroblog.Modules.Posts.Application.PostCreator.Events;
 using DevMikroblog.Modules.Posts.Application.PostCreator.Parsers;
-using DevMikroblog.Modules.Posts.Domain.Model;
 using DevMikroblog.Modules.Posts.Domain.Repositories;
+
+using PostCreator.Domain.Model;
 
 namespace DevMikroblog.Modules.Posts.Application.PostCreator;
 

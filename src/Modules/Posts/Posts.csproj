@@ -5,6 +5,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Folder Include="Application" />
+    <Folder Include="Application\PostCreator" />
     <Folder Include="Handlers\Responses" />
   </ItemGroup>
   <ItemGroup>

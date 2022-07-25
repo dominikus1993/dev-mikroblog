@@ -1,8 +1,9 @@
 using System.Text.RegularExpressions;
 
-using DevMikroblog.Modules.Posts.Domain.Model;
-
 using LanguageExt;
+
+using PostCreator.Domain.Model;
+
 using static LanguageExt.Prelude;
 
 namespace DevMikroblog.Modules.Posts.Application.PostCreator.Parsers;
