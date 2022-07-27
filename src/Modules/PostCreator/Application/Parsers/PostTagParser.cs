@@ -6,7 +6,7 @@ using PostCreator.Domain.Model;
 
 using static LanguageExt.Prelude;
 
-namespace DevMikroblog.Modules.Posts.Application.PostCreator.Parsers;
+namespace PostCreator.Application.Parsers;
 
 public interface IPostTagParser
 {

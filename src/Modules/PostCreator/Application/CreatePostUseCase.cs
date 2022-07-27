@@ -1,15 +1,15 @@
 using DevMikroblog.BuildingBlocks.Infrastructure.Messaging.Abstractions;
-using DevMikroblog.Modules.Posts.Application.PostCreator.Events;
-using DevMikroblog.Modules.Posts.Application.PostCreator.Parsers;
-using DevMikroblog.Modules.Posts.Domain.Repositories;
 
+using PostCreator.Application.Events;
+using PostCreator.Application.Parsers;
 using PostCreator.Domain.Model;
+using PostCreator.Domain.Repositories;
 
-namespace DevMikroblog.Modules.Posts.Application.PostCreator;
+namespace PostCreator.Application;
 
 public record CreatePostCommand(Author Author, string Content, ReplyToPost? ReplyTo);
 
-public sealed class CreatePostUseCase
+internal sealed class CreatePostUseCase
 {
     private readonly IPostWriter _postWriter;
     private readonly IMessagePublisher<PostCreated> _messagePublisher;

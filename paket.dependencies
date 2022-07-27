@@ -43,6 +43,8 @@ nuget OpenTelemetry.Exporter.OpenTelemetryProtocol.Logs prerelease
 nuget OpenTelemetry.Exporter.OpenTelemetryProtocol prerelease
 nuget Npgsql.OpenTelemetry
 nuget Scrutor
+nuget Structurizr.Core
+nuget Structurizr.Client
 
 nuget AutoFixture
 nuget FluentAssertions

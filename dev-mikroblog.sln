@@ -45,6 +45,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Infrastructure.Tests", "tes
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PostCreator", "src\Modules\PostCreator\PostCreator.csproj", "{61B6D941-8A80-4BAF-B792-8664D2E2E158}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "arch", "arch\arch.csproj", "{E80CD592-5304-489B-B488-1190D48C59C1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -92,6 +94,10 @@ Global
 		{61B6D941-8A80-4BAF-B792-8664D2E2E158}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{61B6D941-8A80-4BAF-B792-8664D2E2E158}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{61B6D941-8A80-4BAF-B792-8664D2E2E158}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E80CD592-5304-489B-B488-1190D48C59C1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E80CD592-5304-489B-B488-1190D48C59C1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E80CD592-5304-489B-B488-1190D48C59C1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E80CD592-5304-489B-B488-1190D48C59C1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{B633D5CE-1C22-4D86-AEF6-939849E479F1} = {FBC2AFE3-1596-4723-8CAC-C3EBD2F6C08A}

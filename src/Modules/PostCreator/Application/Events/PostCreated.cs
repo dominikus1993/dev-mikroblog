@@ -1,6 +1,6 @@
 using DevMikroblog.BuildingBlocks.Infrastructure.Messaging.Abstractions;
 
-namespace DevMikroblog.Modules.Posts.Application.PostCreator.Events;
+namespace PostCreator.Application.Events;
 
 public class PostCreated : IMessage
 {

@@ -1,11 +1,12 @@
 using System.Runtime.CompilerServices;
 
+using LanguageExt;
+
+using StronglyTypedIds;
+
 [assembly: InternalsVisibleTo("Posts.UnitTests")]
 [assembly: InternalsVisibleTo("Posts.FunctionalTests")]
 namespace PostCreator.Domain.Model;
-
-[StronglyTypedId(converters: StronglyTypedIdConverter.SystemTextJson)]
-public partial struct PostId{}
 
 [StronglyTypedId(converters: StronglyTypedIdConverter.SystemTextJson)]
 public partial struct AuthorId {}
