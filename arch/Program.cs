@@ -1,15 +1,17 @@
-﻿using Newtonsoft.Json;
+﻿using arch;
+
+using Newtonsoft.Json;
 
 using Structurizr;
 using Structurizr.Api;
 
-Workspace workspace = new Workspace("Getting Started", "This is a model of my software system.");
+Workspace workspace = new Workspace("DevMikroblog", "This is a model of my software system.");
 Model model = workspace.Model;
 
 Person user = model.AddPerson("User", "A user of my software system.");
-SoftwareSystem softwareSystem = model.AddSoftwareSystem("Software System", "My software system.");
+SoftwareSystem softwareSystem = model.AddSoftwareSystem("DevMikroblog", "DevMikroblog");
 user.Uses(softwareSystem, "Uses");
-
+DevMikroblogContainer.Add(softwareSystem);
 ViewSet viewSet = workspace.Views;
 SystemContextView contextView = viewSet.CreateSystemContextView(softwareSystem, "SystemContext", "An example of a System Context diagram.");
 contextView.AddAllSoftwareSystems();
