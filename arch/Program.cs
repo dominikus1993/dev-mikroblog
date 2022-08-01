@@ -20,7 +20,7 @@ contextView.AddAllPeople();
 Styles styles = viewSet.Configuration.Styles;
 styles.Add(new ElementStyle(Tags.SoftwareSystem) { Background = "#1168bd", Color = "#ffffff" });
 styles.Add(new ElementStyle(Tags.Person) { Background = "#08427b", Color = "#ffffff", Shape = Shape.Person });
-
-Console.WriteLine(JsonConvert.SerializeObject(workspace));
-
-await File.WriteAllTextAsync("workspace.json", JsonConvert.SerializeObject(workspace));
+string path = Environment.CurrentDirectory;
+string fileName = Path.Combine(path, "workspace.json");
+Console.WriteLine($"Filename: {fileName}");
+await File.WriteAllTextAsync(fileName, JsonConvert.SerializeObject(workspace));
