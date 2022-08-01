@@ -1,1 +1,126 @@
-{"model":{"people":[{"location":0,"name":"User","description":"A user of my software system.","relationships":[{"description":"Uses","sourceId":"1","destinationId":"2","id":"3","tags":"Relationship","properties":{},"perspectives":[]}],"id":"1","tags":"Element,Person","properties":{},"perspectives":[]}],"softwareSystems":[{"location":0,"containers":[{"technology":"","components":[{"technology":"","size":0,"code":[],"name":"post.creator","description":"","relationships":[],"id":"5","tags":"Element,Component","properties":{},"perspectives":[]}],"name":"devmikroblog","description":"","relationships":[],"id":"4","tags":"Element,Container","properties":{},"perspectives":[]}],"name":"DevMikroblog","description":"DevMikroblog","relationships":[],"id":"2","tags":"Element,Software System","properties":{},"perspectives":[]}],"deploymentNodes":[]},"views":{"systemLandscapeViews":[],"systemContextViews":[{"animations":[],"key":"SystemContext","softwareSystemId":"2","description":"An example of a System Context diagram.","elements":[{"id":"2","x":0,"y":0},{"id":"1","x":0,"y":0}],"relationships":[{"id":"3","vertices":[]}]}],"containerViews":[],"componentViews":[],"dynamicViews":[],"deploymentViews":[],"filteredViews":[],"configuration":{"styles":{"relationships":[],"elements":[{"tag":"Software System","background":"#1168bd","color":"#ffffff"},{"tag":"Person","background":"#08427b","color":"#ffffff","shape":8}]},"branding":{},"terminology":{},"viewSortOrder":0}},"documentation":{"sections":[],"decisions":[],"images":[]},"name":"DevMikroblog","description":"This is a model of my software system.","configuration":{"users":[]}}
+{
+  "id" : 1,
+  "name" : "DevMikroblog",
+  "description" : "This is a model of my software system.",
+  "revision" : 0,
+  "lastModifiedDate" : "2022-08-01T14:06:44Z",
+  "lastModifiedAgent" : "structurizr-web/2763/diagram",
+  "configuration" : { },
+  "model" : {
+    "people" : [ {
+      "id" : "1",
+      "tags" : "Element,Person",
+      "name" : "User",
+      "description" : "A user of my software system.",
+      "relationships" : [ {
+        "id" : "3",
+        "tags" : "Relationship",
+        "sourceId" : "1",
+        "destinationId" : "2",
+        "description" : "Uses"
+      } ],
+      "location" : "Internal"
+    } ],
+    "softwareSystems" : [ {
+      "id" : "2",
+      "tags" : "Element,Software System",
+      "name" : "DevMikroblog",
+      "description" : "DevMikroblog",
+      "location" : "Internal",
+      "containers" : [ {
+        "id" : "4",
+        "tags" : "Element,Container",
+        "name" : "devmikroblog",
+        "components" : [ {
+          "id" : "5",
+          "tags" : "Element,Component",
+          "name" : "post.creator",
+          "size" : 0
+        } ]
+      } ],
+      "documentation" : { }
+    } ]
+  },
+  "documentation" : { },
+  "views" : {
+    "systemContextViews" : [ {
+      "softwareSystemId" : "2",
+      "description" : "An example of a System Context diagram.",
+      "key" : "SystemContext",
+      "order" : 1,
+      "enterpriseBoundaryVisible" : true,
+      "elements" : [ {
+        "id" : "1",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "2",
+        "x" : 0,
+        "y" : 0
+      } ],
+      "relationships" : [ {
+        "id" : "3"
+      } ]
+    } ],
+    "containerViews" : [ {
+      "softwareSystemId" : "2",
+      "description" : "Diagram of containers",
+      "key" : "DevMikroblog",
+      "order" : 1,
+      "paperSize" : "A5_Landscape",
+      "dimensions" : {
+        "width" : 2480,
+        "height" : 1748
+      },
+      "externalSoftwareSystemBoundariesVisible" : false,
+      "elements" : [ {
+        "id" : "1",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "4",
+        "x" : 0,
+        "y" : 0
+      } ]
+    } ],
+    "componentViews" : [ {
+      "description" : "componets view of container devmikroblog",
+      "key" : "devmikroblog view",
+      "order" : 1,
+      "paperSize" : "A5_Landscape",
+      "dimensions" : {
+        "width" : 2480,
+        "height" : 1748
+      },
+      "containerId" : "4",
+      "externalContainerBoundariesVisible" : false,
+      "elements" : [ {
+        "id" : "1",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "5",
+        "x" : 1195,
+        "y" : 530
+      } ]
+    } ],
+    "configuration" : {
+      "branding" : { },
+      "styles" : {
+        "elements" : [ {
+          "tag" : "Software System",
+          "background" : "#1168bd",
+          "color" : "#ffffff"
+        }, {
+          "tag" : "Person",
+          "background" : "#08427b",
+          "color" : "#ffffff",
+          "shape" : "Person"
+        } ]
+      },
+      "terminology" : { },
+      "lastSavedView" : "devmikroblog view",
+      "viewSortOrder" : "Default"
+    }
+  }
+}
