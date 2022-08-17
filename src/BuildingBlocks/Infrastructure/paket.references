@@ -18,7 +18,7 @@ ClrHeapAllocationAnalyzer
 Scrutor
 LanguageExt.Core
 Microsoft.Extensions.Hosting.Abstractions
-RabbitMQ.Client
+RabbitMQ.Stream.Client
 Microsoft.Tye.Extensions.Configuration
 AspNetCore.HealthChecks.Rabbitmq
 

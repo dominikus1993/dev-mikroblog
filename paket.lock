@@ -389,6 +389,8 @@ NUGET
     RabbitMQ.Client (6.4)
       System.Memory (>= 4.5.4)
       System.Threading.Channels (>= 4.7.1)
+    RabbitMQ.Stream.Client (1.0.0-rc.4)
+      System.IO.Pipelines (>= 6.0.2)
     Remotion.Linq (2.2)
       System.Collections (>= 4.0.11)
       System.Diagnostics.Debug (>= 4.0.11)

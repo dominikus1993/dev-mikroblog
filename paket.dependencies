@@ -22,7 +22,7 @@ nuget Serilog.Formatting.Elasticsearch
 nuget Serilog.Sinks.Seq
 nuget Microsoft.Extensions.Hosting.Abstractions
 nuget StronglyTypedId prerelease
-nuget RabbitMQ.Client 
+nuget RabbitMQ.Stream.Client prerelease
 nuget Microsoft.Tye.Extensions.Configuration
 nuget AspNetCore.HealthChecks.UI.Client
 nuget AspNetCore.HealthChecks.Rabbitmq
