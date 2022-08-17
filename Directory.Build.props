@@ -10,5 +10,6 @@
         <AnalysisLevel>latest</AnalysisLevel>
         <ImplicitUsings>enable</ImplicitUsings>
         <LangVersion>preview</LangVersion>
+        <EnablePreviewFeatures>True</EnablePreviewFeatures>
     </PropertyGroup>
 </Project>
