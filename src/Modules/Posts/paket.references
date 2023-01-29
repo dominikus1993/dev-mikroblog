@@ -4,5 +4,4 @@ AsyncFixer
 LanguageExt.Core
 System.Linq.Async
 StronglyTypedId
-Marten
 AspNetCore.HealthChecks.NpgSql

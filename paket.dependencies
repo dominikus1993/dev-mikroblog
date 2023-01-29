@@ -1,7 +1,7 @@
 source https://api.nuget.org/v3/index.json
 
 storage: none
-framework: net6.0
+framework: net7.0
 
 nuget Swashbuckle.AspNetCore
 
@@ -35,13 +35,13 @@ nuget System.Linq.Async
 nuget ClrHeapAllocationAnalyzer
 nuget EFCore.NamingConventions
 nuget Dapper
-nuget Marten
 nuget OpenTelemetry.Extensions
 nuget OpenTelemetry.Extensions.Hosting prerelease
 nuget OpenTelemetry.Instrumentation.AspNetCore prerelease
 nuget OpenTelemetry.Exporter.OpenTelemetryProtocol.Logs prerelease
 nuget OpenTelemetry.Exporter.OpenTelemetryProtocol prerelease
 nuget Npgsql.OpenTelemetry
+nuget OpenTelemetry.Api prerelease
 nuget Scrutor
 
 nuget AutoFixture

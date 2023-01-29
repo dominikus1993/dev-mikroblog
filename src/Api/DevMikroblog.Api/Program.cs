@@ -85,7 +85,7 @@ if (app.Environment.IsDevelopment() || app.Environment.IsEnvironment("tye"))
 
 app.UseRequestLogging();
 app.UseAuthentication();
-app.UseAuthorization(); 
+app.UseAuthorization();
 
 app.MapModule<PostsModule>();
 
