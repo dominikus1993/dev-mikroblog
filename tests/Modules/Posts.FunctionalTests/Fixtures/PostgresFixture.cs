@@ -3,11 +3,8 @@ using DevMikroblog.Modules.Posts.Infrastructure.Model;
 
 using DotNet.Testcontainers.Builders;
 using DotNet.Testcontainers.Configurations;
-using DotNet.Testcontainers.Containers;
 
-using Marten;
-
-using Weasel.Core;
+using Testcontainers.PostgreSql;
 
 using Xunit;
 
@@ -15,16 +12,12 @@ namespace Posts.FunctionalTests.Fixtures;
 
 public sealed class PostgresSqlSqlFixture : IAsyncLifetime, IDisposable
 {
-    private readonly TestcontainerDatabaseConfiguration configuration = new PostgreSqlTestcontainerConfiguration("postgres:14-alpine") { Database = "posts", Username = "postgres", Password = "postgres" };
-
-    public PostgreSqlTestcontainer PostgreSql { get; }
+    public PostgreSqlContainer PostgreSql { get; }
     internal DocumentStore Store { get; private set; }
 
     public PostgresSqlSqlFixture()
     {
-        this.PostgreSql = new TestcontainersBuilder<PostgreSqlTestcontainer>()
-            .WithDatabase(this.configuration)
-            .Build();
+        this.PostgreSql = new PostgreSqlBuilder().Build();
     }
 
     public async Task InitializeAsync()
@@ -43,6 +36,5 @@ public sealed class PostgresSqlSqlFixture : IAsyncLifetime, IDisposable
     public void Dispose()
     {
         Store.Dispose();
-        this.configuration.Dispose();
     }
 }

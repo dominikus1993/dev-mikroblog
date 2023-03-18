@@ -6,4 +6,5 @@ xunit.runner.visualstudio
 Moq
 Testcontainers
 coverlet.collector
+Testcontainers.RabbitMq
 Microsoft.NET.Test.Sdk

@@ -4,5 +4,6 @@ xunit
 xunit.runner.visualstudio
 Moq
 Testcontainers
+Testcontainers.PostgreSql
 coverlet.collector
 Microsoft.NET.Test.Sdk
