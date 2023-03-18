@@ -1,5 +1,5 @@
 Ogooreck
-AutoFixture
+AutoFixture.Xunit2
 FluentAssertions
 xunit
 xunit.runner.visualstudio

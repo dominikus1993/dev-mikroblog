@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 
+using AutoFixture.Xunit2;
+
 using DevMikroblog.Modules.Posts.Core.Dto;
 using DevMikroblog.Modules.Posts.Domain.Model;
 
@@ -16,12 +18,10 @@ namespace Posts.UnitTests.Core.Dto;
 
 public class PostDtoTests
 {
-    [Fact]
-    public void TestMapPostToDto_ShouldBeCorrectDto()
+    [Theory]
+    [AutoData]
+    public void TestMapPostToDto_ShouldBeCorrectDto(Author author, Post post)
     {
-        var author = new Author(AuthorId.New(), "xD");
-        var post = new Post(PostId.New(), "test", null, DateTime.UtcNow, author, None, 2, 2);
-
         var subject = PostDto.FromPost(post);
 
         subject.Should().NotBeNull();

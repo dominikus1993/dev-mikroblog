@@ -4,7 +4,7 @@ storage: none
 framework: net7.0
 
 nuget Swashbuckle.AspNetCore
-
+nuget AutoFixture.Xunit2
 nuget AspNetCore.HealthChecks.NpgSql
 nuget Microsoft.AspNetCore.Authentication.JwtBearer
 nuget Serilog.AspNetCore

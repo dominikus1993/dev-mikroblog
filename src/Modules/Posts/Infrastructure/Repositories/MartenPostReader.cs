@@ -1,17 +1,9 @@
-using System.Runtime.CompilerServices;
-
 using DevMikroblog.Modules.Posts.Domain.Model;
 using DevMikroblog.Modules.Posts.Domain.Repositories;
 using DevMikroblog.Modules.Posts.Infrastructure.Model;
 
 
 using LanguageExt;
-
-using Marten;
-using Marten.Linq;
-using Marten.Linq.Fields;
-using Marten.Linq.Parsing;
-using Marten.Pagination;
 
 using static LanguageExt.Prelude;
 
