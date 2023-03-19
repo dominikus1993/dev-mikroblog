@@ -5,8 +5,10 @@ using DevMikroblog.BuildingBlocks.Infrastructure.Messaging.Publisher;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
+using OpenTelemetry;
 using OpenTelemetry.Logs;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
@@ -22,28 +24,6 @@ public class OpenTelemetryConfiguration
     private bool _oltpExporterEnabled = false;
     private bool _consoleExporterEnabled = false;
 
-    private string? _serviceVersion;
-    private string? _serviceName;
-
-    public string? ServiceName
-    {
-        get =>
-            string.IsNullOrEmpty(_serviceName)
-                ? Environment.GetEnvironmentVariable("SERVICE_NAME") ??
-                  Assembly.GetExecutingAssembly().FullName 
-                : _serviceName;
-        set => _serviceName = value;
-    }
-
-    public string ServiceVersion
-    {
-        get =>
-            string.IsNullOrEmpty(_serviceVersion)
-                ? Environment.GetEnvironmentVariable("SERVICE_VERSION") ?? "v1.0.0"
-                : _serviceVersion;
-        set => _serviceVersion = value;
-    }
-    
     public bool OpenTelemetryEnabled
     {
         get =>
@@ -76,39 +56,107 @@ public class OpenTelemetryConfiguration
         set => _consoleExporterEnabled = value;
     }
 }
+
+public readonly record struct Tag(string Name, string Value);
+public sealed class Service
+{
+    public IReadOnlyCollection<Tag>? Tags { get; init; } = null!;
+    public string Name { get; init; } = Assembly.GetExecutingAssembly().FullName!;
+    public string Version { get; init; } = "Unspecified";
+    
+    public OpenTelemetryConfiguration OpenTelemetryConfiguration { get; init; } = new();
+}
+
+public static class ResourceBuilderExtensions
+{
+    private static IEnumerable<KeyValuePair<string, object>> GetAttributes(this Service service, string envName)
+    {
+        yield return new KeyValuePair<string, object>("env", envName);
+        if (service.Tags is { Count: > 0})
+        {
+            foreach ((string key, string value) in service.Tags)
+            {
+                yield return new KeyValuePair<string, object>(key, value);
+            }
+        }
+    }
+    
+    public static ResourceBuilder GetResourceBuilder(this Service service, string envName)
+    {
+        return ResourceBuilder.CreateDefault()
+            .AddTelemetrySdk()
+            .AddService(serviceName: service.Name, serviceVersion: service.Version, serviceInstanceId: Environment.MachineName )
+            .AddAttributes(GetAttributes(service, envName));
+    }
+}
+
+
+public sealed class SampleOpenTelemetryBuilder
+{
+    public SampleOpenTelemetryBuilder(OpenTelemetryBuilder openTelemetryBuilder, IHostEnvironment environment,
+        Service service)
+    {
+        OpenTelemetryBuilder = openTelemetryBuilder;
+        Environment = environment;
+        Service = service;
+    }
+
+    public Service Service { get; }
+
+    public OpenTelemetryBuilder OpenTelemetryBuilder
+    {
+        get;
+    }
+
+    public IHostEnvironment Environment
+    {
+        get;
+    }
+}
+
 public static class OpenTelemetryExtensions
 {
-
-    private static ResourceBuilder GetResourceBuilder(OpenTelemetryConfiguration config) => ResourceBuilder
-        .CreateDefault()
-        .AddTelemetrySdk()
-        .AddService(serviceName: config.ServiceName, serviceVersion: config.ServiceVersion);
-    public static WebApplicationBuilder AddOpenTelemetryTracing(this WebApplicationBuilder builder,
-        OpenTelemetryConfiguration? configure = null, Action<TracerProviderBuilder>? setup = null)
+    public static SampleOpenTelemetryBuilder AddOpenTelemetry(this WebApplicationBuilder builder,
+        Service? configure = null)
     {
-        var config = configure ?? new OpenTelemetryConfiguration();
-        if (config.OpenTelemetryEnabled)
+        var config = configure ?? new Service();
+        var otelBuilder = builder.Services.AddOpenTelemetry();
+        return new SampleOpenTelemetryBuilder(otelBuilder, builder.Environment, config);
+    }
+
+    public static SampleOpenTelemetryBuilder AddOpenTelemetryTracing(this SampleOpenTelemetryBuilder builder,
+        Action<TracerProviderBuilder>? setup = null)
+    {
+        if (builder.Service.OpenTelemetryConfiguration.OpenTelemetryEnabled)
         {
-            builder.Services.AddOpenTelemetryTracing(b =>
+            builder.OpenTelemetryBuilder.WithTracing(b =>
             {
-                b.AddAspNetCoreInstrumentation();
+                b.AddAspNetCoreInstrumentation(options =>
+                {
+                    options.RecordException = true;
+                });
                 setup?.Invoke(b);
-                b.SetResourceBuilder(GetResourceBuilder(config));
-                if (config.OltpExporterEnabled)
+                b.SetResourceBuilder(builder.Service.GetResourceBuilder(builder.Environment.EnvironmentName));
+                if (builder.Service.OpenTelemetryConfiguration.OltpExporterEnabled)
                 {
                     b.AddOtlpExporter();
                 }
+                //
+                // if (builder.Service.OpenTelemetryConfiguration.ConsoleExporterEnabled)
+                // {
+                //     b.AddConsoleExporter();
+                // }
             });
         }
+
         return builder;
     }
-    
 
     public static WebApplicationBuilder AddOpenTelemetryLogging(this WebApplicationBuilder builder,
-        OpenTelemetryConfiguration? configure = null, Action<OpenTelemetryLoggerOptions>? setup = null)
+        Service? configure = null, Action<OpenTelemetryLoggerOptions>? setup = null)
     {
-        var config = configure ?? new OpenTelemetryConfiguration();
-        if (config.OpenTelemetryLoggingEnabled)
+        var config = configure ?? new Service();
+        if (config.OpenTelemetryConfiguration.OpenTelemetryLoggingEnabled)
         {
             builder.Logging.AddOpenTelemetry(b =>
             {
@@ -116,34 +164,45 @@ public static class OpenTelemetryExtensions
                 b.IncludeScopes = true;
                 b.ParseStateValues = true;
                 b.AttachLogsToActivityEvent();
-                b.SetResourceBuilder(GetResourceBuilder(config));
+                b.SetResourceBuilder(config.GetResourceBuilder(builder.Environment.EnvironmentName));
                 setup?.Invoke(b);
-                if (config.OltpExporterEnabled)
+                if (config.OpenTelemetryConfiguration.OltpExporterEnabled)
                 {
                     b.AddOtlpExporter();
                 }
+
+                // if (config.OpenTelemetryConfiguration.ConsoleExporterEnabled)
+                // {
+                //     b.AddConsoleExporter();
+                // }
             });
         }
+
         return builder;
     }
 
-    public static WebApplicationBuilder AddOpenTelemetryMetrics(this WebApplicationBuilder builder,
-        OpenTelemetryConfiguration? configure = null, Action<MeterProviderBuilder>? setup = null)
+    public static SampleOpenTelemetryBuilder AddOpenTelemetryMetrics(this SampleOpenTelemetryBuilder builder,
+        Action<MeterProviderBuilder>? setup = null)
     {
-        var config = configure ?? new OpenTelemetryConfiguration();
-        if (config.OpenTelemetryMetricsEnabled)
+        if (builder.Service.OpenTelemetryConfiguration!.OpenTelemetryMetricsEnabled)
         {
-            builder.Services.AddOpenTelemetryMetrics(b =>
+            builder.OpenTelemetryBuilder.WithMetrics(b =>
             {
                 b.AddAspNetCoreInstrumentation();
-                b.SetResourceBuilder(GetResourceBuilder(config));
+                b.SetResourceBuilder(builder.Service.GetResourceBuilder(builder.Environment.EnvironmentName));
                 setup?.Invoke(b);
-                if (config.OltpExporterEnabled)
+                if (builder.Service.OpenTelemetryConfiguration.OltpExporterEnabled)
                 {
                     b.AddOtlpExporter();
                 }
+
+                // if (builder.Service.OpenTelemetryConfiguration.ConsoleExporterEnabled)
+                // {
+                //     b.AddConsoleExporter();
+                // }
             });
         }
+
         return builder;
     }
 }

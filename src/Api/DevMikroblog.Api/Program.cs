@@ -22,10 +22,10 @@ Activity.DefaultIdFormat = ActivityIdFormat.W3C;
 Activity.ForceDefaultIdFormat = true;
 AppContext.SetSwitch( "System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
 
-var otelConfig = new OpenTelemetryConfiguration()
-{
-    ServiceName = "devmikroblog", ServiceVersion = "v1.0.0", OpenTelemetryEnabled = true, OpenTelemetryMetricsEnabled = true
-};
+var devmikroblog = new Service() { Name = "DevMikroblog", OpenTelemetryConfiguration = new OpenTelemetryConfiguration()
+{ 
+    OpenTelemetryEnabled = true, OpenTelemetryMetricsEnabled = true
+}};
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -58,17 +58,10 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
-builder.AddOpenTelemetryTracing(otelConfig, b =>
+builder.AddOpenTelemetry(new Service() { Name = "DevMikroblog" }).AddOpenTelemetryTracing(b =>
 {
     b.AddNpgsql();
     b.AddRabbitMqTelemetry();
-});
-
-builder.AddOpenTelemetryLogging(otelConfig, options =>
-{
-    options.IncludeFormattedMessage = true;
-    options.IncludeScopes = true;
-    options.ParseStateValues = true;
 });
 
 builder.Services.AddHealthChecks().AddRabbitMq().AddPostsModuleHealthChecks(builder.Configuration);
