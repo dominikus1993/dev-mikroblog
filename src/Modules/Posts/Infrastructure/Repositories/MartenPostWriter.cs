@@ -17,7 +17,7 @@ public class MartenPostWriter : IPostWriter
 
     public async Task Save(Post post, CancellationToken cancellationToken = default)
     {
-        var dbPost = new MartenPost(post);
+        var dbPost = new EfPost(post);
         await using var session = _store.LightweightSession();
         session.Insert(dbPost);
         await session.SaveChangesAsync(cancellationToken);

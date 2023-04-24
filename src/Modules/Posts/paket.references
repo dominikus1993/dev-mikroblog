@@ -3,5 +3,5 @@ SonarAnalyzer.CSharp
 AsyncFixer
 LanguageExt.Core
 System.Linq.Async
-StronglyTypedId
 AspNetCore.HealthChecks.NpgSql
+Npgsql.EntityFrameworkCore.PostgreSQL

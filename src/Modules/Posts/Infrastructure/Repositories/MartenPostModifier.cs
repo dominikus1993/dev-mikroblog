@@ -19,16 +19,16 @@ public class MartenPostModifier : IPostModifier
     
     public async Task<Unit> Modify(PostId postId, Func<Post, Post> modifyF, CancellationToken cancellationToken)
     {
-        ArgumentNullException.ThrowIfNull(modifyF, nameof(modifyF));
+        ArgumentNullException.ThrowIfNull(modifyF);
         await using var session = _store.LightweightSession();
-        var post = await session.LoadAsync<MartenPost>(postId.Value, cancellationToken);
+        var post = await session.LoadAsync<EfPost>(postId.Value, cancellationToken);
         if (post is null)
         {
             return Unit.Default;
         }
         var model = modifyF.Invoke(post.MapToPost());
         
-        session.Store(new MartenPost(model));
+        session.Store(new EfPost(model));
 
         await session.SaveChangesAsync(cancellationToken);
         return Unit.Default;

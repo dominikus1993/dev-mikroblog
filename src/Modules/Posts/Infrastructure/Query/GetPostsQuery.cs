@@ -9,26 +9,26 @@ namespace DevMikroblog.Modules.Posts.Infrastructure.Query;
 
 using Marten.Linq;
 
-public class GetPagedPostsQuery : ICompiledListQuery<MartenPost>
+public class GetPagedPostsQuery : ICompiledListQuery<EfPost>
 {
     public int PageSize { get; init; } = 12;
     [MartenIgnore] public int Page { get; init; } = 1;
     [MartenIgnore] public int SkipCount => (Page - 1) * PageSize;
 
-    public Expression<Func<IMartenQueryable<MartenPost>, IEnumerable<MartenPost>>> QueryIs()
+    public Expression<Func<IMartenQueryable<EfPost>, IEnumerable<EfPost>>> QueryIs()
     {
         return posts => posts.OrderBy(x => x.CreatedAt).Skip(SkipCount).Take(PageSize);
     }
 }
 
-public class GetPostsInTagQuery : ICompiledListQuery<MartenPost>
+public class GetPostsInTagQuery : ICompiledListQuery<EfPost>
 {
     public int PageSize { get; init; } = 12;
     [MartenIgnore] public string Tag { get; init; } = null!;
     [MartenIgnore] public int Page { get; init; } = 1;
     [MartenIgnore] public int SkipCount => (Page - 1) * PageSize;
 
-    public Expression<Func<IMartenQueryable<MartenPost>, IEnumerable<MartenPost>>> QueryIs()
+    public Expression<Func<IMartenQueryable<EfPost>, IEnumerable<EfPost>>> QueryIs()
     {
         return posts => posts.Where(x => x.Tags.Contains(Tag)).OrderBy(x => x.CreatedAt).Skip(SkipCount).Take(PageSize);
     }

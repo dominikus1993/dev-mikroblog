@@ -21,24 +21,24 @@ internal class MartenPostReader : IPostsReader
     public async Task<Option<Post>> GetPostById(PostId postId, CancellationToken cancellationToken)
     {
         await using var session = _store.QuerySession();
-        var result = await session.LoadAsync<MartenPost>(postId.Value, cancellationToken);
+        var result = await session.LoadAsync<EfPost>(postId.Value, cancellationToken);
         return Optional(result).Map(post => post.MapToPost());
     }
 
     public async Task<Option<PostDetails>> GetPostDetails(PostId postId, CancellationToken cancellationToken)
     {
         await using var session = _store.QuerySession();
-        var result = await session.LoadAsync<MartenPost>(postId.Value, cancellationToken);
+        var result = await session.LoadAsync<EfPost>(postId.Value, cancellationToken);
         if (result is null)
         {
             return None;
         }
 
         var parent = result.ReplyToPostId.HasValue ?
-            await session.LoadAsync<MartenPost>(result.ReplyToPostId.Value, cancellationToken)
+            await session.LoadAsync<EfPost>(result.ReplyToPostId.Value, cancellationToken)
             : null;
 
-        var replies = await session.Query<MartenPost>().Where(x => x.ReplyToPostId == postId.Value).OrderByDescending(x => x.CreatedAt)
+        var replies = await session.Query<EfPost>().Where(x => x.ReplyToPostId == postId.Value).OrderByDescending(x => x.CreatedAt)
             .ToListAsync(cancellationToken);
         
         var postParent = Optional(parent).Map(x => x.MapToPost());
@@ -51,7 +51,7 @@ internal class MartenPostReader : IPostsReader
     public async Task<Option<PagedPosts>> GetPosts(GetPostQuery query, CancellationToken cancellationToken)
     {
         await using var session = _store.QuerySession();
-        IQueryable<MartenPost> q = session.Query<MartenPost>();
+        IQueryable<EfPost> q = session.Query<EfPost>();
 
         if (query.AuthorId.HasValue)
         {

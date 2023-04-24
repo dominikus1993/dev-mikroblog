@@ -1,11 +1,8 @@
 using DevMikroblog.Modules.Posts.Domain.Model;
 
-using Marten.Schema;
-using static LanguageExt.Prelude;
-
 namespace DevMikroblog.Modules.Posts.Infrastructure.Model;
 
-public class MartenPost
+public class EfPost
 {
     public Guid Id { get; init; }
     public string Content { get; init; }
@@ -15,8 +12,8 @@ public class MartenPost
     public DateTime CreatedAt { get; init; }
     public Guid? ReplyToPostId { get; init; }
     public int RepliesQuantity { get; set; }
-    [FullTextIndex]
-    public List<string>? Tags { get; init; }
+
+    public ICollection<string>? Tags { get; init; }
     
     public void IncrementLikes()
     {
@@ -28,12 +25,12 @@ public class MartenPost
         RepliesQuantity += 1;
     }
 
-    public MartenPost()
+    public EfPost()
     {
         
     }
 
-    public MartenPost(Post post)
+    public EfPost(Post post)
     {
         Id = post.Id.Value;
         Content = post.Content;
@@ -41,7 +38,7 @@ public class MartenPost
         AuthorId = post.Author.Id.Value;
         AuthorName = post.Author.Name;
         CreatedAt = post.CreatedAt;
-        Tags = post.Tags.Map(x => x.Select(tag => tag.Value).ToList()).IfNoneUnsafe(() => null);
+        Tags = post.Tags?.Select(tag => tag.Value).ToArray();
         RepliesQuantity = post.RepliesQuantity;
         ReplyToPostId = post.ReplyTo?.Id.Value;
     }
@@ -49,7 +46,8 @@ public class MartenPost
     public Post MapToPost()
     {
         ReplyToPost? replyTo = ReplyToPostId.HasValue ? new ReplyToPost(new PostId(ReplyToPostId.Value)) : null;
-        var tags = Optional<IReadOnlyList<Tag>>(Tags?.Select(x => new Tag(x)).ToList());
+        var tags = Tags?.Select(x => new Tag(x)).ToArray();
+        
         return new Post(new PostId(Id), Content, replyTo, CreatedAt, new Author(new AuthorId(AuthorId), AuthorName), tags,
             Likes, RepliesQuantity);
     }
