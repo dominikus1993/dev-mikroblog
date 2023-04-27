@@ -1,36 +1,34 @@
 using DevMikroblog.Modules.Posts.Domain.Model;
 using DevMikroblog.Modules.Posts.Domain.Repositories;
+using DevMikroblog.Modules.Posts.Infrastructure.EntityFramework;
 using DevMikroblog.Modules.Posts.Infrastructure.Model;
 
 using LanguageExt;
 
-using Marten;
-
 namespace DevMikroblog.Modules.Posts.Infrastructure.Repositories;
 
-public class MartenPostModifier : IPostModifier
+public class EfCorePostModifier : IPostModifier
 {
-    private readonly IDocumentStore _store;
+    private readonly PostDbContext _context;
     
-    public MartenPostModifier(IDocumentStore store)
+    public EfCorePostModifier(PostDbContext store)
     {
-        _store = store;
+        _context = store;
     }
     
     public async Task<Unit> Modify(PostId postId, Func<Post, Post> modifyF, CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(modifyF);
-        await using var session = _store.LightweightSession();
-        var post = await session.LoadAsync<EfPost>(postId.Value, cancellationToken);
+        var post = await _context.Load(postId, cancellationToken);
         if (post is null)
         {
             return Unit.Default;
         }
         var model = modifyF.Invoke(post.MapToPost());
         
-        session.Store(new EfPost(model));
-
-        await session.SaveChangesAsync(cancellationToken);
+        // session.Store(new EfPost(model));
+        //
+        // await session.SaveChangesAsync(cancellationToken);
         return Unit.Default;
     }
 }

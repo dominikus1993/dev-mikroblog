@@ -26,7 +26,7 @@ public class PostModifierTests: IClassFixture<PostgresSqlSqlFixture>
         // Arrange
         await _fixture.Store.Advanced.Clean.CompletelyRemoveAllAsync();
         var reader = new MartenPostReader(_fixture.Store);
-        var modifier = new MartenPostModifier(_fixture.Store);
+        var modifier = new EfCorePostModifier(_fixture.Store);
         // Act
         var postId = PostId.New();
         await modifier.Modify(postId, x => x.IncrementRepliesQuantity(),default);
@@ -42,7 +42,7 @@ public class PostModifierTests: IClassFixture<PostgresSqlSqlFixture>
         await _fixture.Store.Advanced.Clean.CompletelyRemoveAllAsync();
         var writer = new MartenPostWriter(_fixture.Store);
         var reader = new MartenPostReader(_fixture.Store);
-        var modifier = new MartenPostModifier(_fixture.Store);
+        var modifier = new EfCorePostModifier(_fixture.Store);
         // Act
         var post = Post.CreateNew("xDDD", new Author(AuthorId.New(), "jan pawel 2"), null);
         await writer.Save(post);

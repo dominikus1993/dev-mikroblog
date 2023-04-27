@@ -44,7 +44,7 @@ public sealed class PostsModule : IModule
         builder.Services.AddTransient<GetPostDetailsUseCase>();
         builder.Services.AddTransient<IPostsReader, MartenPostReader>();
         builder.Services.AddTransient<IPostWriter, MartenPostWriter>();
-        builder.Services.AddTransient<IPostModifier, MartenPostModifier>();
+        builder.Services.AddTransient<IPostModifier, EfCorePostModifier>();
         builder.Services.AddTransient<IPostTagParser, PostTagParser>();
         builder.Services.AddMarten(MartenDocumentStoreConfig.Configure(
             builder.Configuration.GetConnectionString("PostsDb"), builder.Environment.IsDevelopment()));

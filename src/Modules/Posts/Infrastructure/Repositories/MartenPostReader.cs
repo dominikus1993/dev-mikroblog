@@ -1,5 +1,6 @@
 using DevMikroblog.Modules.Posts.Domain.Model;
 using DevMikroblog.Modules.Posts.Domain.Repositories;
+using DevMikroblog.Modules.Posts.Infrastructure.EntityFramework;
 using DevMikroblog.Modules.Posts.Infrastructure.Model;
 
 
@@ -11,24 +12,22 @@ namespace DevMikroblog.Modules.Posts.Infrastructure.Repositories;
 
 internal class MartenPostReader : IPostsReader
 {
-    private readonly IDocumentStore _store;
+    private readonly PostDbContext _store;
     
-    public MartenPostReader(IDocumentStore store)
+    public MartenPostReader(PostDbContext store)
     {
         _store = store;
     }
 
     public async Task<Option<Post>> GetPostById(PostId postId, CancellationToken cancellationToken)
     {
-        await using var session = _store.QuerySession();
-        var result = await session.LoadAsync<EfPost>(postId.Value, cancellationToken);
-        return Optional(result).Map(post => post.MapToPost());
+        var result = await _store.Load(postId, cancellationToken);
+        return Optional(result).Map(static post => post.MapToPost());
     }
 
     public async Task<Option<PostDetails>> GetPostDetails(PostId postId, CancellationToken cancellationToken)
     {
-        await using var session = _store.QuerySession();
-        var result = await session.LoadAsync<EfPost>(postId.Value, cancellationToken);
+        var result = await _store.Load(postId, cancellationToken);
         if (result is null)
         {
             return None;
