@@ -11,7 +11,10 @@ public readonly record struct PostId(Guid Value)
     public static PostId New() => new PostId(Guid.NewGuid());
 }
 
-public readonly record struct AuthorId(Guid Value);
+public readonly record struct AuthorId(Guid Value)
+{
+    public static AuthorId New() => new AuthorId(Guid.NewGuid());
+}
 public readonly record struct Tag(string Value);
 public sealed record Author(AuthorId Id, string? Name);
 public readonly record struct ReplyToPost(PostId Id);

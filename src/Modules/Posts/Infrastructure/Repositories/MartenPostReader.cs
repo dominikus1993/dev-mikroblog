@@ -1,6 +1,7 @@
 using DevMikroblog.Modules.Posts.Domain.Model;
 using DevMikroblog.Modules.Posts.Domain.Repositories;
 using DevMikroblog.Modules.Posts.Infrastructure.EntityFramework;
+using DevMikroblog.Modules.Posts.Infrastructure.EntityFramework.Extensions;
 using DevMikroblog.Modules.Posts.Infrastructure.Model;
 
 
@@ -49,26 +50,25 @@ internal class MartenPostReader : IPostsReader
 
     public async Task<Option<PagedPosts>> GetPosts(GetPostQuery query, CancellationToken cancellationToken)
     {
-        await using var session = _store.QuerySession();
-        IQueryable<EfPost> q = session.Query<EfPost>();
+        IQueryable<EfPost> q = _store.Posts.AsQueryable();
 
         if (query.AuthorId.HasValue)
         {
-            var id = query.AuthorId.Value;
-            q = q.Where(x => x.AuthorId == id.Value);
+            var id = query.AuthorId;
+            q = q.Where(x => x.AuthorId == id);
         }
         if (!string.IsNullOrEmpty(query.Tag))
         {
             q = q.Where(x => x.Tags!.Contains(query.Tag));
         }
         
-        var result = await q.OrderByDescending(x => x.CreatedAt).ToPagedListAsync(pageNumber: query.Page, pageSize: query.PageSize, cancellationToken);
+        var result = await q.OrderByDescending(static x => x.CreatedAt).ToPagedListAsync(pageNumber: query.Page, pageSize: query.PageSize, cancellationToken);
         if (result.Count == 0)
         {
             return None;
         }
 
-        var postList = result.Select(x => x.MapToPost()).ToList();
+        var postList = result.Select(static x => x.MapToPost()).ToArray();
 
         return Some(new PagedPosts(postList, result.PageCount, result.TotalItemCount));
     }
