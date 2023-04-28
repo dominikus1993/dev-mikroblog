@@ -28,4 +28,23 @@ public sealed record Post(PostId Id, string Content, ReplyToPost? ReplyTo, DateT
         var id = PostId.New();
         return new Post(id, content, replyTo, DateTime.UtcNow, author, tags, 0, 0);
     }
+
+    public IEnumerable<T> MapTags<T>(Func<Tag, T> mapF)
+    {
+        if (Tags is null or { Count: 0 })
+        {
+            yield break;
+        }
+
+        if (Tags is [var t])
+        {
+            yield return mapF(t);
+            yield break;
+        }
+
+        foreach (Tag tag in Tags)
+        {
+            yield return mapF(tag);
+        }
+    }
 }

@@ -34,14 +34,14 @@ internal class MartenPostReader : IPostsReader
         }
 
         var parent = result.ReplyToPostId.HasValue ?
-            await session.LoadAsync<EfPost>(result.ReplyToPostId.Value, cancellationToken)
+            await _store.Load(result.ReplyToPostId.Value, cancellationToken)
             : null;
 
-        var replies = await session.Query<EfPost>().Where(x => x.ReplyToPostId == postId.Value).OrderByDescending(x => x.CreatedAt)
-            .ToListAsync(cancellationToken);
-        
+        var replies = await _store.GetRepliesTo(postId)
+            .ToArrayAsync(cancellationToken);
+
         var postParent = Optional(parent).Map(x => x.MapToPost());
-        var postReplies = Optional(replies).Where(x => x.Count > 0)
+        var postReplies = Optional(replies).Where(x => x.Length > 0)
             .Map<IReadOnlyList<Post>>(posts => posts.Select(post => post.MapToPost()).ToList());
 
         return new PostDetails(postParent, result.MapToPost(), postReplies);

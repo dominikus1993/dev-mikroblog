@@ -1,16 +1,14 @@
 using DevMikroblog.Modules.Posts.Domain.Model;
 using DevMikroblog.Modules.Posts.Domain.Repositories;
+using DevMikroblog.Modules.Posts.Infrastructure.EntityFramework;
 using DevMikroblog.Modules.Posts.Infrastructure.Model;
-
-using Marten;
-
 namespace DevMikroblog.Modules.Posts.Infrastructure.Repositories;
 
-public class MartenPostWriter : IPostWriter
+public sealed class MartenPostWriter : IPostWriter
 {
-    private readonly IDocumentStore _store;
+    private readonly PostDbContext _store;
 
-    public MartenPostWriter(IDocumentStore store)
+    public MartenPostWriter(PostDbContext store)
     {
         _store = store;
     }
@@ -18,8 +16,7 @@ public class MartenPostWriter : IPostWriter
     public async Task Save(Post post, CancellationToken cancellationToken = default)
     {
         var dbPost = new EfPost(post);
-        await using var session = _store.LightweightSession();
-        session.Insert(dbPost);
-        await session.SaveChangesAsync(cancellationToken);
+        _store.Add(dbPost);
+        await _store.SaveChangesAsync(cancellationToken);
     }
 }

@@ -4,13 +4,13 @@ namespace DevMikroblog.Modules.Posts.Infrastructure.Model;
 
 public class EfPost
 {
-    public Guid Id { get; init; }
+    public PostId Id { get; init; }
     public string Content { get; init; }
     public int Likes { get; set; }
-    public Guid AuthorId { get; init; }
+    public AuthorId AuthorId { get; init; }
     public string? AuthorName { get; set; }
     public DateTime CreatedAt { get; init; }
-    public Guid? ReplyToPostId { get; init; }
+    public PostId? ReplyToPostId { get; init; }
     public int RepliesQuantity { get; set; }
 
     public ICollection<string>? Tags { get; init; }
@@ -32,23 +32,23 @@ public class EfPost
 
     public EfPost(Post post)
     {
-        Id = post.Id.Value;
+        Id = post.Id;
         Content = post.Content;
         Likes = post.Likes;
-        AuthorId = post.Author.Id.Value;
+        AuthorId = post.Author.Id;
         AuthorName = post.Author.Name;
         CreatedAt = post.CreatedAt;
-        Tags = post.Tags?.Select(tag => tag.Value).ToArray();
+        Tags = post.MapTags(static x => x.Value).ToArray();
         RepliesQuantity = post.RepliesQuantity;
-        ReplyToPostId = post.ReplyTo?.Id.Value;
+        ReplyToPostId = post.ReplyTo?.Id;
     }
     
     public Post MapToPost()
     {
-        ReplyToPost? replyTo = ReplyToPostId.HasValue ? new ReplyToPost(new PostId(ReplyToPostId.Value)) : null;
+        ReplyToPost? replyTo = ReplyToPostId.HasValue ? new ReplyToPost(ReplyToPostId.Value) : null;
         var tags = Tags?.Select(x => new Tag(x)).ToArray();
         
-        return new Post(new PostId(Id), Content, replyTo, CreatedAt, new Author(new AuthorId(AuthorId), AuthorName), tags,
+        return new Post(Id, Content, replyTo, CreatedAt, new Author(AuthorId, AuthorName), tags,
             Likes, RepliesQuantity);
     }
 }
