@@ -5,3 +5,4 @@ LanguageExt.Core
 System.Linq.Async
 AspNetCore.HealthChecks.NpgSql
 Npgsql.EntityFrameworkCore.PostgreSQL
+EFCore.NamingConventions

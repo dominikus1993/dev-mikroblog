@@ -9,12 +9,14 @@ using DevMikroblog.Modules.Posts.Application.PostProvider;
 using DevMikroblog.Modules.Posts.Domain.Model;
 using DevMikroblog.Modules.Posts.Domain.Repositories;
 using DevMikroblog.Modules.Posts.Handlers.Requests;
+using DevMikroblog.Modules.Posts.Infrastructure.EntityFramework;
 using DevMikroblog.Modules.Posts.Infrastructure.Repositories;
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -41,6 +43,16 @@ public sealed class PostsModule : IModule
         builder.Services.AddTransient<IPostTagParser, PostTagParser>();
         builder.Services.AddPublisher<PostCreated>("posts", "created");
         builder.Services.AddSubscriber<PostCreated, PostCreatedHandler>("posts", "created");
+        builder.Services
+            .AddDbContextPool<PostDbContext>(options =>
+            {
+                options.UseNpgsql(builder.Configuration.GetConnectionString("PostsDb"), optionsBuilder =>
+                {
+                    optionsBuilder.EnableRetryOnFailure(5);
+                    optionsBuilder.CommandTimeout(500);
+                    optionsBuilder.MigrationsAssembly(typeof(PostDbContext).Assembly.FullName);
+                }).UseSnakeCaseNamingConvention();
+            });
         return builder;
     }
 

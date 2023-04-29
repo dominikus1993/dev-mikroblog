@@ -6,14 +6,20 @@ public sealed class AuthorDto
 {
     public string? AuthorName { get; init; }
     public Guid AuthorId { get; init; }
+
+    public AuthorDto(Author author)
+    {
+        AuthorId = author.Id.Value;
+        AuthorName = author.Name;
+    }
 }
 
 public sealed class PostDto
 {
     public Guid PostId { get; init; }
-    public AuthorDto Author { get; init; } = null!;
+    public AuthorDto Author { get; init; }
     public string Content { get; init; }
-    public List<string>? Tags { get; init; }
+    public IReadOnlyCollection<string> Tags { get; init; }
     public int Likes { get; init; }
     
     public int RepliesQuantity { get; init; }
@@ -23,9 +29,9 @@ public sealed class PostDto
     {
         PostId = post.Id.Value;
         Content = post.Content;
-        Author = new AuthorDto() { AuthorId = post.Author.Id.Value, AuthorName = post.Author.Name };
+        Author = new AuthorDto(post.Author);
         Likes = post.Likes;
-        Tags = post.Tags.Map(tags => tags.Select(tag => tag.Value).ToList()).IfNoneUnsafe(() => null);
+        Tags = post.Tags?.Select(tag => tag.Value).ToArray();
         RepliesQuantity = post.RepliesQuantity;
     }
 

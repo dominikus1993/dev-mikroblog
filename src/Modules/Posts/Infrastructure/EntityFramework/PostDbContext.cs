@@ -8,8 +8,12 @@ namespace DevMikroblog.Modules.Posts.Infrastructure.EntityFramework;
 
 public sealed class PostDbContext : DbContext
 {
-    public DbSet<EfPost> Posts { get; set; }
-    
+    public DbSet<EfPost> Posts { get; set; } = null!;
+
+    public PostDbContext(DbContextOptions options) : base(options)
+    {
+    }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfiguration(new PostConfiguration());
@@ -23,7 +27,7 @@ public sealed class PostDbContext : DbContext
     private static readonly Func<PostDbContext, PostId, IAsyncEnumerable<EfPost>> GetReplies =
         EF.CompileAsyncQuery(
             (PostDbContext dbContext, PostId id) =>
-                dbContext.Posts.Where(p => p.ReplyToPostId.HasValue && p.ReplyToPostId.Value == id));
+                dbContext.Posts.Where(p => p.ReplyToPostId == id));
     
     public Task<EfPost?> Load(PostId id, CancellationToken cancellationToken)
     {

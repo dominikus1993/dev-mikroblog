@@ -1,8 +1,11 @@
 using DevMikroblog.Modules.Posts.Infrastructure.Configuration;
+using DevMikroblog.Modules.Posts.Infrastructure.EntityFramework;
 using DevMikroblog.Modules.Posts.Infrastructure.Model;
 
 using DotNet.Testcontainers.Builders;
 using DotNet.Testcontainers.Configurations;
+
+using Microsoft.EntityFrameworkCore;
 
 using Testcontainers.PostgreSql;
 
@@ -10,10 +13,10 @@ using Xunit;
 
 namespace Posts.FunctionalTests.Fixtures;
 
-public sealed class PostgresSqlSqlFixture : IAsyncLifetime, IDisposable
+public sealed class PostgresSqlSqlFixture : IAsyncLifetime
 {
     public PostgreSqlContainer PostgreSql { get; }
-    internal DocumentStore Store { get; private set; }
+    internal PostDbContext Context { get; private set; }
 
     public PostgresSqlSqlFixture()
     {
@@ -24,17 +27,21 @@ public sealed class PostgresSqlSqlFixture : IAsyncLifetime, IDisposable
     {
         await this.PostgreSql.StartAsync()
             .ConfigureAwait(false);
-        Store = DocumentStore.For(MartenDocumentStoreConfig.Configure(PostgreSql.ConnectionString, true));
+
+        var builder = new DbContextOptionsBuilder<PostDbContext>().UseNpgsql(optionsBuilder =>
+        {
+            optionsBuilder.EnableRetryOnFailure(5);
+            optionsBuilder.CommandTimeout(500);
+            optionsBuilder.MigrationsAssembly(typeof(PostDbContext).Assembly.FullName);
+        }).UseSnakeCaseNamingConvention();
+        Context = new PostDbContext(builder.Options);
     }
 
     public async Task DisposeAsync()
     {
         await this.PostgreSql.DisposeAsync()
             .ConfigureAwait(false);
-    }
 
-    public void Dispose()
-    {
-        Store.Dispose();
+        await this.Context.DisposeAsync();
     }
 }

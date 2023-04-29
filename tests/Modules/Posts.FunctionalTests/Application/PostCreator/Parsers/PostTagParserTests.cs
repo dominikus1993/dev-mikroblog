@@ -1,3 +1,5 @@
+using AutoFixture.Xunit2;
+
 using DevMikroblog.Modules.Posts.Application.PostCreator.Parsers;
 using DevMikroblog.Modules.Posts.Domain.Model;
 
@@ -11,12 +13,12 @@ namespace Posts.FunctionalTests.Application.PostCreator.Parsers;
 
 public class PostTagParserTests
 {
-    [Fact]
-    public void TestWhenPostContentNotContainsAnyTags()
+    [Theory]
+    [AutoData]
+    internal void TestWhenPostContentNotContainsAnyTags(PostTagParser parser)
     {
         // Arrange
-        var parser = new PostTagParser();
-        string content = "Hello from fsharp";
+        const string content = "Hello from fsharp";
         
         // Act
 
@@ -24,25 +26,24 @@ public class PostTagParserTests
         
         // Test
 
-        tags.IsNone.Should().BeTrue();
+        tags.Should().BeEmpty();
     }
     
-    [Fact]
-    public void TestWhenPostContentContainsTags()
+    [Theory]
+    [AutoData]
+    internal void TestWhenPostContentContainsTags(PostTagParser parser)
     {
         // Arrange
-        var parser = new PostTagParser();
-        string content = "Hello from #fsharp and #csharp";
+        const string content = "Hello from #fsharp and #csharp";
         
         // Act
 
         var subject = parser.ParseTagsFromPostContent(content);
         
         // Test
-        subject.IsSome.Should().BeTrue();
-        var tags = subject.ValueUnsafe();
-        tags.Should().HaveCount(2);
-        tags.Should().Contain(new Tag("csharp")).And.Contain(new Tag("fsharp"));
+        subject.Should().NotBeEmpty();
+        subject.Should().HaveCount(2);
+         subject.Should().Contain(new Tag("CSHARP")).And.Contain(new Tag("FSHARP"));
     }
 
 }

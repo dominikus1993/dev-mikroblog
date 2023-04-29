@@ -1,4 +1,7 @@
+using AutoFixture.Xunit2;
+
 using DevMikroblog.Modules.Posts.Domain.Model;
+using DevMikroblog.Modules.Posts.Domain.Repositories;
 using DevMikroblog.Modules.Posts.Infrastructure.Repositories;
 
 using FluentAssertions;
@@ -14,47 +17,44 @@ namespace Posts.FunctionalTests.Repositories;
 public class PostModifierTests: IClassFixture<PostgresSqlSqlFixture>
 {
     private readonly PostgresSqlSqlFixture _fixture;
+    private readonly IPostsReader _postsReader;
+    private readonly IPostModifier _postModifier;
+    private readonly IPostWriter _postWriter;
 
     public PostModifierTests(PostgresSqlSqlFixture fixture)
     {
         _fixture = fixture;
+        _postsReader = new MartenPostReader(_fixture.Context);
+        _postModifier = new EfCorePostModifier(_fixture.Context);
+        _postWriter = new MartenPostWriter(_fixture.Context);
     }
 
-    [Fact]
-    public async Task GetPostDetailsTestsWhenNotExists()
+    [Theory]
+    [AutoData]
+    public async Task GetPostDetailsTestsWhenNotExists(PostId postId)
     {
-        // Arrange
-        await _fixture.Store.Advanced.Clean.CompletelyRemoveAllAsync();
-        var reader = new MartenPostReader(_fixture.Store);
-        var modifier = new EfCorePostModifier(_fixture.Store);
         // Act
-        var postId = PostId.New();
-        await modifier.Modify(postId, x => x.IncrementRepliesQuantity(),default);
-        var post = await reader.GetPostById(postId, CancellationToken.None);
+        await _postModifier.Modify(postId, x => x.IncrementRepliesQuantity(),default);
+        var post = await _postsReader.GetPostById(postId, CancellationToken.None);
         // Test
         post.IsSome.Should().BeFalse();
     }
     
-    [Fact]
-    public async Task GetPostDetailsTestsWhenPostExists()
+    [Theory]
+    [AutoData]
+    public async Task GetPostDetailsTestsWhenPostExists(Post post)
     {
-        // Arrange
-        await _fixture.Store.Advanced.Clean.CompletelyRemoveAllAsync();
-        var writer = new MartenPostWriter(_fixture.Store);
-        var reader = new MartenPostReader(_fixture.Store);
-        var modifier = new EfCorePostModifier(_fixture.Store);
         // Act
-        var post = Post.CreateNew("xDDD", new Author(AuthorId.New(), "jan pawel 2"), null);
-        await writer.Save(post);
-        await modifier.Modify(post.Id, x => x.IncrementRepliesQuantity(),default);
-        var subject = await reader.GetPostById(post.Id, CancellationToken.None);
+        await _postWriter.Save(post);
+        await _postModifier.Modify(post.Id, x => x.IncrementRepliesQuantity(),default);
+        var subject = await _postsReader.GetPostById(post.Id, CancellationToken.None);
         // Test
         subject.IsSome.Should().BeTrue();
         var result = subject.ValueUnsafe();
         result.Id.Should().Be(post.Id);
         result.Content.Should().Be(post.Content);
         result.Author.Should().Be(post.Author);
-        result.Tags.IsNone.Should().BeTrue();
+        result.Tags.Should().BeEmpty();
         result.RepliesQuantity.Should().Be(post.RepliesQuantity + 1);
     }
 }
