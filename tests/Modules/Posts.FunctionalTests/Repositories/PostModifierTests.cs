@@ -53,8 +53,9 @@ public class PostModifierTests: IClassFixture<PostgresSqlSqlFixture>
         var result = subject.ValueUnsafe();
         result.Id.Should().Be(post.Id);
         result.Content.Should().Be(post.Content);
-        result.Author.Should().Be(post.Author);
-        result.Tags.Should().BeEmpty();
+        result.Author.Should().BeEquivalentTo(post.Author);
+        result.Tags.Should().BeEquivalentTo(post.Tags);
         result.RepliesQuantity.Should().Be(post.RepliesQuantity + 1);
+        result.Version.Should().Be(post.Version + 1);
     }
 }

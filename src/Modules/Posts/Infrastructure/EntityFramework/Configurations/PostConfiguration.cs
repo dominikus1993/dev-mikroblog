@@ -27,6 +27,17 @@ public sealed class AuthorIdConverter : ValueConverter<AuthorId, Guid>
     }
 }
 
+public sealed class DateTimeOffsetConverter : ValueConverter<DateTimeOffset, DateTime>
+{
+    public DateTimeOffsetConverter()
+        : base(
+            v => DateTime.SpecifyKind(v.UtcDateTime, DateTimeKind.Utc),
+            v => DateTime.SpecifyKind(v, DateTimeKind.Local))
+
+    {
+    }
+}
+
 public sealed class PostConfiguration: IEntityTypeConfiguration<EfPost>
 {
     public void Configure(EntityTypeBuilder<EfPost> builder)
@@ -35,5 +46,6 @@ public sealed class PostConfiguration: IEntityTypeConfiguration<EfPost>
         builder.Property(x => x.Id).HasConversion<PostIdConverter>();
         builder.Property(x => x.AuthorId).HasConversion<AuthorIdConverter>();
         builder.Property(x => x.ReplyToPostId).HasConversion<PostIdConverter>();
+        builder.Property(x => x.CreatedAt).HasConversion<DateTimeOffsetConverter>();
     }
 }

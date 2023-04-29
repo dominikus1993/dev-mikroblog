@@ -18,18 +18,18 @@ public readonly record struct AuthorId(Guid Value)
 public readonly record struct Tag(string Value);
 public sealed record Author(AuthorId Id, string? Name);
 public readonly record struct ReplyToPost(PostId Id);
-public sealed record Post(PostId Id, string Content, ReplyToPost? ReplyTo, DateTime CreatedAt, Author Author, IReadOnlyList<Tag>? Tags, int Likes, int RepliesQuantity)
+public sealed record Post(PostId Id, string Content, ReplyToPost? ReplyTo, DateTimeOffset CreatedAt, Author Author, IReadOnlyList<Tag>? Tags, int Likes, int RepliesQuantity, uint Version = 1)
 {
     public Post IncrementRepliesQuantity()
     {
-        return this with { RepliesQuantity = RepliesQuantity + 1 };
+        return this with { RepliesQuantity = RepliesQuantity + 1, Version = Version + 1 };
     }
     
 
-    public static Post CreateNew(string content, Author author, IReadOnlyList<Tag>? tags, ReplyToPost? replyTo = null)
+    public static Post CreateNew(string content, DateTimeOffset dateTime, Author author, IReadOnlyList<Tag>? tags, ReplyToPost? replyTo = null)
     {
         var id = PostId.New();
-        return new Post(id, content, replyTo, DateTime.UtcNow, author, tags, 0, 0);
+        return new Post(id, content, replyTo, dateTime, author, tags, 0, 0, 1);
     }
 
     public IEnumerable<T> MapTags<T>(Func<Tag, T> mapF)

@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+
 using DevMikroblog.Modules.Posts.Domain.Model;
 
 namespace DevMikroblog.Modules.Posts.Infrastructure.Model;
@@ -9,9 +11,12 @@ public class EfPost
     public int Likes { get; set; }
     public AuthorId AuthorId { get; init; }
     public string? AuthorName { get; set; }
-    public DateTime CreatedAt { get; init; }
+    public DateTimeOffset CreatedAt { get; init; }
     public PostId? ReplyToPostId { get; init; }
     public int RepliesQuantity { get; set; }
+    
+    [Timestamp]
+    public uint Version { get; set; }
 
     public string[]? Tags { get; init; }
     
@@ -41,6 +46,7 @@ public class EfPost
         Tags = post.MapTags(static x => x.Value).ToArray();
         RepliesQuantity = post.RepliesQuantity;
         ReplyToPostId = post.ReplyTo?.Id;
+        Version = post.Version;
     }
     
     public Post MapToPost()
@@ -49,6 +55,6 @@ public class EfPost
         var tags = Tags?.Select(x => new Tag(x)).ToArray();
         
         return new Post(Id, Content, replyTo, CreatedAt, new Author(AuthorId, AuthorName), tags,
-            Likes, RepliesQuantity);
+            Likes, RepliesQuantity, Version);
     }
 }

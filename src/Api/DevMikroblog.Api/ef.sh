@@ -1,0 +1,1 @@
+dotnet ef migrations add Init --project ../../Modules/Posts -o Infrastructure/Migrations 

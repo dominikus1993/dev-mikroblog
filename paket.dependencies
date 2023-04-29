@@ -36,6 +36,7 @@ nuget System.Linq.Async
 nuget ClrHeapAllocationAnalyzer
 nuget EFCore.NamingConventions
 nuget Dapper
+nuget Microsoft.EntityFrameworkCore.Design
 nuget OpenTelemetry.Extensions
 nuget OpenTelemetry.Extensions.Hosting
 nuget OpenTelemetry.Instrumentation.AspNetCore

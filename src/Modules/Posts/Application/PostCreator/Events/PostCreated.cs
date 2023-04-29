@@ -5,7 +5,7 @@ namespace DevMikroblog.Modules.Posts.Application.PostCreator.Events;
 public class PostCreated : IMessage
 {
     public Guid MessageId { get; init; }
-    public DateTime CreatedAt { get; init; }
+    public DateTimeOffset CreatedAt { get; init; }
     public Guid PostId { get; init; }
     public Guid? ReplyToPost { get; init; }
     public string Content { get; init; } = null!;

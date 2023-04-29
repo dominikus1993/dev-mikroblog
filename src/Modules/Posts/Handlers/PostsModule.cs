@@ -1,6 +1,7 @@
 using DevMikroblog.BuildingBlocks.Infrastructure.Auth;
 using DevMikroblog.BuildingBlocks.Infrastructure.Messaging.IoC;
 using DevMikroblog.BuildingBlocks.Infrastructure.Modules;
+using DevMikroblog.BuildingBlocks.Infrastructure.Time;
 using DevMikroblog.Modules.Posts.Application.PostCreator;
 using DevMikroblog.Modules.Posts.Application.PostCreator.Events;
 using DevMikroblog.Modules.Posts.Application.PostCreator.Handlers;
@@ -43,6 +44,7 @@ public sealed class PostsModule : IModule
         builder.Services.AddTransient<IPostTagParser, PostTagParser>();
         builder.Services.AddPublisher<PostCreated>("posts", "created");
         builder.Services.AddSubscriber<PostCreated, PostCreatedHandler>("posts", "created");
+        builder.Services.AddSingleton<ISystemClock, UtcSystemClock>();
         builder.Services
             .AddDbContextPool<PostDbContext>(options =>
             {

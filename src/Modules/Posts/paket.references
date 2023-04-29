@@ -6,3 +6,4 @@ System.Linq.Async
 AspNetCore.HealthChecks.NpgSql
 Npgsql.EntityFrameworkCore.PostgreSQL
 EFCore.NamingConventions
+Microsoft.EntityFrameworkCore.Design
