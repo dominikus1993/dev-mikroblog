@@ -28,13 +28,14 @@ public sealed class PostgresSqlSqlFixture : IAsyncLifetime
         await this.PostgreSql.StartAsync()
             .ConfigureAwait(false);
 
-        var builder = new DbContextOptionsBuilder<PostDbContext>().UseNpgsql(optionsBuilder =>
+        var builder = new DbContextOptionsBuilder<PostDbContext>().UseNpgsql(PostgreSql.GetConnectionString(), optionsBuilder =>
         {
             optionsBuilder.EnableRetryOnFailure(5);
             optionsBuilder.CommandTimeout(500);
             optionsBuilder.MigrationsAssembly(typeof(PostDbContext).Assembly.FullName);
         }).UseSnakeCaseNamingConvention();
         Context = new PostDbContext(builder.Options);
+        await Context.Database.MigrateAsync();
     }
 
     public async Task DisposeAsync()

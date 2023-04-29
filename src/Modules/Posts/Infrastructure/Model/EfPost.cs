@@ -13,7 +13,7 @@ public class EfPost
     public PostId? ReplyToPostId { get; init; }
     public int RepliesQuantity { get; set; }
 
-    public ICollection<string>? Tags { get; init; }
+    public string[]? Tags { get; init; }
     
     public void IncrementLikes()
     {
