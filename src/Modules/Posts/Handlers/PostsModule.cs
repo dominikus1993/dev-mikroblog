@@ -40,7 +40,6 @@ public sealed class PostsModule : IModule
         builder.Services.AddTransient<GetPostDetailsUseCase>();
         builder.Services.AddTransient<IPostsReader, MartenPostReader>();
         builder.Services.AddTransient<IPostWriter, MartenPostWriter>();
-        builder.Services.AddTransient<IPostModifier, EfCorePostModifier>();
         builder.Services.AddTransient<IPostTagParser, PostTagParser>();
         builder.Services.AddPublisher<PostCreated>("posts", "created");
         builder.Services.AddSubscriber<PostCreated, PostCreatedHandler>("posts", "created");
@@ -79,8 +78,12 @@ public sealed class PostsModule : IModule
         CancellationToken cancellationToken)
     {
         var result = await useCase.Execute(new PostId(postId), cancellationToken);
+        if (result is null)
+        {
+            return Results.NotFound();
+        }
 
-        return result.Match(x => Results.Ok(x), () => Results.NotFound());
+        return Results.Ok(result);
     }
     
     [Authorize]

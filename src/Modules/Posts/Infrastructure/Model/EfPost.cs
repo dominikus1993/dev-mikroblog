@@ -8,12 +8,12 @@ public class EfPost
 {
     public PostId Id { get; init; }
     public string Content { get; init; }
-    public int Likes { get; set; }
+    public uint Likes { get; set; }
     public AuthorId AuthorId { get; init; }
     public string? AuthorName { get; set; }
     public DateTimeOffset CreatedAt { get; init; }
     public PostId? ReplyToPostId { get; init; }
-    public int RepliesQuantity { get; set; }
+    public uint RepliesQuantity { get; set; }
     
     [Timestamp]
     public uint Version { get; set; }

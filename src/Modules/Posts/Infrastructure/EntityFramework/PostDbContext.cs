@@ -22,16 +22,26 @@ public sealed class PostDbContext : DbContext
     private static readonly Func<PostDbContext, PostId, CancellationToken, Task<EfPost?>> GetPostById =
         EF.CompileAsyncQuery(
             (PostDbContext dbContext, PostId id, CancellationToken ct) =>
-                dbContext.Posts.FirstOrDefault(p => p.Id == id));
+                dbContext.Posts.AsNoTracking().FirstOrDefault(p => p.Id == id));
+    
+    private static readonly Func<PostDbContext, PostId, CancellationToken, Task<EfPost?>> GetPostByIdReadonly =
+        EF.CompileAsyncQuery(
+            (PostDbContext dbContext, PostId id, CancellationToken ct) =>
+                dbContext.Posts.AsNoTracking().FirstOrDefault(p => p.Id == id));
     
     private static readonly Func<PostDbContext, PostId, IAsyncEnumerable<EfPost>> GetReplies =
         EF.CompileAsyncQuery(
             (PostDbContext dbContext, PostId id) =>
-                dbContext.Posts.Where(p => p.ReplyToPostId == id));
+                dbContext.Posts.AsNoTracking().Where(p => p.ReplyToPostId == id));
     
     public Task<EfPost?> Load(PostId id, CancellationToken cancellationToken)
     {
         return GetPostById(this, id, cancellationToken);
+    }
+    
+    public Task<EfPost?> ReadOnlyLoad(PostId id, CancellationToken cancellationToken)
+    {
+        return GetPostByIdReadonly(this, id, cancellationToken);
     }
 
     public IAsyncEnumerable<EfPost> GetRepliesTo(PostId id)

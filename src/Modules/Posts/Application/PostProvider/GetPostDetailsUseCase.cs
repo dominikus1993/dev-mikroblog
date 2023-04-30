@@ -27,9 +27,14 @@ public sealed class GetPostDetailsUseCase
         _postsReader = postsReader;
     }
 
-    public async Task<Option<PostDetailsDto>> Execute(PostId id, CancellationToken cancellationToken)
+    public async Task<PostDetailsDto?> Execute(PostId id, CancellationToken cancellationToken)
     {
         var result = await _postsReader.GetPostDetails(id, cancellationToken);
-        return result.Map(x => PostDetailsDto.FromPostDetails(x));
+        if (result is null)
+        {
+            return null;
+        }
+
+        return PostDetailsDto.FromPostDetails(result);
     }
 }

@@ -7,38 +7,42 @@ using DevMikroblog.Modules.Posts.Infrastructure.Model;
 
 using LanguageExt;
 
+using Microsoft.EntityFrameworkCore;
+
 using static LanguageExt.Prelude;
 
 namespace DevMikroblog.Modules.Posts.Infrastructure.Repositories;
 
-internal class MartenPostReader : IPostsReader
+internal sealed class MartenPostReader : IPostsReader
 {
-    private readonly PostDbContext _store;
+    private readonly IDbContextFactory<PostDbContext> _contextFactory;
     
-    public MartenPostReader(PostDbContext store)
+    public MartenPostReader(IDbContextFactory<PostDbContext> contextFactory)
     {
-        _store = store;
+        _contextFactory = contextFactory;
     }
 
-    public async Task<Option<Post>> GetPostById(PostId postId, CancellationToken cancellationToken)
+    public async Task<Post?> GetPostById(PostId postId, CancellationToken cancellationToken)
     {
-        var result = await _store.Load(postId, cancellationToken);
-        return Optional(result).Map(static post => post.MapToPost());
+        await using var context = await _contextFactory.CreateDbContextAsync(cancellationToken);
+        var result = await context.Load(postId, cancellationToken);
+        return result?.MapToPost();
     }
 
-    public async Task<Option<PostDetails>> GetPostDetails(PostId postId, CancellationToken cancellationToken)
+    public async Task<PostDetails?> GetPostDetails(PostId postId, CancellationToken cancellationToken)
     {
-        var result = await _store.Load(postId, cancellationToken);
+        await using var context = await _contextFactory.CreateDbContextAsync(cancellationToken);
+        var result = await context.Load(postId, cancellationToken);
         if (result is null)
         {
-            return None;
+            return null;
         }
 
         var parent = result.ReplyToPostId.HasValue ?
-            await _store.Load(result.ReplyToPostId.Value, cancellationToken)
+            await context.Load(result.ReplyToPostId.Value, cancellationToken)
             : null;
 
-        var replies = await _store.GetRepliesTo(postId)
+        var replies = await context.GetRepliesTo(postId)
             .ToArrayAsync(cancellationToken);
 
         var postParent = Optional(parent).Map(x => x.MapToPost());
@@ -50,7 +54,8 @@ internal class MartenPostReader : IPostsReader
 
     public async Task<Option<PagedPosts>> GetPosts(GetPostQuery query, CancellationToken cancellationToken)
     {
-        IQueryable<EfPost> q = _store.Posts.AsQueryable();
+        await using var context = await _contextFactory.CreateDbContextAsync(cancellationToken);
+        IQueryable<EfPost> q = context.Posts.AsQueryable();
 
         if (query.AuthorId.HasValue)
         {

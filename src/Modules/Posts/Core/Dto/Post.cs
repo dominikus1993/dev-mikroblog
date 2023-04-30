@@ -20,9 +20,9 @@ public sealed class PostDto
     public AuthorDto Author { get; init; }
     public string Content { get; init; }
     public IReadOnlyCollection<string> Tags { get; init; }
-    public int Likes { get; init; }
+    public uint Likes { get; init; }
     
-    public int RepliesQuantity { get; init; }
+    public uint RepliesQuantity { get; init; }
     
     
     private PostDto(Post post)

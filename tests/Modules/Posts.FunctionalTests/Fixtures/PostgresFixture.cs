@@ -15,8 +15,25 @@ namespace Posts.FunctionalTests.Fixtures;
 
 public sealed class PostgresSqlSqlFixture : IAsyncLifetime
 {
-    public PostgreSqlContainer PostgreSql { get; }
-    internal PostDbContext Context { get; private set; }
+    private class TestDbContextFactory : IDbContextFactory<PostDbContext>
+    {
+        private readonly DbContextOptionsBuilder<PostDbContext> _dbContextOptionsBuilder;
+        public TestDbContextFactory(string connection)
+        {
+            _dbContextOptionsBuilder = new DbContextOptionsBuilder<PostDbContext>().UseNpgsql(connection, optionsBuilder =>
+            {
+                optionsBuilder.EnableRetryOnFailure(5);
+                optionsBuilder.CommandTimeout(500);
+                optionsBuilder.MigrationsAssembly(typeof(PostDbContext).Assembly.FullName);
+            }).UseSnakeCaseNamingConvention().UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
+        } 
+        public PostDbContext CreateDbContext()
+        {
+            return new PostDbContext(_dbContextOptionsBuilder.Options);
+        }
+    }
+    private PostgreSqlContainer PostgreSql { get; }
+    public IDbContextFactory<PostDbContext> ContextFactory { get; private set; }
 
     public PostgresSqlSqlFixture()
     {
@@ -28,21 +45,14 @@ public sealed class PostgresSqlSqlFixture : IAsyncLifetime
         await this.PostgreSql.StartAsync()
             .ConfigureAwait(false);
 
-        var builder = new DbContextOptionsBuilder<PostDbContext>().UseNpgsql(PostgreSql.GetConnectionString(), optionsBuilder =>
-        {
-            optionsBuilder.EnableRetryOnFailure(5);
-            optionsBuilder.CommandTimeout(500);
-            optionsBuilder.MigrationsAssembly(typeof(PostDbContext).Assembly.FullName);
-        }).UseSnakeCaseNamingConvention();
-        Context = new PostDbContext(builder.Options);
-        await Context.Database.MigrateAsync();
+        ContextFactory = new TestDbContextFactory(PostgreSql.GetConnectionString());
+        await using var context = await ContextFactory.CreateDbContextAsync();
+        await context.Database.MigrateAsync();
     }
 
     public async Task DisposeAsync()
     {
         await this.PostgreSql.DisposeAsync()
             .ConfigureAwait(false);
-
-        await this.Context.DisposeAsync();
     }
 }

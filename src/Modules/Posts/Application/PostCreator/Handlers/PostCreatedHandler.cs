@@ -11,11 +11,13 @@ namespace DevMikroblog.Modules.Posts.Application.PostCreator.Handlers;
 
 public class PostCreatedHandler : IMessageHandler<PostCreated>
 {
-    private IPostModifier _modifier;
+    private readonly IPostsReader _postsReader;
+    private readonly IPostWriter _postWriter;
 
-    public PostCreatedHandler(IPostModifier modifier)
+    public PostCreatedHandler(IPostsReader postsReader, IPostWriter postWriter)
     {
-        _modifier = modifier;
+        _postsReader = postsReader;
+        _postWriter = postWriter;
     }
 
     public async Task<Unit> Handle(PostCreated message, CancellationToken cancellationToken = default)
@@ -23,7 +25,14 @@ public class PostCreatedHandler : IMessageHandler<PostCreated>
         if (message.ReplyToPost.HasValue)
         {
             var postId = new PostId(message.ReplyToPost.Value);
-            await _modifier.Modify(postId, post => post.IncrementRepliesQuantity(), cancellationToken);
+            var post = await _postsReader.GetPostById(postId, cancellationToken);
+            if (post is null)
+            {
+                return Unit.Default;
+            }
+
+            var newPost = post.IncrementRepliesQuantity();
+            await _postWriter.Update(newPost, cancellationToken);
         }
         return Unit.Default;
     }

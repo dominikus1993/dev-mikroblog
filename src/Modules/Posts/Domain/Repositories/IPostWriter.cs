@@ -8,5 +8,6 @@ namespace DevMikroblog.Modules.Posts.Domain.Repositories;
 
 public interface IPostWriter
 {
-    Task Save(Post post, CancellationToken cancellationToken = default);
+    Task Add(Post post, CancellationToken cancellationToken = default);
+    Task Update(Post post, CancellationToken cancellationToken = default);
 }
