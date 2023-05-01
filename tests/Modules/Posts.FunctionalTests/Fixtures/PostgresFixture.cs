@@ -40,6 +40,20 @@ public sealed class PostgresSqlSqlFixture : IAsyncLifetime
         this.PostgreSql = new PostgreSqlBuilder().Build();
     }
 
+    public async Task Seed(IEnumerable<EfPost> posts)
+    {
+        await using var context = await ContextFactory.CreateDbContextAsync();
+        context.Posts.AddRange(posts);
+        await context.SaveChangesAsync();
+    }
+    
+    public async Task Clean()
+    {
+        await using var context = await ContextFactory.CreateDbContextAsync();
+        context.Posts.RemoveRange(context.Posts);
+        await context.SaveChangesAsync();
+    }
+
     public async Task InitializeAsync()
     {
         await this.PostgreSql.StartAsync()
