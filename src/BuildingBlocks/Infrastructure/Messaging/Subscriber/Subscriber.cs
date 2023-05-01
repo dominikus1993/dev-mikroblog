@@ -26,9 +26,13 @@ public class RabbtMqSubscriptionConfig<T> where T : notnull, IMessage
     public string Queue { get; init; } = null!;
 }
 
+file static class RabbitMqSubscriber
+{
+    internal static readonly JsonSerializerOptions Options = new() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };   
+}
+
 internal class RabbitMqSubscriber<T> : BackgroundService where T : notnull, IMessage
 {
-    private static readonly JsonSerializerOptions Options = new() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
     private readonly IServiceProvider _serviceProvider;
     private readonly RabbtMqSubscriptionConfig<T> _config;
     private readonly ILogger<RabbitMqSubscriber<T>> _logger;
@@ -51,12 +55,13 @@ internal class RabbitMqSubscriber<T> : BackgroundService where T : notnull, IMes
         _channel.QueueBind(queue: _config.Queue, exchange: _config.Exchange, routingKey: _config.Topic);
         var consumer = new AsyncEventingBasicConsumer(_channel);
         consumer.Received += OnMessageReceived;
-        _channel.BasicConsume(queue: _config.Queue, autoAck: true, consumer: consumer);
+        _channel.BasicConsume(queue: _config.Queue, autoAck: false, consumer: consumer);
         return Task.CompletedTask;
     }
 
     private async Task OnMessageReceived(object sender, BasicDeliverEventArgs ea)
     {
+        
         _logger.LogReceivedRabbitMqMessage(T.Name, _config.Exchange, _config.Queue, _config.Topic);
         using var activity = RabbitMqOpenTelemetry.RabbitMqSource.StartActivity(name: "rabbitmq.consumer",
             ActivityKind.Consumer,
@@ -72,7 +77,7 @@ internal class RabbitMqSubscriber<T> : BackgroundService where T : notnull, IMes
             activity.SetTag("messaging.protocol_version", "0.9.1");
             activity.SetTag("messaging.message_name", T.Name);
         }
-        var message = JsonSerializer.Deserialize<T>(ea.Body.Span, Options);
+        var message = JsonSerializer.Deserialize<T>(ea.Body.Span, RabbitMqSubscriber.Options);
         if (message is null)
         {
             _logger.LogRabbitmqMessageIsNull(ea.Exchange, ea.RoutingKey);
@@ -83,11 +88,13 @@ internal class RabbitMqSubscriber<T> : BackgroundService where T : notnull, IMes
         {
             var messageHandler = _serviceProvider.GetService<IMessageHandler<T>>()!;
             await messageHandler!.Handle(message);
+            _channel.BasicAck(ea.DeliveryTag, false);
         }
         catch (Exception e)
         {
             activity?.RecordException(e);
             _logger.LogProcessingMessageError(e, T.Name, _config.Exchange, _config.Queue, _config.Topic);
+            _channel.BasicNack(ea.DeliveryTag, false, true);
         }
 
     }
