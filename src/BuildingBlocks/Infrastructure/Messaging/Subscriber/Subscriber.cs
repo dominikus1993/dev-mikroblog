@@ -24,6 +24,7 @@ public class RabbtMqSubscriptionConfig<T> where T : notnull, IMessage
     public string Exchange { get; init; } = null!;
     public string Topic { get; init; } = "#";
     public string Queue { get; init; } = null!;
+    public static string MessageName => typeof(T).FullName;
 }
 
 file static class RabbitMqSubscriber
@@ -61,7 +62,6 @@ internal class RabbitMqSubscriber<T> : BackgroundService where T : notnull, IMes
 
     private async Task OnMessageReceived(object sender, BasicDeliverEventArgs ea)
     {
-        
         _logger.LogReceivedRabbitMqMessage(T.Name, _config.Exchange, _config.Queue, _config.Topic);
         using var activity = RabbitMqOpenTelemetry.RabbitMqSource.StartActivity(name: "rabbitmq.consumer",
             ActivityKind.Consumer,

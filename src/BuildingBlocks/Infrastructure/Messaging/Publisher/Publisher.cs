@@ -21,7 +21,7 @@ using Microsoft.Extensions.Logging;
 
 using RabbitMQ.Client;
 
-public class RabbitMqPublisherConfig<T> where T : notnull, IMessage
+public sealed class RabbitMqPublisherConfig<T> where T : notnull, IMessage
 {
     public string Exchange { get; init; } = null!;
     public string Topic { get; init; } = "#";
@@ -29,7 +29,7 @@ public class RabbitMqPublisherConfig<T> where T : notnull, IMessage
     public string MessageName { get; } = T.Name;
 }
 
-internal class RabbitMqPublishChannel : IDisposable
+internal sealed class RabbitMqPublishChannel : IDisposable
 {
     public IModel Model { get; }
 
@@ -46,10 +46,14 @@ internal class RabbitMqPublishChannel : IDisposable
         }
     }
 }
-internal class RabbitMqMessagePublisher<T> : IMessagePublisher<T> where T : class, IMessage
+
+file static class RabbitMqMessagePublisher
 {
-    private static readonly JsonSerializerOptions
-        _options = new() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
+    public static readonly JsonSerializerOptions
+        Options = new() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
+}
+internal sealed class RabbitMqMessagePublisher<T> : IMessagePublisher<T> where T : class, IMessage
+{
     private readonly RabbitMqPublisherConfig<T> _config;
     private readonly RabbitMqPublishChannel _channel;
     private readonly ILogger<RabbitMqMessagePublisher<T>> _logger;
@@ -70,9 +74,9 @@ internal class RabbitMqMessagePublisher<T> : IMessagePublisher<T> where T : clas
 
     public ValueTask<Unit> Publish(T message, CancellationToken cancellationToken = default)
     {
-        ArgumentNullException.ThrowIfNull(message, nameof(message));
+        ArgumentNullException.ThrowIfNull(message);
         _logger.LogPublishRabbitMqMessage(T.Name, _config.Exchange, _config.Topic);
-        var json = JsonSerializer.SerializeToUtf8Bytes(message, _options);
+        var json = JsonSerializer.SerializeToUtf8Bytes(message, RabbitMqMessagePublisher.Options);
         using var activity = RabbitMqOpenTelemetry.RabbitMqSource.StartActivity("rabbitmq", ActivityKind.Producer);
         _channel.Model.ExchangeDeclare(exchange: _config.Exchange, type: ExchangeType.Topic);
         var props = _channel.Model.CreateBasicProperties();
@@ -94,7 +98,7 @@ internal class RabbitMqMessagePublisher<T> : IMessagePublisher<T> where T : clas
         return new ValueTask<Unit>(Unit.Default);
     }
 
-    private void InjectIntoHeader(IBasicProperties properties)
+    private static void InjectIntoHeader(IBasicProperties properties)
     {
         properties.Headers ??= new Dictionary<string, object>();
         foreach (var header in DefaultHeaders)
