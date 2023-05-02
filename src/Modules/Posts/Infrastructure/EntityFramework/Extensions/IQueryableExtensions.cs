@@ -7,6 +7,7 @@ namespace DevMikroblog.Modules.Posts.Infrastructure.EntityFramework.Extensions;
 public sealed record PagedResult<T>(IReadOnlyCollection<T> Items, int PageCount, int TotalItemCount) : IEnumerable<T>
 {
     public int Count => Items.Count;
+    public bool IsEmpty => Items.Count == 0;
 
     public static readonly PagedResult<T> Empty = new(Array.Empty<T>(), 0, 0);
     
@@ -38,14 +39,17 @@ public static class QueryableExtensions
     {
         var rowCount = await query.CountAsync(cancellationToken: cancellationToken);
 
-
+        if (rowCount == 0)
+        {
+            return PagedResult<T>.Empty;
+        }
+        
         var pageCount = (int)Math.Ceiling((double)rowCount / pageSize);
 
         var skip = (pageNumber - 1) * pageSize;
-
-
+        
         var result = await query.Skip(skip).Take(pageSize).ToListAsync(cancellationToken: cancellationToken);
-
+        
         return new PagedResult<T>(result, pageCount, rowCount);
     }
 }

@@ -44,12 +44,23 @@ public sealed class QueryableExtensionsTests : IClassFixture<PostgresSqlSqlFixtu
     
     [Theory]
     [AutoData]
+    public async Task TestWhenRecordsNotExists()
+    {
+        var subject = await _postDbContext.Posts.AsQueryable().ToPagedListAsync(1, 1);
+        
+        subject.Should().NotBeNull();
+        subject.IsEmpty.Should().BeTrue();
+    }
+    
+    [Theory]
+    [AutoData]
     public async Task TestWhenRecordsExists(EfPost[] posts)
     {
         await _postgresSqlSqlFixture.Seed(posts);
 
         var subject = await _postDbContext.Posts.AsQueryable().ToPagedListAsync(1, 1);
 
+        subject.IsEmpty.Should().BeFalse();
         subject.Should().NotBeNull();
         subject.PageCount.Should().Be(posts.Length);
         subject.TotalItemCount.Should().Be(posts.Length);
@@ -66,6 +77,7 @@ public sealed class QueryableExtensionsTests : IClassFixture<PostgresSqlSqlFixtu
         var subject = await _postDbContext.Posts.AsQueryable().ToPagedListAsync(1, posts.Length + 1);
 
         subject.Should().NotBeNull();
+        subject.IsEmpty.Should().BeFalse();
         subject.PageCount.Should().Be(1);
         subject.TotalItemCount.Should().Be(posts.Length);
         subject.Items.Should().NotBeEmpty();
