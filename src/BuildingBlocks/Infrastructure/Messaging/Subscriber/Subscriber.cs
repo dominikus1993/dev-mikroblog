@@ -32,7 +32,7 @@ file static class RabbitMqSubscriber
     internal static readonly JsonSerializerOptions Options = new() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };   
 }
 
-internal class RabbitMqSubscriber<T> : BackgroundService where T : notnull, IMessage
+internal sealed class RabbitMqSubscriber<T> : BackgroundService where T : notnull, IMessage
 {
     private readonly IServiceProvider _serviceProvider;
     private readonly RabbtMqSubscriptionConfig<T> _config;
