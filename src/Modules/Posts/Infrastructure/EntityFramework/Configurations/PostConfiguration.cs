@@ -38,13 +38,13 @@ public sealed class DateTimeOffsetConverter : ValueConverter<DateTimeOffset, Dat
     }
 }
 
-public sealed class PostConfiguration: IEntityTypeConfiguration<EfPost>
+public sealed class PostConfiguration: IEntityTypeConfiguration<Post>
 {
-    public void Configure(EntityTypeBuilder<EfPost> builder)
+    public void Configure(EntityTypeBuilder<Post> builder)
     {
         builder.HasKey(x => x.Id);
         builder.Property(x => x.Id).HasConversion<PostIdConverter>();
-        builder.Property(x => x.AuthorId).HasConversion<AuthorIdConverter>();
+        builder.Property(x => x.).HasConversion<AuthorIdConverter>();
         builder.Property(x => x.ReplyToPostId).HasConversion<PostIdConverter>();
         builder.Property(x => x.CreatedAt).HasConversion<DateTimeOffsetConverter>();
     }
