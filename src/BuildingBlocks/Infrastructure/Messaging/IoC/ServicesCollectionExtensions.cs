@@ -30,7 +30,7 @@ public static class ServicesCollectionExtensions
     
     public static IServiceCollection AddRabbitMq(this IServiceCollection services, RabbitMqConfiguration? configuration)
     {
-        ArgumentNullException.ThrowIfNull(configuration, nameof(configuration));
+        ArgumentNullException.ThrowIfNull(configuration);
         ArgumentNullException.ThrowIfNull(configuration.AmqpConnection, $"{nameof(configuration)}.{nameof(configuration.AmqpConnection)}");
         services.AddSingleton<IConnectionFactory>(new ConnectionFactory()
         {
