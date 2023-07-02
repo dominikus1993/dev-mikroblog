@@ -84,7 +84,6 @@ public static class Extensionss
                 .Enrich.FromLogContext()
                 .Enrich.WithProperty("Environment", context.HostingEnvironment.EnvironmentName)
                 .Enrich.WithProperty("ApplicationName", appName)
-                .Enrich.WithClientAgent()
                 .Enrich.WithCustomerId()
                 .Enrich.WithSpan()
                 .Enrich.WithExceptionDetails();

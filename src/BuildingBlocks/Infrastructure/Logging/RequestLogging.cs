@@ -14,14 +14,6 @@ namespace DevMikroblog.BuildingBlocks.Infrastructure.Logging;
 
 public static class RequestLogging
 {
-    public static LogEventLevel CustomGetLevel(HttpContext ctx, double _, Exception? ex) =>
-        ex is not null
-            ? LogEventLevel.Error
-            : ctx.Response.StatusCode > 499
-                ? LogEventLevel.Error
-                : LogEventLevel.Debug; //Debug instead of Information
-
-
     private static bool IsHealthCheckEndpoint(HttpContext ctx)
     {
         var endpoint = ctx.GetEndpoint();
@@ -46,7 +38,7 @@ public static class RequestLogging
                     ? LogEventLevel.Verbose // Was a health check, use Verbose
                     : LogEventLevel.Information;
 
-    public static void EnrichFromRequest(
+    private static void EnrichFromRequest(
         IDiagnosticContext diagnosticContext, HttpContext httpContext)
     {
         var request = httpContext.Request;
