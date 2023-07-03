@@ -26,7 +26,7 @@ internal sealed class MartenPostReader : IPostsReader
     {
         await using var context = await _contextFactory.CreateDbContextAsync(cancellationToken);
         var result = await context.Load(postId, cancellationToken);
-        return result?.MapToPost();
+        return result;
     }
 
     public async Task<PostDetails?> GetPostDetails(PostId postId, CancellationToken cancellationToken)
@@ -38,7 +38,7 @@ internal sealed class MartenPostReader : IPostsReader
             return null;
         }
 
-        var parent = result.ReplyToPostId.HasValue ?
+        var parent = result.ReplyTo.HasValue ?
             await context.Load(result.ReplyToPostId.Value, cancellationToken)
             : null;
 
@@ -55,12 +55,12 @@ internal sealed class MartenPostReader : IPostsReader
     public async Task<Option<PagedPosts>> GetPosts(GetPostQuery query, CancellationToken cancellationToken)
     {
         await using var context = await _contextFactory.CreateDbContextAsync(cancellationToken);
-        IQueryable<EfPost> q = context.Posts.AsQueryable();
+        IQueryable<Post> q = context.Posts.AsQueryable();
 
         if (query.AuthorId.HasValue)
         {
             var id = query.AuthorId;
-            q = q.Where(x => x.AuthorId == id);
+            q = q.Where(x => x.Author.Id == id);
         }
         if (!string.IsNullOrEmpty(query.Tag))
         {

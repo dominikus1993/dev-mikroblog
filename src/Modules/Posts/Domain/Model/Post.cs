@@ -17,7 +17,7 @@ public readonly record struct AuthorId(Guid Value)
 }
 public readonly record struct Tag(string Value);
 public sealed record Author(AuthorId Id, string? Name);
-public readonly record struct ReplyToPost(PostId Id);
+public sealed record ReplyToPost(PostId Id);
 public sealed record Post(PostId Id, string Content, ReplyToPost? ReplyTo, DateTimeOffset CreatedAt, Author Author, IReadOnlyList<Tag>? Tags, uint Likes, uint RepliesQuantity, uint Version = 1)
 {
     public Post IncrementRepliesQuantity()

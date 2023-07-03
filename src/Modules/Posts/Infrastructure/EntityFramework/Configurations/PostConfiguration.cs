@@ -1,5 +1,4 @@
 using DevMikroblog.Modules.Posts.Domain.Model;
-using DevMikroblog.Modules.Posts.Infrastructure.Model;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -44,8 +43,9 @@ public sealed class PostConfiguration: IEntityTypeConfiguration<Post>
     {
         builder.HasKey(x => x.Id);
         builder.Property(x => x.Id).HasConversion<PostIdConverter>();
-        builder.Property(x => x.).HasConversion<AuthorIdConverter>();
-        builder.Property(x => x.ReplyToPostId).HasConversion<PostIdConverter>();
+        builder.OwnsOne<Author>(x => x.Author);
+        builder.OwnsOne(x => x.ReplyTo);
+        builder.Property(x => x.ReplyTo.Id).HasConversion<PostIdConverter>();
         builder.Property(x => x.CreatedAt).HasConversion<DateTimeOffsetConverter>();
     }
 }

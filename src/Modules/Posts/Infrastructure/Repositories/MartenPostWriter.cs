@@ -19,16 +19,14 @@ public sealed class MartenPostWriter : IPostWriter
     public async Task Add(Post post, CancellationToken cancellationToken = default)
     {
         await using var context = await _contextFactory.CreateDbContextAsync(cancellationToken);
-        var dbPost = new EfPost(post);
-        context.Add(dbPost);
+        context.Posts.Add(post);
         await context.SaveChangesAsync(cancellationToken);
     }
 
     public async Task Update(Post post, CancellationToken cancellationToken = default)
     {
         await using var context = await _contextFactory.CreateDbContextAsync(cancellationToken);
-        var dbPost = new EfPost(post);
-        context.Update(dbPost);
+        context.Posts.Update(post);
         await context.SaveChangesAsync(cancellationToken);
     }
 }
