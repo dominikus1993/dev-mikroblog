@@ -2,81 +2,53 @@ using DevMikroblog.Modules.Posts.Domain.Model;
 using DevMikroblog.Modules.Posts.Domain.Repositories;
 using DevMikroblog.Modules.Posts.Infrastructure.EntityFramework;
 using DevMikroblog.Modules.Posts.Infrastructure.EntityFramework.Extensions;
-using DevMikroblog.Modules.Posts.Infrastructure.Model;
-
-
-using LanguageExt;
 
 using Microsoft.EntityFrameworkCore;
-
-using static LanguageExt.Prelude;
 
 namespace DevMikroblog.Modules.Posts.Infrastructure.Repositories;
 
 internal sealed class MartenPostReader : IPostsReader
 {
-    private readonly IDbContextFactory<PostDbContext> _contextFactory;
-    
-    public MartenPostReader(IDbContextFactory<PostDbContext> contextFactory)
+    private readonly PostDbContext _context;
+
+    public MartenPostReader(PostDbContext context)
     {
-        _contextFactory = contextFactory;
+        _context = context;
     }
+
 
     public async Task<Post?> GetPostById(PostId postId, CancellationToken cancellationToken)
     {
-        await using var context = await _contextFactory.CreateDbContextAsync(cancellationToken);
-        var result = await context.Load(postId, cancellationToken);
+        var result = await _context.Load(postId, cancellationToken);
         return result;
     }
 
-    public async Task<PostDetails?> GetPostDetails(PostId postId, CancellationToken cancellationToken)
+    public Task<PostDetails?> GetPostDetails(PostId postId, CancellationToken cancellationToken)
     {
-        await using var context = await _contextFactory.CreateDbContextAsync(cancellationToken);
-        var result = await context.Load(postId, cancellationToken);
-        if (result is null)
-        {
-            return null;
-        }
-
-        Post? parent;
-        if (result.ReplyTo is not null)
-        {
-            parent = await context.Load(result.ReplyTo.Id, cancellationToken);
-        }
-
-        var replies = await context.GetRepliesTo(postId)
-            .ToArrayAsync(cancellationToken);
-
-        var postParent = Optional(parent).Map(x => x.MapToPost());
-        var postReplies = Optional(replies).Where(x => x.Length > 0)
-            .Map<IReadOnlyList<Post>>(posts => posts.Select(post => post.MapToPost()).ToList());
-
-        return new PostDetails(postParent, result.MapToPost(), postReplies);
+        return Task.FromResult<PostDetails?>(null);
     }
 
-    public async Task<Option<PagedPosts>> GetPosts(GetPostQuery query, CancellationToken cancellationToken)
+    public async Task<PagedPosts?> GetPosts(GetPostQuery query, CancellationToken cancellationToken)
     {
-        await using var context = await _contextFactory.CreateDbContextAsync(cancellationToken);
-        IQueryable<Post> q = context.Posts.AsQueryable();
+        IQueryable<Post> q = _context.Posts.AsQueryable();
 
         if (query.AuthorId.HasValue)
         {
             var id = query.AuthorId;
             q = q.Where(x => x.Author.Id == id);
         }
-        if (!string.IsNullOrEmpty(query.Tag))
-        {
-            q = q.Where(x => x.Tags!.Contains(query.Tag));
-        }
+        
+        // if (!string.IsNullOrEmpty(query.Tag))
+        // {
+        //     q = q.Where(x => x.Tags!.Contains(query.Tag));
+        // }
         
         var result = await q.OrderByDescending(static x => x.CreatedAt).ToPagedListAsync(pageNumber: query.Page, pageSize: query.PageSize, cancellationToken);
-        if (result.Count == 0)
+        if (result is null or { Count: 0 })
         {
-            return None;
+            return null;
         }
 
-        var postList = result.Select(static x => x.MapToPost()).ToArray();
-
-        return Some(new PagedPosts(postList, result.PageCount, result.TotalItemCount));
+        return new PagedPosts(result.Items, result.PageCount, result.TotalItemCount);
     }
 }

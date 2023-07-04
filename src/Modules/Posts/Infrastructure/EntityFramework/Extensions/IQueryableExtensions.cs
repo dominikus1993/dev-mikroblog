@@ -48,7 +48,7 @@ public static class QueryableExtensions
 
         var skip = (pageNumber - 1) * pageSize;
         
-        var result = await query.Skip(skip).Take(pageSize).ToListAsync(cancellationToken: cancellationToken);
+        var result = await query.Skip(skip).Take(pageSize).ToArrayAsync(cancellationToken: cancellationToken);
         
         return new PagedResult<T>(result, pageCount, rowCount);
     }

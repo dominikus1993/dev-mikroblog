@@ -18,16 +18,18 @@ internal class GetPostsUseCase
         _postProvider = postProvider;
     }
 
-    public async Task<Option<PagedPostsDto>> Execute(GetPostsQuery query, CancellationToken cancellationToken = default)
+    public async Task<PagedPostsDto?> Execute(GetPostsQuery query, CancellationToken cancellationToken = default)
     {
         var result =
             await _postProvider.GetPosts(new GetPostQuery(query.Page, query.PageSize, query.Tag, query.AuthorId),
                 cancellationToken);
-        return result.Map(posts =>
+        if (result is null)
         {
-            var dtos = posts.Posts.Select(post => PostDto.FromPost(post)).ToList();
-            return new PagedPostsDto(dtos, posts.TotalPages,
-                posts.TotalPostsQuantity);
-        });
+            return null;
+        }
+        
+        var dtos = result.Posts.Select(static post => PostDto.FromPost(post)).ToList();
+        return new PagedPostsDto(dtos, result.TotalPages,
+            result.TotalPostsQuantity);
     }
 }
