@@ -1,7 +1,6 @@
 using DevMikroblog.Modules.Posts.Domain.Model;
 using DevMikroblog.Modules.Posts.Domain.Repositories;
 using DevMikroblog.Modules.Posts.Infrastructure.EntityFramework;
-using DevMikroblog.Modules.Posts.Infrastructure.Model;
 
 using Microsoft.EntityFrameworkCore;
 
