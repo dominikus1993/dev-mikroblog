@@ -38,9 +38,11 @@ internal sealed class MartenPostReader : IPostsReader
             return null;
         }
 
-        var parent = result.ReplyTo.HasValue ?
-            await context.Load(result.ReplyToPostId.Value, cancellationToken)
-            : null;
+        Post? parent;
+        if (result.ReplyTo is not null)
+        {
+            parent = await context.Load(result.ReplyTo.Id, cancellationToken);
+        }
 
         var replies = await context.GetRepliesTo(postId)
             .ToArrayAsync(cancellationToken);
