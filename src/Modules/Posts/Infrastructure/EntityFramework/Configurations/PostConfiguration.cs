@@ -45,7 +45,6 @@ public sealed class PostConfiguration: IEntityTypeConfiguration<Post>
         builder.Property(x => x.Id).HasConversion<PostIdConverter>();
         builder.OwnsOne<Author>(x => x.Author);
         builder.OwnsOne(x => x.ReplyTo);
-        builder.Property(x => x.ReplyTo.Id).HasConversion<PostIdConverter>();
         builder.Property(x => x.CreatedAt).HasConversion<DateTimeOffsetConverter>();
     }
 }

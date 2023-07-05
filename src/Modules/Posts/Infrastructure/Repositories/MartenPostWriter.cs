@@ -8,24 +8,23 @@ namespace DevMikroblog.Modules.Posts.Infrastructure.Repositories;
 
 public sealed class MartenPostWriter : IPostWriter
 {
-    private readonly IDbContextFactory<PostDbContext> _contextFactory;
-    
-    public MartenPostWriter(IDbContextFactory<PostDbContext> contextFactory)
+    private readonly PostDbContext _context;
+
+    public MartenPostWriter(PostDbContext context)
     {
-        _contextFactory = contextFactory;
+        _context = context;
     }
+
 
     public async Task Add(Post post, CancellationToken cancellationToken = default)
     {
-        await using var context = await _contextFactory.CreateDbContextAsync(cancellationToken);
-        context.Posts.Add(post);
-        await context.SaveChangesAsync(cancellationToken);
+        _context.Posts.Add(post);
+        await _context.SaveChangesAsync(cancellationToken);
     }
 
     public async Task Update(Post post, CancellationToken cancellationToken = default)
     {
-        await using var context = await _contextFactory.CreateDbContextAsync(cancellationToken);
-        context.Posts.Update(post);
-        await context.SaveChangesAsync(cancellationToken);
+        _context.Posts.Update(post);
+        await _context.SaveChangesAsync(cancellationToken);
     }
 }
