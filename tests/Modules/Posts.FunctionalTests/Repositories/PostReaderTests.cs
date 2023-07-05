@@ -2,28 +2,27 @@ using AutoFixture.Xunit2;
 
 using DevMikroblog.Modules.Posts.Domain.Model;
 using DevMikroblog.Modules.Posts.Domain.Repositories;
-using DevMikroblog.Modules.Posts.Infrastructure.Model;
+using DevMikroblog.Modules.Posts.Infrastructure.EntityFramework;
 using DevMikroblog.Modules.Posts.Infrastructure.Repositories;
 
 using FluentAssertions;
 
-using LanguageExt.UnsafeValueAccess;
-
 using Posts.FunctionalTests.Fixtures;
 
 using Xunit;
-using static LanguageExt.Prelude;
 
 namespace Posts.FunctionalTests.Repositories;
 
-public class PostReaderTests : IClassFixture<PostgresSqlSqlFixture>
+public class PostReaderTests : IClassFixture<PostgresSqlSqlFixture>, IDisposable
 {
     private readonly PostgresSqlSqlFixture _fixture;
+    private readonly PostDbContext _postDbContext;
     private readonly IPostsReader _postsReader;
     public PostReaderTests(PostgresSqlSqlFixture fixture)
     {
         _fixture = fixture;
-        _postsReader = new MartenPostReader(_fixture.ContextFactory);
+        _postDbContext = _fixture.ContextFactory.CreateDbContext();
+        _postsReader = new MartenPostReader(_postDbContext);
     }
 
     [Theory]
@@ -333,4 +332,8 @@ public class PostReaderTests : IClassFixture<PostgresSqlSqlFixture>
     //     // Test
     //     subject.IsNone.Should().BeTrue();
     // }
+    public void Dispose()
+    {
+        _postDbContext?.Dispose();
+    }
 }

@@ -1,8 +1,8 @@
 using AutoFixture.Xunit2;
 
+using DevMikroblog.Modules.Posts.Domain.Model;
 using DevMikroblog.Modules.Posts.Infrastructure.EntityFramework;
 using DevMikroblog.Modules.Posts.Infrastructure.EntityFramework.Extensions;
-using DevMikroblog.Modules.Posts.Infrastructure.Model;
 
 using FluentAssertions;
 
@@ -54,7 +54,7 @@ public sealed class QueryableExtensionsTests : IClassFixture<PostgresSqlSqlFixtu
     
     [Theory]
     [AutoData]
-    public async Task TestWhenRecordsExists(EfPost[] posts)
+    public async Task TestWhenRecordsExists(Post[] posts)
     {
         await _postgresSqlSqlFixture.Seed(posts);
 
@@ -70,7 +70,7 @@ public sealed class QueryableExtensionsTests : IClassFixture<PostgresSqlSqlFixtu
     
     [Theory]
     [AutoData]
-    public async Task TestWhenRecordsExistsAndPageSizeIsGreaterThanDbSize(EfPost[] posts)
+    public async Task TestWhenRecordsExistsAndPageSizeIsGreaterThanDbSize(Post[] posts)
     {
         await _postgresSqlSqlFixture.Seed(posts);
 

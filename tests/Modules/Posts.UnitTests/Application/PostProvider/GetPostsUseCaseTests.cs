@@ -40,7 +40,7 @@ public class GetPostsUseCaseTests
 
         var subject = await useCase.Execute(query, CancellationToken.None);
         // Test
-        subject.IsNone.Should().BeTrue();
+        subject.Should().BeNull();
         mock.Verify(x => x.GetPosts(It.Is<GetPostQuery>(x => x.Page == query.Page && x.PageSize == query.PageSize), It.IsAny<CancellationToken>()), Times.Once);
     }
     
@@ -62,8 +62,8 @@ public class GetPostsUseCaseTests
         // Act
         var query = new GetPostsQuery(1, 2);
         var result = await useCase.Execute(query, CancellationToken.None);
-        result.IsSome.Should().BeTrue();
-        var subject = result.ValueUnsafe();
+        result.Should().NotBeNull();
+        var subject = result;
         // Test
         subject.Posts.Should().HaveCount(data.Count);
         subject.Posts.Should().Contain(x => x.PostId == data[0].Id.Value);

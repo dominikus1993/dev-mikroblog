@@ -1,9 +1,5 @@
-using DevMikroblog.Modules.Posts.Infrastructure.Configuration;
+using DevMikroblog.Modules.Posts.Domain.Model;
 using DevMikroblog.Modules.Posts.Infrastructure.EntityFramework;
-using DevMikroblog.Modules.Posts.Infrastructure.Model;
-
-using DotNet.Testcontainers.Builders;
-using DotNet.Testcontainers.Configurations;
 
 using Microsoft.EntityFrameworkCore;
 
@@ -40,7 +36,7 @@ public sealed class PostgresSqlSqlFixture : IAsyncLifetime
         this.PostgreSql = new PostgreSqlBuilder().Build();
     }
 
-    public async Task Seed(IEnumerable<EfPost> posts)
+    public async Task Seed(IEnumerable<Post> posts)
     {
         await using var context = await ContextFactory.CreateDbContextAsync();
         context.Posts.AddRange(posts);
