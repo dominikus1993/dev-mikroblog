@@ -15,14 +15,32 @@ public readonly record struct AuthorId(Guid Value)
 {
     public static AuthorId New() => new AuthorId(Guid.NewGuid());
 }
-public readonly record struct Tag(string Value);
-public sealed record Author(AuthorId Id, string? Name);
+public sealed record Tag(string Value);
+
 public sealed record ReplyToPost(PostId Id);
-public sealed record Post(PostId Id, string Content, ReplyToPost? ReplyTo, DateTimeOffset CreatedAt, Author Author, IReadOnlyList<Tag>? Tags, uint Likes, uint RepliesQuantity, uint Version = 1)
+public sealed class Post
 {
+    public Post(PostId Id, string Content, ReplyToPost? ReplyTo, DateTimeOffset CreatedAt, Author Author, IReadOnlyList<Tag>? Tags, uint Likes, uint RepliesQuantity, uint Version = 1)
+    {
+        this.Id = Id;
+        this.Content = Content;
+        this.ReplyTo = ReplyTo;
+        this.CreatedAt = CreatedAt;
+        this.Author = Author;
+        this.Tags = Tags;
+        this.Likes = Likes;
+        this.RepliesQuantity = RepliesQuantity;
+        this.Version = Version;
+    }
+
+    public Post()
+    {
+        
+    }
+
     public Post IncrementRepliesQuantity()
     {
-        return this with { RepliesQuantity = RepliesQuantity + 1, Version = Version + 1 };
+        return this;
     }
     
 
@@ -50,4 +68,14 @@ public sealed record Post(PostId Id, string Content, ReplyToPost? ReplyTo, DateT
             yield return mapF(tag);
         }
     }
+
+    public PostId Id { get; init; }
+    public string Content { get; init; }
+    public ReplyToPost? ReplyTo { get; init; }
+    public DateTimeOffset CreatedAt { get; init; }
+    public Author Author { get; init; }
+    public IReadOnlyList<Tag>? Tags { get; init; }
+    public uint Likes { get; init; }
+    public uint RepliesQuantity { get; init; }
+    public uint Version { get; init; }
 }
