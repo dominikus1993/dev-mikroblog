@@ -38,8 +38,8 @@ public sealed class PostsModule : IModule
         builder.Services.AddTransient<GetPostsUseCase>();
         builder.Services.AddTransient<CreatePostUseCase>();
         builder.Services.AddTransient<GetPostDetailsUseCase>();
-        builder.Services.AddTransient<IPostsReader, MartenPostReader>();
-        builder.Services.AddTransient<IPostWriter, MartenPostWriter>();
+        builder.Services.AddScoped<IPostsReader, EntityPostRepository>();
+        builder.Services.AddScoped<IPostWriter, EntityPostRepository>();
         builder.Services.AddTransient<IPostTagParser, PostTagParser>();
         builder.Services.AddPublisher<PostCreated>("posts", "created");
         builder.Services.AddSubscriber<PostCreated, PostCreatedHandler>("posts", "created");

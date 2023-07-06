@@ -22,7 +22,7 @@ public class PostReaderTests : IClassFixture<PostgresSqlSqlFixture>, IDisposable
     {
         _fixture = fixture;
         _postDbContext = _fixture.ContextFactory.CreateDbContext();
-        _postsReader = new MartenPostReader(_postDbContext);
+        _postsReader = new EntityPostRepository(_postDbContext);
     }
 
     [Theory]
