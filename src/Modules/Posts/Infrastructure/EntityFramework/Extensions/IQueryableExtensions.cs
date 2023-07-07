@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DevMikroblog.Modules.Posts.Infrastructure.EntityFramework.Extensions;
 
-public sealed record PagedResult<T>(IReadOnlyCollection<T> Items, int PageCount, int TotalItemCount) : IEnumerable<T>
+public sealed record PagedResult<T>(IReadOnlyCollection<T> Items, int PageCount, int TotalItemCount) : IEnumerable<T> where T : class
 {
     public int Count => Items.Count;
     public bool IsEmpty => Items.Count == 0;
@@ -19,7 +19,7 @@ public sealed record PagedResult<T>(IReadOnlyCollection<T> Items, int PageCount,
 public static class QueryableExtensions
 {
     public static Task<PagedResult<T>> ToPagedListAsync<T>(this IQueryable<T> query, int pageNumber, int pageSize,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default) where T : class
     {
         if (pageNumber <= 0)
         {
@@ -35,7 +35,7 @@ public static class QueryableExtensions
     }
 
     private static async Task<PagedResult<T>> ToPagedList<T>(this IQueryable<T> query, int pageNumber, int pageSize,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default) where T : class
     {
         var rowCount = await query.CountAsync(cancellationToken: cancellationToken);
 
