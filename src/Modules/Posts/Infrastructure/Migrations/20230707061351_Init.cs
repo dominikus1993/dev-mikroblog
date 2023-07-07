@@ -20,7 +20,7 @@ namespace DevMikroblog.Modules.Posts.Infrastructure.Migrations
                     id = table.Column<Guid>(type: "uuid", nullable: false),
                     content = table.Column<string>(type: "text", nullable: false),
                     reply_to_id = table.Column<Guid>(type: "uuid", nullable: true),
-                    created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    created_at = table.Column<long>(type: "bigint", nullable: false),
                     author_id = table.Column<Guid>(type: "uuid", nullable: false),
                     author_name = table.Column<string>(type: "text", nullable: true),
                     tags = table.Column<IReadOnlyList<Tag>>(type: "jsonb", nullable: true),

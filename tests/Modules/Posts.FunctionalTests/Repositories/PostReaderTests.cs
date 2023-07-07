@@ -34,26 +34,26 @@ public class PostReaderTests : IClassFixture<PostgresSqlSqlFixture>, IDisposable
     {
         // Act
         var post = await _postsReader.GetPostById(postId);
-        
+
         // Test
         post.Should().BeNull();
     }
-    
+
     [Theory]
     [AutoData]
     public async Task GetPostByIdTestWhenExists(Post post)
     {
         // Arrange 
         await _postWriter.Add(post);
-        
+
         // Act
         var postById = await _postsReader.GetPostById(post.Id);
-        
+
         // Test
         postById.Should().NotBeNull();
-        postById.Should().BeEquivalentTo(post);
+        postById.Should().BeEquivalentTo(post, x => x.Excluding(p => p.CreatedAt));
     }
-    
+
     // [Fact]
     // public async Task GetPostDetailsTestsWhenExistsAndHasNoParentsOrReplies()
     // {

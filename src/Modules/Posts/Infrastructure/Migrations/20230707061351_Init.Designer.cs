@@ -14,7 +14,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DevMikroblog.Modules.Posts.Infrastructure.Migrations
 {
     [DbContext(typeof(PostDbContext))]
-    [Migration("20230706165208_Init")]
+    [Migration("20230707061351_Init")]
     partial class Init
     {
         /// <inheritdoc />
@@ -38,8 +38,8 @@ namespace DevMikroblog.Modules.Posts.Infrastructure.Migrations
                         .HasColumnType("text")
                         .HasColumnName("content");
 
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone")
+                    b.Property<long>("CreatedAt")
+                        .HasColumnType("bigint")
                         .HasColumnName("created_at");
 
                     b.Property<long>("Likes")

@@ -35,8 +35,8 @@ namespace DevMikroblog.Modules.Posts.Infrastructure.Migrations
                         .HasColumnType("text")
                         .HasColumnName("content");
 
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone")
+                    b.Property<long>("CreatedAt")
+                        .HasColumnType("bigint")
                         .HasColumnName("created_at");
 
                     b.Property<long>("Likes")

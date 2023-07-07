@@ -26,17 +26,6 @@ internal sealed class AuthorIdConverter : ValueConverter<AuthorId, Guid>
     }
 }
 
-internal sealed class DateTimeOffsetConverter : ValueConverter<DateTimeOffset, DateTime>
-{
-    public DateTimeOffsetConverter()
-        : base(
-            v => DateTime.SpecifyKind(v.UtcDateTime, DateTimeKind.Utc),
-            v => DateTime.SpecifyKind(v, DateTimeKind.Utc))
-
-    {
-    }
-}
-
 public sealed class PostConfiguration: IEntityTypeConfiguration<Post>
 {
     public void Configure(EntityTypeBuilder<Post> builder)
@@ -51,6 +40,6 @@ public sealed class PostConfiguration: IEntityTypeConfiguration<Post>
             .IsTsVectorExpressionIndex("english");
         builder.OwnsOne<Author>(x => x.Author, b => b.Property(x => x.Id).HasConversion<AuthorIdConverter>());
         builder.OwnsOne(x => x.ReplyTo, b => b.Property(x => x.Id).HasConversion<PostIdConverter>());
-        builder.Property(x => x.CreatedAt).HasConversion<DateTimeOffsetConverter>();
+        builder.Property(x => x.CreatedAt).HasConversion<DateTimeOffsetToBinaryConverter>();
     }
 }
