@@ -16,7 +16,7 @@ public record PostDetails(Option<Post> ReplyTo, Post Post, Option<IReadOnlyList<
 
 public interface IPostsReader
 {
-    Task<Post?> GetPostById(PostId postId, CancellationToken cancellationToken);
-    Task<PostDetails?> GetPostDetails(PostId postId, CancellationToken cancellationToken);
-    Task<PagedPosts?> GetPosts(GetPostQuery query, CancellationToken cancellationToken);
+    Task<Post?> GetPostById(PostId postId, CancellationToken cancellationToken = default);
+    Task<PostDetails?> GetPostDetails(PostId postId, CancellationToken cancellationToken = default);
+    Task<PagedPosts?> GetPosts(GetPostQuery query, CancellationToken cancellationToken = default);
 }

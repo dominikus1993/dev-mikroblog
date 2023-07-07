@@ -17,18 +17,18 @@ internal sealed class MartenPostReader : IPostsReader
     }
 
 
-    public async Task<Post?> GetPostById(PostId postId, CancellationToken cancellationToken)
+    public async Task<Post?> GetPostById(PostId postId, CancellationToken cancellationToken = default)
     {
         var result = await _context.Load(postId, cancellationToken);
         return result;
     }
 
-    public Task<PostDetails?> GetPostDetails(PostId postId, CancellationToken cancellationToken)
+    public Task<PostDetails?> GetPostDetails(PostId postId, CancellationToken cancellationToken = default)
     {
         return Task.FromResult<PostDetails?>(null);
     }
 
-    public async Task<PagedPosts?> GetPosts(GetPostQuery query, CancellationToken cancellationToken)
+    public async Task<PagedPosts?> GetPosts(GetPostQuery query, CancellationToken cancellationToken = default)
     {
         IQueryable<Post> q = _context.Posts.AsQueryable();
 

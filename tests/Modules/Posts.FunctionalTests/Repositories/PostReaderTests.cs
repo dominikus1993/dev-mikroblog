@@ -18,19 +18,22 @@ public class PostReaderTests : IClassFixture<PostgresSqlSqlFixture>, IDisposable
     private readonly PostgresSqlSqlFixture _fixture;
     private readonly PostDbContext _postDbContext;
     private readonly IPostsReader _postsReader;
+    private readonly IPostWriter _postWriter;
     public PostReaderTests(PostgresSqlSqlFixture fixture)
     {
         _fixture = fixture;
         _postDbContext = _fixture.ContextFactory.CreateDbContext();
         _postsReader = new EntityPostRepository(_postDbContext);
+        _postWriter = new EntityPostRepository(_postDbContext);
     }
-
+    
+    
     [Theory]
     [AutoData]
-    public async Task GetPostDetailsTestsWhenNotExists(PostId postId)
+    public async Task GetPostByIdTestWhenNotExists(PostId postId)
     {
         // Act
-        var post = await _postsReader.GetPostDetails(postId, default);
+        var post = await _postsReader.GetPostById(postId);
         
         // Test
         post.Should().BeNull();
@@ -38,13 +41,16 @@ public class PostReaderTests : IClassFixture<PostgresSqlSqlFixture>, IDisposable
     
     [Theory]
     [AutoData]
-    public async Task GetPostByIdTestWhenNotExists(PostId postId)
+    public async Task GetPostByIdTestWhenExists(Post post)
     {
+        // Arrange 
+        await _postWriter.Add(post);
+        
         // Act
-        var post = await _postsReader.GetPostById(postId, default);
+        var postById = await _postsReader.GetPostById(post.Id);
         
         // Test
-        post.Should().BeNull();
+        postById.Should().NotBeNull();
     }
     
     // [Fact]
