@@ -51,6 +51,7 @@ public class PostReaderTests : IClassFixture<PostgresSqlSqlFixture>, IDisposable
         
         // Test
         postById.Should().NotBeNull();
+        postById.Should().BeEquivalentTo(post);
     }
     
     // [Fact]

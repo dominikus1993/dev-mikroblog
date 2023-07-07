@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace DevMikroblog.Modules.Posts.Infrastructure.EntityFramework.Configurations;
 
-public sealed class PostIdConverter : ValueConverter<PostId, Guid>
+internal sealed class PostIdConverter : ValueConverter<PostId, Guid>
 {
     public PostIdConverter()
         : base(
@@ -16,7 +16,7 @@ public sealed class PostIdConverter : ValueConverter<PostId, Guid>
     }
 }
 
-public sealed class AuthorIdConverter : ValueConverter<AuthorId, Guid>
+internal sealed class AuthorIdConverter : ValueConverter<AuthorId, Guid>
 {
     public AuthorIdConverter()
         : base(
@@ -26,12 +26,12 @@ public sealed class AuthorIdConverter : ValueConverter<AuthorId, Guid>
     }
 }
 
-public sealed class DateTimeOffsetConverter : ValueConverter<DateTimeOffset, DateTime>
+internal sealed class DateTimeOffsetConverter : ValueConverter<DateTimeOffset, DateTime>
 {
     public DateTimeOffsetConverter()
         : base(
             v => DateTime.SpecifyKind(v.UtcDateTime, DateTimeKind.Utc),
-            v => DateTime.SpecifyKind(v, DateTimeKind.Local))
+            v => DateTime.SpecifyKind(v, DateTimeKind.Utc))
 
     {
     }
