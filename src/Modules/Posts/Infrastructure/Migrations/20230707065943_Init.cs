@@ -26,7 +26,8 @@ namespace DevMikroblog.Modules.Posts.Infrastructure.Migrations
                     tags = table.Column<IReadOnlyList<Tag>>(type: "jsonb", nullable: true),
                     likes = table.Column<long>(type: "bigint", nullable: false),
                     replies_quantity = table.Column<long>(type: "bigint", nullable: false),
-                    version = table.Column<long>(type: "bigint", nullable: false)
+                    version = table.Column<long>(type: "bigint", nullable: false),
+                    row_version = table.Column<byte[]>(type: "bytea", rowVersion: true, nullable: true)
                 },
                 constraints: table =>
                 {

@@ -28,6 +28,8 @@ internal sealed class AuthorIdConverter : ValueConverter<AuthorId, Guid>
 
 public sealed class PostConfiguration: IEntityTypeConfiguration<Post>
 {
+    private const string RowVersion = nameof(RowVersion);
+
     public void Configure(EntityTypeBuilder<Post> builder)
     {
         builder.HasKey(x => x.Id);
@@ -41,5 +43,7 @@ public sealed class PostConfiguration: IEntityTypeConfiguration<Post>
         builder.OwnsOne<Author>(x => x.Author, b => b.Property(x => x.Id).HasConversion<AuthorIdConverter>());
         builder.OwnsOne(x => x.ReplyTo, b => b.Property(x => x.Id).HasConversion<PostIdConverter>());
         builder.Property(x => x.CreatedAt).HasConversion<DateTimeOffsetToBinaryConverter>();
+        builder.Property<byte[]>(RowVersion)
+            .IsRowVersion();
     }
 }

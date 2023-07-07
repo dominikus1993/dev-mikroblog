@@ -14,7 +14,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DevMikroblog.Modules.Posts.Infrastructure.Migrations
 {
     [DbContext(typeof(PostDbContext))]
-    [Migration("20230707061351_Init")]
+    [Migration("20230707065943_Init")]
     partial class Init
     {
         /// <inheritdoc />
@@ -49,6 +49,12 @@ namespace DevMikroblog.Modules.Posts.Infrastructure.Migrations
                     b.Property<long>("RepliesQuantity")
                         .HasColumnType("bigint")
                         .HasColumnName("replies_quantity");
+
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("bytea")
+                        .HasColumnName("row_version");
 
                     b.Property<IReadOnlyList<Tag>>("Tags")
                         .HasColumnType("jsonb")
