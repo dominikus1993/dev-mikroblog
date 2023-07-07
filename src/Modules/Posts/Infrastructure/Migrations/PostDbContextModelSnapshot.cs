@@ -47,6 +47,12 @@ namespace DevMikroblog.Modules.Posts.Infrastructure.Migrations
                         .HasColumnType("bigint")
                         .HasColumnName("replies_quantity");
 
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("bytea")
+                        .HasColumnName("row_version");
+
                     b.Property<IReadOnlyList<Tag>>("Tags")
                         .HasColumnType("jsonb")
                         .HasColumnName("tags");
