@@ -21,7 +21,7 @@ public sealed class PostDbContext : DbContext
     private static readonly Func<PostDbContext, PostId, CancellationToken, Task<Post?>> GetPostById =
         EF.CompileAsyncQuery(
             (PostDbContext dbContext, PostId id, CancellationToken ct) =>
-                dbContext.Posts.AsNoTracking().FirstOrDefault(p => p.Id == id));
+                dbContext.Posts.AsTracking().FirstOrDefault(p => p.Id == id));
     
     private static readonly Func<PostDbContext, PostId, CancellationToken, Task<Post?>> GetPostByIdReadonly =
         EF.CompileAsyncQuery(

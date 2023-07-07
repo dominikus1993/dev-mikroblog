@@ -31,8 +31,8 @@ public class PostCreatedHandler : IMessageHandler<PostCreated>
                 return Unit.Default;
             }
 
-            var newPost = post.IncrementRepliesQuantity();
-            await _postWriter.Update(newPost, cancellationToken);
+            post.IncrementRepliesQuantity();
+            await _postWriter.Update(post, cancellationToken);
         }
         return Unit.Default;
     }

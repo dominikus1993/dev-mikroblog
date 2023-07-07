@@ -6,9 +6,5 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\src\Modules\Posts\Posts.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Core\UseCases" />
-    <Folder Include="Infrastructure" />
-  </ItemGroup>
   <Import Project="..\..\..\.paket\Paket.Restore.targets" />
 </Project>

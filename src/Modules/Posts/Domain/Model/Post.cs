@@ -38,9 +38,9 @@ public sealed class Post
         
     }
 
-    public Post IncrementRepliesQuantity()
+    public void IncrementRepliesQuantity()
     {
-        return this;
+        Likes += 1;
     }
     
 
@@ -75,7 +75,7 @@ public sealed class Post
     public DateTimeOffset CreatedAt { get; init; }
     public Author Author { get; init; }
     public IReadOnlyList<Tag>? Tags { get; init; }
-    public uint Likes { get; init; }
+    public uint Likes { get; set; }
     public uint RepliesQuantity { get; init; }
     public uint Version { get; init; }
 }
