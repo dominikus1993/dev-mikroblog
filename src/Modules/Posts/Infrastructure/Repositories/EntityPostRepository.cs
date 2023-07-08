@@ -47,7 +47,7 @@ public sealed class EntityPostRepository: IPostsReader, IPostWriter
 
         if (!string.IsNullOrEmpty(query.Tag))
         {
-            q = q.Where(x => EF.Functions.ArrayToTsVector(x.Tags)
+            q = q.Where(x => x.SearchVector
                 .Matches(query.Tag.ToUpperInvariant()));
         }
 

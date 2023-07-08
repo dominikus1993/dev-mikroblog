@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
+using NpgsqlTypes;
 
 #nullable disable
 
@@ -18,6 +19,9 @@ namespace DevMikroblog.Modules.Posts.Infrastructure.Migrations
                     id = table.Column<Guid>(type: "uuid", nullable: false),
                     is_deleted = table.Column<bool>(type: "boolean", nullable: false),
                     deleted_at = table.Column<long>(type: "bigint", nullable: true),
+                    search_vector = table.Column<NpgsqlTsVector>(type: "tsvector", nullable: false)
+                        .Annotation("Npgsql:TsVectorConfig", "english")
+                        .Annotation("Npgsql:TsVectorProperties", new[] { "tags" }),
                     content = table.Column<string>(type: "text", nullable: false),
                     reply_to_id = table.Column<Guid>(type: "uuid", nullable: true),
                     created_at = table.Column<long>(type: "bigint", nullable: false),
@@ -35,11 +39,10 @@ namespace DevMikroblog.Modules.Posts.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "ix_posts_tags",
+                name: "ix_posts_search_vector",
                 table: "posts",
-                column: "tags")
-                .Annotation("Npgsql:IndexMethod", "GIN")
-                .Annotation("Npgsql:TsVectorConfig", "english");
+                column: "search_vector")
+                .Annotation("Npgsql:IndexMethod", "GIN");
         }
 
         /// <inheritdoc />

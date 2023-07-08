@@ -2,6 +2,8 @@ using System.Runtime.CompilerServices;
 
 using LanguageExt;
 
+using NpgsqlTypes;
+
 [assembly: InternalsVisibleTo("Posts.UnitTests")]
 [assembly: InternalsVisibleTo("Posts.FunctionalTests")]
 namespace DevMikroblog.Modules.Posts.Domain.Model;
@@ -82,7 +84,7 @@ public sealed class Post
 
     public bool IsDeleted { get; set; }
     public DateTimeOffset? DeletedAt { get; set; }
-
+    internal NpgsqlTsVector SearchVector { get; set; }
     public PostId Id { get; init; }
     public string Content { get; init; }
     public ReplyToPost? ReplyTo { get; init; }

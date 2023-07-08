@@ -6,13 +6,14 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
+using NpgsqlTypes;
 
 #nullable disable
 
 namespace DevMikroblog.Modules.Posts.Infrastructure.Migrations
 {
     [DbContext(typeof(PostDbContext))]
-    [Migration("20230708045809_Init")]
+    [Migration("20230708054742_Init")]
     partial class Init
     {
         /// <inheritdoc />
@@ -62,6 +63,14 @@ namespace DevMikroblog.Modules.Posts.Infrastructure.Migrations
                         .HasColumnType("bytea")
                         .HasColumnName("row_version");
 
+                    b.Property<NpgsqlTsVector>("SearchVector")
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("tsvector")
+                        .HasColumnName("search_vector")
+                        .HasAnnotation("Npgsql:TsVectorConfig", "english")
+                        .HasAnnotation("Npgsql:TsVectorProperties", new[] { "Tags" });
+
                     b.Property<string[]>("Tags")
                         .HasColumnType("jsonb")
                         .HasColumnName("tags");
@@ -73,11 +82,10 @@ namespace DevMikroblog.Modules.Posts.Infrastructure.Migrations
                     b.HasKey("Id")
                         .HasName("pk_posts");
 
-                    b.HasIndex(new[] { "Tags" }, "tags")
-                        .HasDatabaseName("ix_posts_tags")
-                        .HasAnnotation("Npgsql:TsVectorConfig", "english");
+                    b.HasIndex("SearchVector")
+                        .HasDatabaseName("ix_posts_search_vector");
 
-                    NpgsqlIndexBuilderExtensions.HasMethod(b.HasIndex(new[] { "Tags" }, "tags"), "GIN");
+                    NpgsqlIndexBuilderExtensions.HasMethod(b.HasIndex("SearchVector"), "GIN");
 
                     b.ToTable("posts", (string)null);
                 });

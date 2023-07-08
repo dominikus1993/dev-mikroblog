@@ -37,10 +37,13 @@ public sealed class PostConfiguration: IEntityTypeConfiguration<Post>
         builder.Property(x => x.Tags)
             .HasColumnType("jsonb");
         builder
-            .HasIndex(b => new { b.Tags }, "tags")
-            .HasMethod("GIN")
-            .IsTsVectorExpressionIndex("english");
-        
+            .HasGeneratedTsVectorColumn(
+                p => p.SearchVector,
+                "english",  // Text search config
+                p => new { p.Tags })  // Included properties
+            .HasIndex(p => p.SearchVector)
+            .HasMethod("GIN"); // Index method on the search vector (GIN or GIST)
+
         builder.OwnsOne<Author>(x => x.Author, b => b.Property(x => x.Id).HasConversion<AuthorIdConverter>());
         builder.OwnsOne(x => x.ReplyTo, b => b.Property(x => x.Id).HasConversion<PostIdConverter>());
         builder.Property(x => x.CreatedAt).HasConversion<DateTimeOffsetToBinaryConverter>();
