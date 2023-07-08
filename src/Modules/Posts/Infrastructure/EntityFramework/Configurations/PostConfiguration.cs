@@ -37,12 +37,14 @@ public sealed class PostConfiguration: IEntityTypeConfiguration<Post>
         builder.Property(x => x.Tags)
             .HasColumnType("jsonb");
         builder
-            .HasIndex(b => new { b.Tags })
+            .HasIndex(b => new { b.Tags }, "tags")
             .HasMethod("GIN")
             .IsTsVectorExpressionIndex("english");
+        
         builder.OwnsOne<Author>(x => x.Author, b => b.Property(x => x.Id).HasConversion<AuthorIdConverter>());
         builder.OwnsOne(x => x.ReplyTo, b => b.Property(x => x.Id).HasConversion<PostIdConverter>());
         builder.Property(x => x.CreatedAt).HasConversion<DateTimeOffsetToBinaryConverter>();
+        builder.Property(x => x.DeletedAt).HasConversion<DateTimeOffsetToBinaryConverter>();
         builder.Property<byte[]>(RowVersion)
             .IsRowVersion();
     }

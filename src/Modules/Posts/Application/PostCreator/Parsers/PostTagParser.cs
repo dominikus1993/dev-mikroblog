@@ -11,20 +11,20 @@ namespace DevMikroblog.Modules.Posts.Application.PostCreator.Parsers;
 
 public interface IPostTagParser
 {
-    IReadOnlyList<Tag> ParseTagsFromPostContent(string content);
+    string[] ParseTagsFromPostContent(string content);
 }
 
 internal class PostTagParser : IPostTagParser
 {
     private static readonly Regex TagRegex = new(@"(?<=#)\w+", RegexOptions.Compiled, TimeSpan.FromSeconds(1));
-    public IReadOnlyList<Tag> ParseTagsFromPostContent(string content)
+    public string[] ParseTagsFromPostContent(string content)
     {
         ArgumentException.ThrowIfNullOrEmpty(content);
         var result = TagRegex.Matches(content);
         if (result.Count == 0)
         {
-            return Array.Empty<Tag>();
+            return Array.Empty<string>();
         }
-        return result.Select(tag => new Tag(tag.Value.ToUpperInvariant())).ToArray();
+        return result.Select(tag => tag.Value.ToUpperInvariant()).ToArray();
     }
 }

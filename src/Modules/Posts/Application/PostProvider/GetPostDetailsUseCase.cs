@@ -6,15 +6,14 @@ using LanguageExt;
 
 namespace DevMikroblog.Modules.Posts.Application.PostProvider;
 
-public record PostDetailsDto(PostDto? ReplyTo, PostDto Post, IReadOnlyList<PostDto>? Replies)
+public record PostDetailsDto(PostDto? ReplyTo, PostDto? Post)
 {
     internal static PostDetailsDto FromPostDetails(PostDetails details)
     {
-        var replies = details.Replies.Map<IReadOnlyList<PostDto>>(posts => posts.Select(x => PostDto.FromPost(x)).ToList()).IfNoneUnsafe(() => null);
-        var replyTo = details.ReplyTo.Map(post => PostDto.FromPost(post)).IfNoneUnsafe(() => null);
+        var replyTo = details.ReplyTo is null ? null : PostDto.FromPost(details.ReplyTo);
         var post = PostDto.FromPost(details.Post);
 
-        return new PostDetailsDto(replyTo, post, replies);
+        return new PostDetailsDto(replyTo, post);
     }
 }
 

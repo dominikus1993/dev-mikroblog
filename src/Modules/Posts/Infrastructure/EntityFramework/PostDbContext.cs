@@ -42,6 +42,15 @@ public sealed class PostDbContext : DbContext
     {
         return GetPostByIdReadonly(this, id, cancellationToken);
     }
+    
+    public async Task<Post?> LoadReplyTo(ReplyToPost? reply, CancellationToken cancellationToken)
+    {
+        if (reply is null)
+        {
+            return null;
+        }
+        return await GetPostByIdReadonly(this, reply.Id, cancellationToken);
+    }
 
     public IAsyncEnumerable<Post> GetRepliesTo(PostId id)
     {

@@ -15,12 +15,11 @@ public readonly record struct AuthorId(Guid Value)
 {
     public static AuthorId New() => new AuthorId(Guid.NewGuid());
 }
-public sealed record Tag(string Value);
 
 public sealed record ReplyToPost(PostId Id);
 public sealed class Post
 {
-    public Post(PostId Id, string Content, ReplyToPost? ReplyTo, DateTimeOffset CreatedAt, Author Author, IReadOnlyList<Tag>? Tags, uint Likes, uint RepliesQuantity, uint Version = 1)
+    public Post(PostId Id, string Content, ReplyToPost? ReplyTo, DateTimeOffset CreatedAt, Author Author, string[]? Tags, uint Likes, uint RepliesQuantity, uint Version = 1)
     {
         this.Id = Id;
         this.Content = Content;
@@ -44,15 +43,15 @@ public sealed class Post
     }
     
 
-    public static Post CreateNew(string content, DateTimeOffset dateTime, Author author, IReadOnlyList<Tag>? tags, ReplyToPost? replyTo = null)
+    public static Post CreateNew(string content, DateTimeOffset dateTime, Author author, string[]? tags, ReplyToPost? replyTo = null)
     {
         var id = PostId.New();
         return new Post(id, content, replyTo, dateTime, author, tags, 0, 0, 1);
     }
 
-    public IEnumerable<T> MapTags<T>(Func<Tag, T> mapF)
+    public IEnumerable<T> MapTags<T>(Func<string, T> mapF)
     {
-        if (Tags is null or { Count: 0 })
+        if (Tags is null or { Length: 0 })
         {
             yield break;
         }
@@ -63,18 +62,33 @@ public sealed class Post
             yield break;
         }
 
-        foreach (Tag tag in Tags)
+        foreach (string tag in Tags)
         {
             yield return mapF(tag);
         }
     }
+
+    public void Delete(DateTimeOffset deleteAt)
+    {
+        IsDeleted = true;
+        DeletedAt = deleteAt;
+    }
+    
+    public void Undo()
+    {
+        IsDeleted = false;
+        DeletedAt = null;
+    }
+
+    public bool IsDeleted { get; set; }
+    public DateTimeOffset? DeletedAt { get; set; }
 
     public PostId Id { get; init; }
     public string Content { get; init; }
     public ReplyToPost? ReplyTo { get; init; }
     public DateTimeOffset CreatedAt { get; init; }
     public Author Author { get; init; }
-    public IReadOnlyList<Tag>? Tags { get; init; }
+    public string[]? Tags { get; init; }
     public uint Likes { get; set; }
     public uint RepliesQuantity { get; init; }
     public uint Version { get; init; }

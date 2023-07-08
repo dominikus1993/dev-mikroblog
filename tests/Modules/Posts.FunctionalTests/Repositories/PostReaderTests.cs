@@ -71,7 +71,7 @@ public class PostReaderTests : IClassFixture<PostgresSqlSqlFixture>, IDisposable
 
         // Test
         postById.Should().NotBeNull();
-        postById.Should().BeEquivalentTo(post, x => x.Excluding(p => p.CreatedAt));
+        postById.Should().BeEquivalentTo(post, x => x.Excluding(p => p.CreatedAt).Excluding(p => p.DeletedAt));
         postById.Likes.Should().Be(oldLikesQ + 1);
     }
 
@@ -228,18 +228,20 @@ public class PostReaderTests : IClassFixture<PostgresSqlSqlFixture>, IDisposable
     //     subject.IsNone.Should().BeTrue();
     // }
     //
-    // [Fact]
-    // public async Task GetPostWithTagsTestsWhenNotExists()
-    // {
-    //     // Arrange
-    //     await _fixture.Store.Advanced.Clean.CompletelyRemoveAllAsync();
-    //     var reader = new MartenPostReader(_fixture.Store);
-    //     // Act
-    //     var subject = await reader.GetPosts(new GetPostQuery(1, 12, "fsharp"), CancellationToken.None);
-    //     
-    //     // Test
-    //     subject.IsNone.Should().BeTrue();
-    // }
+    
+    [Fact]
+    public async Task GetPostWithTagsTestsWhenNotExists()
+    {
+        // Arrange
+        await _fixture.Clean();
+ 
+        // Act
+        var subject = await _postsReader.GetPosts(new GetPostQuery(1, 12, "fsharp"), CancellationToken.None);
+        
+        // Test
+        subject.Should().BeNull();
+    }
+    
     //
     // [Fact]
     // public async Task GetPostWithTagTestsWhenExists()

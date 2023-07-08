@@ -31,7 +31,7 @@ public sealed class PostDto
         Content = post.Content;
         Author = new AuthorDto(post.Author);
         Likes = post.Likes;
-        Tags = post.Tags?.Select(tag => tag.Value).ToArray();
+        Tags = post.Tags;
         RepliesQuantity = post.RepliesQuantity;
     }
 

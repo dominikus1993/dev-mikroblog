@@ -12,7 +12,6 @@ namespace DevMikroblog.Modules.Posts.Domain.Repositories;
 public record GetPostQuery(int Page, int PageSize, string? Tag = null, AuthorId? AuthorId = null);
 public record PagedPosts(IReadOnlyCollection<Post> Posts, long TotalPages, long TotalPostsQuantity);
 public record GetPostReplies(PostId PostId, int Page, int PageSize);
-public record PostDetails(Option<Post> ReplyTo, Post Post, Option<IReadOnlyList<Post>> Replies);
 
 public interface IPostsReader
 {

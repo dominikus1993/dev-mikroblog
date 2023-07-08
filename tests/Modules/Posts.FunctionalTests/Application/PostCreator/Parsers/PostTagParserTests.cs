@@ -43,7 +43,7 @@ public class PostTagParserTests
         // Test
         subject.Should().NotBeEmpty();
         subject.Should().HaveCount(2);
-         subject.Should().Contain(new Tag("CSHARP")).And.Contain(new Tag("FSHARP"));
+         subject.Should().Contain("CSHARP").And.Contain("FSHARP");
     }
 
 }

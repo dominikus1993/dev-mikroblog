@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using DevMikroblog.Modules.Posts.Domain.Model;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
@@ -18,12 +16,14 @@ namespace DevMikroblog.Modules.Posts.Infrastructure.Migrations
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uuid", nullable: false),
+                    is_deleted = table.Column<bool>(type: "boolean", nullable: false),
+                    deleted_at = table.Column<long>(type: "bigint", nullable: true),
                     content = table.Column<string>(type: "text", nullable: false),
                     reply_to_id = table.Column<Guid>(type: "uuid", nullable: true),
                     created_at = table.Column<long>(type: "bigint", nullable: false),
                     author_id = table.Column<Guid>(type: "uuid", nullable: false),
                     author_name = table.Column<string>(type: "text", nullable: true),
-                    tags = table.Column<IReadOnlyList<Tag>>(type: "jsonb", nullable: true),
+                    tags = table.Column<string[]>(type: "jsonb", nullable: true),
                     likes = table.Column<long>(type: "bigint", nullable: false),
                     replies_quantity = table.Column<long>(type: "bigint", nullable: false),
                     version = table.Column<long>(type: "bigint", nullable: false),
