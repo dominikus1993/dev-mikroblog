@@ -13,7 +13,7 @@ using Xunit;
 
 namespace Posts.FunctionalTests.Repositories;
 
-public class PostReaderTests : IClassFixture<PostgresSqlSqlFixture>, IDisposable
+public class PostReaderTests : IClassFixture<PostgresSqlSqlFixture>, IDisposable, IAsyncLifetime
 {
     private readonly PostgresSqlSqlFixture _fixture;
     private readonly PostDbContext _postDbContext;
@@ -75,31 +75,21 @@ public class PostReaderTests : IClassFixture<PostgresSqlSqlFixture>, IDisposable
         postById.Likes.Should().Be(oldLikesQ + 1);
     }
 
-    // [Fact]
-    // public async Task GetPostDetailsTestsWhenExistsAndHasNoParentsOrReplies()
-    // {
-    //     // Arrange
-    //     await _fixture.Store.Advanced.Clean.CompletelyRemoveAllAsync();
-    //     var reader = new MartenPostReader(_fixture.Store);
-    //     var writer = new MartenPostWriter(_fixture.Store);
-    //     var post = Post.CreateNew("xDDD", new Author(AuthorId.New(), "jan pawel 2"), null);
-    //     await writer.Save(post);
-    //     // Act
-    //     var subject = await reader.GetPostDetails(post.Id, CancellationToken.None);
-    //     
-    //     // Test
-    //     subject.IsSome.Should().BeTrue();
-    //     var details = subject.ValueUnsafe();
-    //     
-    //     details.ReplyTo.IsNone.Should().BeTrue();
-    //     details.Replies.IsNone.Should().BeTrue();
-    //     details.Post.Id.Should().Be(post.Id);
-    //     details.Post.Author.Should().Be(post.Author);
-    //     details.Post.Likes.Should().Be(0);
-    //     details.Post.ReplyTo.Should().BeNull();
-    //     details.Post.Content.Should().Be(post.Content);
-    // }
-    //
+    [Theory]
+    [AutoData]
+    public async Task GetPostDetailsTestsWhenExistsAndHasNoParentsOrReplies(Post post)
+    {
+        //Arrange
+        await _postWriter.Add(post);
+        // Act
+        var subject = await _postsReader.GetPostDetails(post.Id, CancellationToken.None);
+        
+        // Test
+        subject.Should().NotBeNull();
+
+        subject.Should().BeEquivalentTo(subject, x => x);
+    }
+    
     // [Fact]
     // public async Task GetPostDetailsTestsWhenExistsAndHasNoParentsAndHasReplies()
     // {
@@ -365,5 +355,15 @@ public class PostReaderTests : IClassFixture<PostgresSqlSqlFixture>, IDisposable
     public void Dispose()
     {
         _postDbContext?.Dispose();
+    }
+
+    public Task InitializeAsync()
+    {
+        return Task.CompletedTask;
+    }
+
+    public async Task DisposeAsync()
+    {
+        await _fixture.Clean();
     }
 }
