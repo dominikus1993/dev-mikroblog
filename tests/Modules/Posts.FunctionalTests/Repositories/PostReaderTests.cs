@@ -90,35 +90,23 @@ public class PostReaderTests : IClassFixture<PostgresSqlSqlFixture>, IDisposable
         subject.Should().BeEquivalentTo(subject, x => x);
     }
     
-    // [Fact]
-    // public async Task GetPostDetailsTestsWhenExistsAndHasNoParentsAndHasReplies()
-    // {
-    //     // Arrange
-    //     await _fixture.Store.Advanced.Clean.CompletelyRemoveAllAsync();
-    //     var reader = new MartenPostReader(_fixture.Store);
-    //     var writer = new MartenPostWriter(_fixture.Store);
-    //     var post = Post.CreateNew("xDDD", new Author(AuthorId.New(), "jan pawel 2"), null);
-    //     await writer.Save(post);
-    //     var post2 = Post.CreateNew("xDDD2", new Author(AuthorId.New(), "jan pawel 2"), null, new ReplyToPost(post.Id));
-    //     await writer.Save(post2);
-    //     // Act
-    //     var subject = await reader.GetPostDetails(post.Id, CancellationToken.None);
-    //     
-    //     // Test
-    //     subject.IsSome.Should().BeTrue();
-    //     var details = subject.ValueUnsafe();
-    //     details.Post.Id.Should().Be(post.Id);
-    //     details.Post.Author.Should().Be(post.Author);
-    //     details.Post.Likes.Should().Be(0);
-    //     details.Post.ReplyTo.Should().BeNull();
-    //     details.Post.Content.Should().Be(post.Content);
-    //     details.Replies.IsSome.Should().BeTrue();
-    //     var replies = details.Replies.ValueUnsafe();
-    //     replies.Should().NotBeEmpty();
-    //     replies.Should().HaveCount(1);
-    //     replies.Should().Contain(x => x.Id == post2.Id);
-    // }
-    //
+    [Theory]
+    [AutoData]
+    public async Task GetPostDetailsTestsWhenExistsAndHasNoParentsAndHasReplies(Post post, Post reply)
+    {
+        // Arrange
+        reply.AddReplyTo(post.Id);
+        await _postWriter.Add(post);
+        await _postWriter.Add(reply);
+        // Act
+        var subject = await _postsReader.GetPostDetails(reply.Id, CancellationToken.None);
+        
+        // Test
+        Assert.NotNull(subject);
+        subject.Post.Should().BeEquivalentTo(reply, x => x.Excluding(p => p.CreatedAt).Excluding(p => p.DeletedAt));
+        subject.ReplyTo.Should().BeEquivalentTo(post, x => x.Excluding(p => p.CreatedAt).Excluding(p => p.DeletedAt));
+    }
+    
     // [Fact]
     // public async Task GetPostDetailsTestsWhenExistsAndHasParentsAndHasReplies()
     // {

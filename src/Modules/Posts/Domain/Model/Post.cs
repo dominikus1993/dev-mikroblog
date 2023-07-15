@@ -82,12 +82,17 @@ public sealed class Post
         DeletedAt = null;
     }
 
+    public void AddReplyTo(PostId postId)
+    {
+        ReplyTo = new ReplyToPost(postId);
+    }
+
     public bool IsDeleted { get; set; }
     public DateTimeOffset? DeletedAt { get; set; }
     internal NpgsqlTsVector SearchVector { get; set; }
     public PostId Id { get; init; }
     public string Content { get; init; }
-    public ReplyToPost? ReplyTo { get; init; }
+    public ReplyToPost? ReplyTo { get; set; }
     public DateTimeOffset CreatedAt { get; init; }
     public Author Author { get; init; }
     public string[]? Tags { get; init; }
