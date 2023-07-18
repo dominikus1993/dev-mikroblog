@@ -1,6 +1,6 @@
 namespace DevMikroblog.Modules.Posts.Handlers.Requests;
 
-public class GetPostsRequest
+public sealed class GetPostsRequest
 {
     public string? AuthorId { get; set; }
     public string? Tag { get; set; }

@@ -15,7 +15,7 @@ public sealed class PostDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.ApplyConfiguration(new PostConfiguration());
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(PostDbContext).Assembly);
     }
     
     private static readonly Func<PostDbContext, PostId, CancellationToken, Task<Post?>> GetPostById =
