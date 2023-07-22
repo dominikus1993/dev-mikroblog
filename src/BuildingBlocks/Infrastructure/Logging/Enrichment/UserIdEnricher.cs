@@ -8,7 +8,7 @@ using Serilog.Events;
 
 namespace DevMikroblog.BuildingBlocks.Infrastructure.Logging.Enrichment;
 
-internal class UserIdEnricher : ILogEventEnricher
+internal sealed class UserIdEnricher : ILogEventEnricher
 {
     private const string UserIdPropertyName = "UserId";
     private readonly IHttpContextAccessor _contextAccessor;

@@ -8,3 +8,4 @@ Testcontainers
 coverlet.collector
 Testcontainers.RabbitMq
 Microsoft.NET.Test.Sdk
+AutoFixture.Xunit2
