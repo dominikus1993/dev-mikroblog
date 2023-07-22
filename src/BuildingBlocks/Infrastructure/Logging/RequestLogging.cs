@@ -29,7 +29,7 @@ public static class RequestLogging
         return false;
     }
 
-    private static LogEventLevel ExcludeHealthChecks(HttpContext ctx, Exception? ex) =>
+    private static LogEventLevel ExcludeHealthChecks(HttpContext ctx, double _, Exception? ex) =>
         ex is not null
             ? LogEventLevel.Error
             : ctx.Response.StatusCode > 499
@@ -88,8 +88,8 @@ public static class RequestLogging
     {
         app.UseSerilogRequestLogging(opts =>
         {
-            opts.EnrichDiagnosticContext = (ctx, http) => EnrichFromRequest(ctx, http);
-            opts.GetLevel = (context, _, exc) => ExcludeHealthChecks(context, exc); // Use the custom level
+            opts.EnrichDiagnosticContext = EnrichFromRequest;
+            opts.GetLevel = ExcludeHealthChecks; // Use the custom level
         });
         return app;
     }

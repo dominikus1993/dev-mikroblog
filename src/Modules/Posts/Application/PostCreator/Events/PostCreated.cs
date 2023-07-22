@@ -4,13 +4,13 @@ namespace DevMikroblog.Modules.Posts.Application.PostCreator.Events;
 
 public class PostCreated : IMessage
 {
-    public Guid MessageId { get; init; }
-    public DateTimeOffset CreatedAt { get; init; }
-    public Guid PostId { get; init; }
-    public Guid? ReplyToPost { get; init; }
-    public string Content { get; init; } = null!;
-    public Guid AuthorId { get; init; }
+    public Guid MessageId { get; set; }
+    public DateTimeOffset CreatedAt { get; set; }
+    public Guid PostId { get; set; }
+    public Guid? ReplyToPost { get; set; }
+    public string Content { get; set; } = null!;
+    public Guid AuthorId { get; set; }
     
-    public List<string>? Tags { get; init; }
+    public List<string>? Tags { get; set; }
     public static string Name => nameof(PostCreated);
 }
