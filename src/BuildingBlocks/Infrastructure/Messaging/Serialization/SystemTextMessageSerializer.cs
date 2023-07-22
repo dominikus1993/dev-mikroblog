@@ -6,7 +6,7 @@ namespace DevMikroblog.BuildingBlocks.Infrastructure.Messaging.Serialization;
 
 public sealed class SystemTextMessageSerializer<T> : IMessageSerializer<T> where T: IMessage
 {
-    private JsonSerializerOptions _serializerOptions;
+    private readonly JsonSerializerOptions _serializerOptions;
 
     public SystemTextMessageSerializer(JsonSerializerOptions serializerOptions)
     {
