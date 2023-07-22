@@ -9,7 +9,7 @@ public static class Id
 {
     private const char Slash = '/';
     private const byte SlashB = (byte)Slash;
-    private const char Equals = '=';
+    private const char EqualsChar = '=';
     private const char Hyphen = '-';
     private const char Undescore = '_';
     private const char Plus = '+';
@@ -36,6 +36,8 @@ public static class Id
             };
         }
 
+        result[22] = EqualsChar;
+        result[23] = EqualsChar;
         return new string(result);
     }
     
@@ -53,8 +55,8 @@ public static class Id
             };
         }
 
-        base64[22] = Equals;
-        base64[23] = Equals;
+        base64[22] = EqualsChar;
+        base64[23] = EqualsChar;
 
         Span<byte> idB = stackalloc byte[16];
         Convert.TryFromBase64Chars(base64, idB, out _);
