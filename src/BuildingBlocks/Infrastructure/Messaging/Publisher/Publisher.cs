@@ -26,7 +26,7 @@ public sealed class RabbitMqPublisherConfig<T> where T : notnull, IMessage
     public string Exchange { get; init; } = null!;
     public string Topic { get; init; } = "#";
 
-    public string MessageName { get; } = T.Name;
+    internal static readonly string MessageName = typeof(T).FullName!;
 }
 
 internal sealed class RabbitMqPublishChannel : IDisposable
@@ -61,7 +61,7 @@ internal sealed class RabbitMqMessagePublisher<T> : IMessagePublisher<T> where T
     {
         { "Content-Type", "application/json" },
         { "X-Message-Type", typeof(T).FullName },
-        { "X-Message-Name", T.Name }
+        { "X-Message-Name", RabbitMqPublisherConfig<T>.MessageName }
     };
 
     public RabbitMqMessagePublisher(RabbitMqPublisherConfig<T> config, RabbitMqPublishChannel channel,
@@ -75,7 +75,7 @@ internal sealed class RabbitMqMessagePublisher<T> : IMessagePublisher<T> where T
     public ValueTask<Unit> Publish(T message, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(message);
-        _logger.LogPublishRabbitMqMessage(T.Name, _config.Exchange, _config.Topic);
+        _logger.LogPublishRabbitMqMessage(RabbitMqPublisherConfig<T>.MessageName, _config.Exchange, _config.Topic);
         var json = JsonSerializer.SerializeToUtf8Bytes(message, RabbitMqMessagePublisher.Options);
         using var activity = RabbitMqOpenTelemetry.RabbitMqSource.StartActivity("rabbitmq", ActivityKind.Producer);
         _channel.Model.ExchangeDeclare(exchange: _config.Exchange, type: ExchangeType.Topic);
@@ -89,7 +89,7 @@ internal sealed class RabbitMqMessagePublisher<T> : IMessagePublisher<T> where T
             activity.SetTag("messaging.destination_kind", "topic");
             activity.SetTag("messaging.protocol", "AMQP");
             activity.SetTag("messaging.protocol_version", "0.9.1");
-            activity.SetTag("messaging.message_name", T.Name);
+            activity.SetTag("messaging.message_name", RabbitMqPublisherConfig<T>.MessageName);
             RabbitMqOpenTelemetry.AddActivityToHeader(activity, props);
         }
         _channel.Model.BasicPublish(exchange: _config.Exchange, routingKey: _config.Topic, basicProperties: props,

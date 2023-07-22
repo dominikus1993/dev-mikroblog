@@ -19,17 +19,17 @@ using RabbitMQ.Client.Events;
 
 namespace DevMikroblog.BuildingBlocks.Infrastructure.Messaging.Subscriber;
 
-public class RabbtMqSubscriptionConfig<T> where T : notnull, IMessage
+public sealed class RabbtMqSubscriptionConfig<T> where T : notnull, IMessage
 {
     public string Exchange { get; init; } = null!;
     public string Topic { get; init; } = "#";
     public string Queue { get; init; } = null!;
-    public static string MessageName => typeof(T).FullName;
+    public static readonly string MessageName = typeof(T).FullName!;
 }
 
 file static class RabbitMqSubscriber
 {
-    internal static readonly JsonSerializerOptions Options = new() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };   
+    internal static readonly JsonSerializerOptions Options = new() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
 }
 
 internal sealed class RabbitMqSubscriber<T> : BackgroundService where T : notnull, IMessage
@@ -50,7 +50,7 @@ internal sealed class RabbitMqSubscriber<T> : BackgroundService where T : notnul
 
     protected override Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        _logger.LogConsumerStart(T.Name, _config.Exchange, _config.Topic, _config.Queue);
+        _logger.LogConsumerStart(RabbtMqSubscriptionConfig<T>.MessageName, _config.Exchange, _config.Topic, _config.Queue);
         _channel.ExchangeDeclare(exchange: _config.Exchange, type: ExchangeType.Topic);
         _channel.QueueDeclare(queue: _config.Queue, durable: true, exclusive: false, autoDelete: false, arguments: null);
         _channel.QueueBind(queue: _config.Queue, exchange: _config.Exchange, routingKey: _config.Topic);
@@ -62,7 +62,7 @@ internal sealed class RabbitMqSubscriber<T> : BackgroundService where T : notnul
 
     private async Task OnMessageReceived(object sender, BasicDeliverEventArgs ea)
     {
-        _logger.LogReceivedRabbitMqMessage(T.Name, _config.Exchange, _config.Queue, _config.Topic);
+        _logger.LogReceivedRabbitMqMessage(RabbtMqSubscriptionConfig<T>.MessageName, _config.Exchange, _config.Queue, _config.Topic);
         using var activity = RabbitMqOpenTelemetry.RabbitMqSource.StartActivity(name: "rabbitmq.consumer",
             ActivityKind.Consumer,
             RabbitMqOpenTelemetry.GetHeaderFromProps(ea.BasicProperties).ActivityContext);
@@ -75,7 +75,7 @@ internal sealed class RabbitMqSubscriber<T> : BackgroundService where T : notnul
             activity.SetTag("messaging.destination_kind", "queue");
             activity.SetTag("messaging.protocol", "AMQP");
             activity.SetTag("messaging.protocol_version", "0.9.1");
-            activity.SetTag("messaging.message_name", T.Name);
+            activity.SetTag("messaging.message_name", RabbtMqSubscriptionConfig<T>.MessageName);
         }
         var message = JsonSerializer.Deserialize<T>(ea.Body.Span, RabbitMqSubscriber.Options);
         if (message is null)
@@ -93,7 +93,7 @@ internal sealed class RabbitMqSubscriber<T> : BackgroundService where T : notnul
         catch (Exception e)
         {
             activity?.RecordException(e);
-            _logger.LogProcessingMessageError(e, T.Name, _config.Exchange, _config.Queue, _config.Topic);
+            _logger.LogProcessingMessageError(e, RabbtMqSubscriptionConfig<T>.MessageName, _config.Exchange, _config.Queue, _config.Topic);
             _channel.BasicNack(ea.DeliveryTag, false, true);
         }
 
