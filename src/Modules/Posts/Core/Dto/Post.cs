@@ -21,7 +21,6 @@ public sealed class PostDto
     public string Content { get; init; }
     public IReadOnlyCollection<string>? Tags { get; init; }
     public uint Likes { get; init; }
-    
     public uint RepliesQuantity { get; init; }
     
     
