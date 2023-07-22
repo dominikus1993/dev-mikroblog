@@ -38,7 +38,7 @@ public sealed class SystemTextMessageSerializerTests
     {
         var json = _messageSerializer.Serialize(msg);
 
-        var subject = _messageSerializer.Deserialize(ref json);
+        var subject = _messageSerializer.Deserialize(json);
 
         Assert.NotNull(subject);
         Assert.Equivalent(msg, subject);

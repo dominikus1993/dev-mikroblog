@@ -13,7 +13,7 @@ public sealed class SystemTextMessageSerializer<T> : IMessageSerializer<T> where
         _serializerOptions = serializerOptions;
     }
 
-    public T? Deserialize(ref ReadOnlyMemory<byte> body)
+    public T? Deserialize(in ReadOnlyMemory<byte> body)
     {
         ReadOnlySpan<byte> json = body.Span;
         var reader = new Utf8JsonReader(json);
